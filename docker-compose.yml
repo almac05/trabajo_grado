@@ -1,0 +1,70 @@
+# =============================================================================
+# docker-compose.yml - Proyecto de Grado Montebello
+# -----------------------------------------------------------------------------
+# Servicios:
+#   - app : contenedor Python con el pipeline ETL y el codigo del proyecto
+#   - db  : (opcional) MySQL 8 local para pruebas sin acceder a Registel
+#
+# Uso tipico:
+#   docker compose up -d --build            # levanta todos los servicios
+#   docker compose run --rm app python -m proyecto_grado.etl.pipeline
+#   docker compose down                     # detiene los servicios
+# =============================================================================
+
+name: proyecto_grado
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PYTHON_VERSION: "3.11"
+    image: proyecto_grado:latest
+    container_name: proyecto_grado_app
+    env_file:
+      - .env
+    environment:
+      PYTHONUNBUFFERED: "1"
+      PYTHONPATH: /app/src
+    volumes:
+      # Montamos datos y reportes para persistencia entre ejecuciones
+      - ./data:/app/data
+      - ./reports:/app/reports
+      - ./configs:/app/configs:ro
+      # Monta el codigo fuente en dev para iterar sin rebuild
+      - ./src:/app/src:ro
+    working_dir: /app
+    # Por defecto no arranca en modo detached: usar `docker compose run` para ETL on-demand
+    command: ["python", "-m", "proyecto_grado.etl.pipeline"]
+    profiles:
+      - etl
+    depends_on:
+      db:
+        condition: service_healthy
+        required: false
+
+  db:
+    image: mysql:8.0
+    container_name: proyecto_grado_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: ${REGISTEL_DB_NAME:-bd_montebello_rdw}
+      MYSQL_USER: ${REGISTEL_DB_USER:-montebello}
+      MYSQL_PASSWORD: ${REGISTEL_DB_PASSWORD:-montebello}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpass}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    profiles:
+      - db
+
+volumes:
+  mysql_data:
+    name: proyecto_grado_mysql_data

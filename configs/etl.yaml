@@ -1,0 +1,79 @@
+# Configuración operativa del pipeline ETL
+# Todos los valores aquí sobreescriben los defaults del código.
+# Si este archivo no existe, el pipeline usa los defaults embebidos.
+
+# Rutas operativas a procesar (IDs en tbl_intervalo_despacho.FK_RUTA)
+rutas_operativas: [1, 3]
+
+gps:
+  # Coordenadas de los patios terminales de cada ruta
+  puntos:
+    MOJICA:
+      lat: 3.416218
+      lon: -76.490574
+    MORICHAL:
+      lat: 3.398863
+      lon: -76.508078
+
+  # Radio (metros) para geocerca de detección de salida del patio
+  radio_geocerca_m: 700
+
+  # Radio (metros) para validación metodológica (función encontrar_hora_salida_por_geocerca)
+  radio_validacion_m: 1800
+
+  # Ventanas escalonadas (minutos) para búsqueda GPS cuando falta HORA_INICIAL_REAL
+  # Se prueban en orden; se detiene en el primer match exitoso
+  ventanas_busqueda_min: [30, 90, 180]
+
+trip_end:
+  # Minutos antes de HORA_INICIAL_REAL para abrir la ventana GPS
+  buffer_min: 20
+
+  # Duración máxima (minutos) de la ventana GPS post-inicio
+  ventana_min: 180
+
+  # Umbral de velocidad baja (km/h) — por debajo se considera detenido
+  vel_baja_kmh: 3
+
+  # Velocidad mínima (km/h) en cola final para clasificar como retorno activo
+  vel_retorno_kmh: 12
+
+  # Duración (minutos) de la cola final a evaluar para clasificar el fin
+  cola_eval_min: 15
+
+  # Fracción mínima de registros en cola con velocidad baja para TRUNCADO_ABANDONO
+  pct_baja: 0.70
+
+  # Usar señal de "Móvil Apagado" en el score de abandono
+  usar_msg_apagado: true
+
+  # Peso del evento apagado en el score de abandono (0.0–1.0)
+  w_msg: 0.35
+
+  # Cadena de texto GPS que indica apagado del vehículo
+  msg_apagado: "Móvil Apagado"
+
+  # Nombre de la tabla GPS en la base de datos
+  tabla_gps: "tbl_forwarding_wtch"
+
+  # Frecuencia de checkpoint (número de despachos procesados entre guardados)
+  checkpoint_every: 500
+
+qc:
+  # Percentil (0–100) para umbral soft de duración excesiva, calculado por ruta
+  duracion_pctl_soft: 99.0
+
+  # Duración máxima absoluta (minutos) para hard fail; null = deshabilitado
+  duracion_max_min_hard: null
+
+  # Percentil (0–100) para umbral soft de pasajeros absurdos, calculado por ruta
+  pasajeros_pctl_soft: 99.5
+
+  # Máximo absoluto de pasajeros para hard fail; null = deshabilitado
+  pasajeros_max_hard: null
+
+  # Frecuencia de despacho mínima (min) para soft fail
+  freq_min_soft: 1.0
+
+  # Frecuencia de despacho máxima (min) para soft fail
+  freq_max_soft: 60.0

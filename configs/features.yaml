@@ -1,0 +1,43 @@
+# Configuracion del modulo de features - Serie temporal agregada
+# Todos los valores sobreescriben los defaults del codigo.
+
+# Granularidades a generar (en minutos). Se producira un Parquet por cada
+# combinacion granularidad x ruta. La literatura reporta que 15 min reduce
+# RMSE hasta 75% frente a 60 min (NYC taxi study), pero requiere mayor
+# volumen. Con los registros reales de Montebello se comparan empiricamente
+# las tres resoluciones.
+granularidades_min: [15, 30, 60]
+
+# Definicion de franjas horarias del dia
+# Cada franja: [hora_inicio, hora_fin] inclusive (0-23)
+franjas_horarias:
+  MADRUGADA: [0, 5]
+  MANANA: [6, 11]
+  MEDIODIA: [12, 13]
+  TARDE: [14, 18]
+  NOCHE: [19, 23]
+
+# Estrategia de imputacion para franjas sin despachos (gaps)
+# Opciones:
+#   zero  — pasajeros=0, despachos=0 (recomendado para modelos de demanda)
+#   ffill — propaga el valor anterior
+#   mark  — deja NaN y marca is_gap=True
+imputacion_gaps: zero
+
+# Cobertura minima de dias requerida para considerar la serie valida
+cobertura_minima_dias: 30
+
+# Rutas operativas a procesar (deben coincidir con FK_RUTA en model-ready)
+rutas: [1, 3]
+
+# Estimacion del horario operativo real desde los datos historicos.
+# Se calcula por tipo_dia x ruta x granularidad para distinguir gaps anomalos
+# (dentro del horario pero sin servicio) de franjas fuera de operacion.
+horario_operativo:
+  umbral_actividad: 0.10      # fraccion minima de dias activos para considerar
+                               # una franja como parte del horario operativo
+  umbral_anomalia: 0.30       # franjas con pct_activa < este valor dentro del
+                               # horario se marcan como anomalas
+  min_dias_muestra: 10        # minimo de dias de cada tipo para calcular el
+                               # horario; si hay menos, usa LABORAL como proxy
+  incluir_festivo_puente: true # clasifica lunes festivos colombianos por separado

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(.\\\\.venv\\\\Scripts\\\\pip.exe show proyecto-grado 2>&1)",
+      "PowerShell(.\\\\.venv\\\\Scripts\\\\pre-commit.exe --version 2>&1)",
+      "PowerShell(.\\\\.venv\\\\Scripts\\\\python.exe -m pip install \"holidays>=0.46\" -q)",
+      "PowerShell(.\\\\.venv\\\\Scripts\\\\python.exe -c \"import holidays; print\\('holidays', holidays.__version__\\)\")",
+      "PowerShell(.\\\\.venv\\\\Scripts\\\\ruff.exe check src/proyecto_grado/features/ scripts/build_time_series.py 2>&1)",
+      "PowerShell(.\\\\.venv\\\\Scripts\\\\python.exe -m pytest tests/unit/test_time_series_builder.py -q 2>&1)",
+      "PowerShell(.venv\\\\Scripts\\\\python.exe -m pytest tests/unit/test_time_series_builder.py -v -p no:cacheprovider 2>&1)",
+      "Bash(.venvScriptspython.exe -c ' *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\regis\\\\proyecto_grado\" -Recurse)",
+      "Bash(Select-Object FullName)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(Out-String)",
+      "Bash(python3)"
+    ]
+  }
+}

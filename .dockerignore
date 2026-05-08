@@ -1,0 +1,77 @@
+# Git
+.git
+.gitignore
+.gitattributes
+.github
+
+# Entornos virtuales / Python
+.venv
+venv
+env
+__pycache__
+**/__pycache__
+*.py[cod]
+*.egg-info
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.tox
+htmlcov
+.coverage
+.coverage.*
+
+# Datos (se montan como volumenes, no deben entrar en la imagen)
+data/raw/*
+data/interim/*
+data/processed/*
+data/external/*
+!data/**/.gitkeep
+
+# Modelos entrenados y reportes generados
+models/*.pkl
+models/*.joblib
+models/*.h5
+models/*.pt
+mlruns
+mlartifacts
+reports/figures/*
+reports/tables/*
+!reports/**/.gitkeep
+
+# Notebooks y documentacion (no necesarios en runtime)
+notebooks
+docs
+*.ipynb
+*.ipynb_checkpoints
+
+# Secretos y configuracion local
+.env
+.env.*
+!.env.example
+credentials.json
+*.pem
+*.key
+
+# IDE / editores
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Artefactos de build
+build
+dist
+*.log
+
+# PDFs y recursos de documentacion del anteproyecto
+*.pdf
