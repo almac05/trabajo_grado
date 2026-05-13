@@ -7,50 +7,85 @@
 **Programa:** Maestría en IA y Ciencia de Datos — Universidad Autónoma de Occidente (UAO)
 
 ## Descripción
-Implementación de modelos de aprendizaje automático (SARIMA, Prophet, Random Forest, XGBoost, LSTM, GRU) para predecir la demanda de pasajeros y apoyar el despacho vehicular de la empresa Montebello (Cali, Colombia), utilizando datos históricos de APC, GPS y despachos provenientes de Registel.
+
+Implementación de modelos de aprendizaje automático para predecir la demanda de pasajeros y apoyar el despacho vehicular de la empresa Montebello (Cali, Colombia), utilizando datos históricos de APC, GPS y despachos provenientes de Registel.
+
+## Estado actual del proyecto
+
+| Fase | Módulo | Estado |
+|------|--------|--------|
+| ETL | `etl/` — Extracción MySQL, normalización, QC, GPS, model-ready | ✅ Implementado |
+| ETL Analytics | `analytics/` — Diagnósticos, KPIs y figuras post-ETL | ✅ Implementado |
+| Features | `features/` — Series temporales (3 granularidades × 2 rutas), horario operativo | ✅ Implementado |
+| EDA temporal | `eda/` — Perfiles intraday/semanal/mensual, ACF/PACF, atípicos | ✅ Implementado |
+| Dashboard | `dashboard/` — Streamlit: ETL, series temporales y EDA temporal | ✅ Implementado |
+| Modelado | `models/baselines/`, `models/ml/`, `models/dl/` | 🔲 Pendiente |
+| Evaluación | `evaluation/` | 🔲 Pendiente |
+| Despacho | `dispatch/` | 🔲 Pendiente |
 
 ## Estructura del repositorio
+
 ```
 proyecto_grado/
-├── configs/                    # Configuraciones (YAML) para modelos y pipelines
+├── configs/
+│   ├── etl.yaml                    # Configuración del pipeline ETL
+│   └── features.yaml               # Configuración de features/series temporales
 ├── data/
-│   ├── raw/                    # Datos crudos extraídos de Registel (MySQL)
-│   ├── interim/                # Datos en transformación
-│   ├── processed/              # Datasets listos para modelado
-│   └── external/               # Fuentes externas (clima, calendario)
-├── docs/                       # Documentación técnica y metodológica
-├── notebooks/
-│   ├── 01_eda/                 # Fase 1 — Análisis exploratorio
-│   ├── 02_preprocessing/       # Limpieza y features
-│   ├── 03_modeling/            # Experimentos de modelado
-│   └── 04_evaluation/          # Comparación y validación
+│   ├── raw/                        # Datos crudos (despachos_raw_historico.csv)
+│   ├── interim/
+│   │   ├── gps/                    # Artefactos GPS (despachos_end.parquet)
+│   │   └── qc/                     # Resultados QC del ETL
+│   └── processed/
+│       ├── eda/                    # Artefactos EDA temporal (Parquet por ruta/granularidad)
+│       ├── model_ready/            # Dataset final model-ready (CSV + Parquet)
+│       ├── time_series/            # Series temporales: ts_ruta{1,3}_g{15,30,60}min.parquet
+│       └── operational_hours.parquet
+├── docs/                           # Documentación técnica (pendiente)
+├── notebooks/                      # Notebooks por fase (pendiente)
+│   ├── 01_eda/
+│   ├── 02_preprocessing/
+│   ├── 03_modeling/
+│   └── 04_evaluation/
 ├── reports/
-│   ├── figures/                # Gráficos generados
-│   └── tables/                 # Tablas y métricas
-├── scripts/                    # Scripts utilitarios (CLI)
+│   ├── figures/eda/                # ~50 figuras PNG (ACF/PACF, heatmaps, intraday, etc.)
+│   └── tables/                     # Métricas CSV/JSON del ETL y EDA
+├── scripts/
+│   ├── build_time_series.py        # Construye 6 series temporales (3 gran. × 2 rutas)
+│   ├── estimate_operational_hours.py  # Estima horario operativo real
+│   └── run_eda_temporal.py         # Genera artefactos EDA y figuras
 ├── src/proyecto_grado/
-│   ├── data/                   # Acceso y carga de datos
-│   ├── etl/                    # Pipeline ETL (extract/transform/load)
-│   ├── features/               # Ingeniería de características
+│   ├── analytics/                  # Diagnósticos ETL, KPIs y gráficos post-ETL
+│   ├── dashboard/                  # Dashboard Streamlit (app.py)
+│   ├── eda/                        # Análisis temporal: TemporalEDA
+│   ├── etl/                        # Pipeline ETL completo (Bloques 1–9)
+│   │   ├── config.py
+│   │   ├── db.py
+│   │   ├── extract.py
+│   │   ├── gps.py
+│   │   ├── model_ready.py
+│   │   ├── pipeline.py
+│   │   ├── qc.py
+│   │   ├── transforms.py
+│   │   ├── trip_end.py
+│   │   └── utils.py
+│   ├── features/                   # Series temporales y horario operativo
+│   │   ├── operational_hours.py
+│   │   ├── time_series_builder.py
+│   │   └── validators.py
 │   ├── models/
-│   │   ├── baselines/          # SARIMA, Prophet
-│   │   ├── ml/                 # Random Forest, XGBoost
-│   │   └── dl/                 # LSTM, GRU, híbridos
-│   ├── evaluation/             # Métricas (MAE, RMSE, MAPE) y comparación
-│   ├── dispatch/               # Módulo heurístico de apoyo al despacho
-│   └── utils/                  # Utilidades compartidas
+│   │   ├── baselines/              # SARIMA, Prophet (pendiente)
+│   │   ├── ml/                     # Random Forest, XGBoost (pendiente)
+│   │   └── dl/                     # LSTM, GRU (pendiente)
+│   ├── evaluation/                 # Métricas y comparación (pendiente)
+│   ├── dispatch/                   # Módulo de apoyo al despacho (pendiente)
+│   └── utils/
 └── tests/
-    ├── unit/
-    └── integration/
+    ├── unit/                       # 13 módulos de pruebas unitarias
+    └── integration/                # Prueba de integración del pipeline ETL
 ```
 
-## Fases metodológicas
-1. **Caracterización de variables** — extracción, limpieza y EDA sobre datos operativos.
-2. **Arquitectura y ETL** — pipeline reproducible Registel (MySQL) → AWS S3/Parquet.
-3. **Modelado** — entrenamiento comparativo de modelos predictivos.
-4. **Evaluación** — validación con MAE, RMSE, MAPE y análisis de sensibilidad.
-
 ## Inicio rápido
+
 ```powershell
 # 1) Crear entorno virtual
 make venv
@@ -63,14 +98,40 @@ make dev
 make help
 ```
 
+## Flujo de trabajo actual
+
+```powershell
+# Ejecutar pipeline ETL (requiere .env con credenciales REGISTEL_DB_*)
+make etl
+
+# Construir series temporales (3 granularidades × 2 rutas)
+make build-ts
+
+# Estimar horario operativo y regenerar series con gap_tipo
+make estimate-op-hours
+
+# Análisis EDA temporal (genera Parquet + figuras en reports/)
+make eda-temporal
+
+# Iniciar dashboard Streamlit
+make dashboard
+
+# Ejecutar pruebas
+make test
+make test-eda       # Solo tests EDA temporal
+make test-cov       # Con reporte de cobertura
+```
+
 ## Tecnologías
+
 - **Lenguaje:** Python 3.11+
 - **Datos:** pandas, pyarrow, SQLAlchemy, PyMySQL
-- **ML:** scikit-learn, XGBoost, statsmodels, Prophet
-- **DL:** PyTorch / TensorFlow (según modelo)
-- **Cloud:** AWS (S3, Glue, SageMaker)
+- **EDA / Stats:** statsmodels, scipy
+- **Dashboard:** Streamlit, Plotly
+- **ML/DL:** scikit-learn, XGBoost, statsmodels, Prophet *(pendiente)*
 - **Calidad:** ruff, mypy, pytest, pre-commit
-- **Orquestación:** Make, Docker, docker-compose
+- **Infraestructura:** Make, Docker, docker-compose
 
 ## Licencia
+
 Uso académico — Universidad Autónoma de Occidente, 2025.

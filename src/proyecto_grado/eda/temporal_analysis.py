@@ -21,6 +21,7 @@ _TS_FILE_PATTERN = re.compile(r"ts_ruta(\d+)_g(\d+)min")
 _TIME_SERIES_DIR = PROJECT_ROOT / "data" / "processed" / "time_series"
 _EDA_DIR = PROJECT_ROOT / "data" / "processed" / "eda"
 _MODEL_READY_PATH = Path(MODEL_READY_DIR) / "despachos_model_ready.parquet"
+_REPORTS_DIR = PROJECT_ROOT / "reports" / "tables"
 
 WEEKDAY_NAMES = {
     0: "Lunes",
@@ -607,3 +608,165 @@ class TemporalEDA:
         }
         logger.info("EDA temporal completado. Artefactos en: %s", self.eda_dir)
         return results
+
+
+def calcular_gaps_horario_operativo(
+    series_dict: dict[tuple[int, int], pd.DataFrame],
+    operational_hours_df: pd.DataFrame,
+    output_dir: Path | None = None,
+) -> pd.DataFrame:
+    """Recalcula el análisis de gaps restringiéndolo al horario operativo estimado.
+
+    Para cada combinación (ruta x granularidad_min x tipo_dia) filtra las franjas
+    cuyo timestamp cae dentro de [hora_inicio_op_min, hora_fin_op_min] y calcula
+    n_franjas_op, n_gaps_op y pct_gaps_op. Los valores sin filtro horario (24h)
+    se incluyen como columnas de comparación directa para evidenciar cuánto
+    inflaban los gaps nocturnos estructurales el porcentaje reportado.
+
+    Parameters
+    ----------
+    series_dict : dict[tuple[int, int], pd.DataFrame]
+        Diccionario {(ruta, granularidad_min): DataFrame} producido por
+        TimeSeriesBuilder.build_all(). Cada DataFrame debe tener las columnas
+        timestamp, is_gap y tipo_dia.
+    operational_hours_df : pd.DataFrame
+        DataFrame cargado desde operational_hours.parquet con las columnas
+        tipo_dia, ruta, granularidad_min, hora_inicio_op_min, hora_fin_op_min.
+    output_dir : Path | None
+        Directorio de salida para gaps_horario_operativo.csv.
+        Si es None, usa reports/tables/ del proyecto.
+
+    Returns
+    -------
+    pd.DataFrame
+        Tabla con columnas: granularidad_min, ruta, tipo_dia,
+        n_franjas_op, n_gaps_op, pct_gaps_op,
+        n_franjas_24h, n_gaps_24h, pct_gaps_24h.
+        Imprime en consola el resumen agregado por (granularidad_min x ruta).
+    """
+    rows: list[dict] = []
+
+    for (ruta, gran), df in series_dict.items():
+        if df.empty:
+            continue
+
+        required = {"timestamp", "is_gap", "tipo_dia"}
+        missing = required - set(df.columns)
+        if missing:
+            logger.warning(
+                "calcular_gaps_horario_operativo: columnas faltantes ruta=%d gran=%d: %s",
+                ruta,
+                gran,
+                missing,
+            )
+            continue
+
+        df = df.copy()
+        df["timestamp"] = pd.to_datetime(df["timestamp"])
+        df["is_gap"] = df["is_gap"].fillna(False).astype(bool)
+        df["_minuto_dia"] = df["timestamp"].dt.hour * 60 + df["timestamp"].dt.minute
+
+        op_sub = operational_hours_df[
+            (operational_hours_df["ruta"] == ruta)
+            & (operational_hours_df["granularidad_min"] == gran)
+            & (operational_hours_df["hora_inicio_op_min"] >= 0)
+        ]
+        lookup: dict[str, tuple[int, int]] = {
+            str(r["tipo_dia"]): (int(r["hora_inicio_op_min"]), int(r["hora_fin_op_min"]))
+            for _, r in op_sub.iterrows()
+        }
+
+        for tipo_dia, grp in df.groupby("tipo_dia", dropna=False):
+            tipo_str = str(tipo_dia)
+            n_24h = len(grp)
+            n_gaps_24h = int(grp["is_gap"].sum())
+            pct_24h = round(100.0 * n_gaps_24h / n_24h, 2) if n_24h > 0 else 0.0
+
+            if tipo_str not in lookup:
+                logger.debug(
+                    "Sin horario operativo para ruta=%d gran=%d tipo=%s — se registra sin filtro",
+                    ruta,
+                    gran,
+                    tipo_str,
+                )
+                rows.append(
+                    {
+                        "granularidad_min": gran,
+                        "ruta": ruta,
+                        "tipo_dia": tipo_str,
+                        "n_franjas_op": 0,
+                        "n_gaps_op": 0,
+                        "pct_gaps_op": None,
+                        "n_franjas_24h": n_24h,
+                        "n_gaps_24h": n_gaps_24h,
+                        "pct_gaps_24h": pct_24h,
+                    }
+                )
+                continue
+
+            inicio, fin = lookup[tipo_str]
+            grp_op = grp[(grp["_minuto_dia"] >= inicio) & (grp["_minuto_dia"] <= fin)]
+
+            n_op = len(grp_op)
+            n_gaps_op = int(grp_op["is_gap"].sum())
+            pct_op = round(100.0 * n_gaps_op / n_op, 2) if n_op > 0 else 0.0
+
+            rows.append(
+                {
+                    "granularidad_min": gran,
+                    "ruta": ruta,
+                    "tipo_dia": tipo_str,
+                    "n_franjas_op": n_op,
+                    "n_gaps_op": n_gaps_op,
+                    "pct_gaps_op": pct_op,
+                    "n_franjas_24h": n_24h,
+                    "n_gaps_24h": n_gaps_24h,
+                    "pct_gaps_24h": pct_24h,
+                }
+            )
+
+    result = pd.DataFrame(rows)
+
+    if result.empty:
+        logger.warning("calcular_gaps_horario_operativo: sin resultados.")
+        return result
+
+    out_dir = Path(output_dir) if output_dir else _REPORTS_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
+    csv_path = out_dir / "gaps_horario_operativo.csv"
+    result.to_csv(csv_path, index=False)
+    logger.info("Gaps horario operativo guardado: %s", csv_path)
+
+    # Resumen agregado por (granularidad_min x ruta): promedio ponderado por tipo_dia
+    valid = result.dropna(subset=["pct_gaps_op"])
+    if not valid.empty:
+        agg_rows: list[dict] = []
+        for (gran_g, ruta_g), grp_g in valid.groupby(["granularidad_min", "ruta"]):
+            n_op_tot = int(grp_g["n_franjas_op"].sum())
+            n_gaps_op_tot = int(grp_g["n_gaps_op"].sum())
+            n_24h_tot = int(grp_g["n_franjas_24h"].sum())
+            n_gaps_24h_tot = int(grp_g["n_gaps_24h"].sum())
+            pct_op = round(100.0 * n_gaps_op_tot / n_op_tot, 2) if n_op_tot > 0 else 0.0
+            pct_24h = round(100.0 * n_gaps_24h_tot / n_24h_tot, 2) if n_24h_tot > 0 else 0.0
+            agg_rows.append(
+                {
+                    "granularidad_min": gran_g,
+                    "ruta": ruta_g,
+                    "n_franjas_op": n_op_tot,
+                    "n_gaps_op": n_gaps_op_tot,
+                    "pct_gaps_op": pct_op,
+                    "n_franjas_24h": n_24h_tot,
+                    "pct_gaps_24h": pct_24h,
+                    "reduccion_pct_pts": round(pct_24h - pct_op, 2),
+                }
+            )
+        agg = pd.DataFrame(agg_rows)
+        sep = "=" * 70
+        print(f"\n{sep}")
+        print("  Gaps: horario operativo vs 24h  (promedio ponderado por tipo_dia)")
+        print(sep)
+        print(agg.to_string(index=False))
+        print(f"{sep}\n")
+        logger.info("Resumen gaps horario operativo:\n%s", agg.to_string(index=False))
+
+    return result

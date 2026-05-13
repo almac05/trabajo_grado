@@ -40,14 +40,13 @@ else
 endif
 
 .DEFAULT_GOAL := help
-.PHONY: help venv install dev lint format typecheck test test-cov \
+.PHONY: help venv install dev lint format typecheck test test-eda test-cov \
         clean clean-pyc clean-build clean-cache \
         etl etl-dry-run etl-clean \
         build-ts build-ts-ruta1 build-ts-ruta3 estimate-op-hours \
-        eda eda-temporal eda-clean \
-        train-baseline train-ml train-dl train-all \
-        evaluate report \
-        docker-build docker-up docker-down docker-logs docker-ps docker-config docker-shell \
+        eda-temporal eda-clean \
+        docker-build docker-up docker-down docker-logs docker-ps docker-config docker-shell docker-etl \
+        post-etl-report dashboard \
         precommit-install precommit-run \
         freeze
 
@@ -155,9 +154,6 @@ build-ts-ruta3:  ## Construye 3 series temporales para ruta 3 (15/30/60 min)
 # =============================================================================
 # Fase 1: Analisis exploratorio de datos (EDA)
 # =============================================================================
-eda:  ## EDA clasico: ejecuta notebooks en notebooks/01_eda/
-	jupyter nbconvert --to notebook --execute $(NOTEBOOKS_DIR)/01_eda/*.ipynb
-
 eda-temporal:  ## EDA temporal: perfil intraday, ACF/PACF, atipicos y tendencia sobre series
 	$(PY_UTF8_RUN) $(PYTHON) scripts/run_eda_temporal.py
 
@@ -166,27 +162,11 @@ eda-clean:  ## Borra artefactos del EDA temporal (data/processed/eda/ y reports/
 	$(RM_RF) reports/figures/eda
 
 # =============================================================================
-# Fase 3: Entrenamiento de modelos
+# Fase 3-4: Entrenamiento y evaluacion (pendiente de implementacion)
 # =============================================================================
-train-baseline:  ## Entrena modelos baseline (SARIMA, Prophet)
-	$(PYTHON) -m $(PACKAGE).models.baselines.train
-
-train-ml:  ## Entrena modelos de ML clasico (RF, XGBoost)
-	$(PYTHON) -m $(PACKAGE).models.ml.train
-
-train-dl:  ## Entrena modelos de Deep Learning (LSTM, GRU)
-	$(PYTHON) -m $(PACKAGE).models.dl.train
-
-train-all: train-baseline train-ml train-dl  ## Entrena todos los modelos
-
-# =============================================================================
-# Fase 4: Evaluacion y reportes
-# =============================================================================
-evaluate:  ## Evalua modelos (MAE, RMSE, MAPE) y compara
-	$(PYTHON) -m $(PACKAGE).evaluation.compare
-
-report:  ## Genera reporte final con metricas y graficos
-	$(PYTHON) -m $(PACKAGE).evaluation.report
+# train-baseline, train-ml, train-dl, evaluate, report
+# Los modulos models/ y evaluation/ son stubs. Targets disponibles
+# cuando se implementen los modulos correspondientes.
 
 # =============================================================================
 # Docker

@@ -51,6 +51,7 @@ OPERATIONAL_HOURS_PATH = PROJECT_ROOT / "data" / "processed" / "operational_hour
 OPERATIONAL_HOURS_SUMMARY_PATH = (
     PROJECT_ROOT / "reports" / "tables" / "operational_hours_summary.csv"
 )
+GAPS_HORARIO_PATH = PROJECT_ROOT / "reports" / "tables" / "gaps_horario_operativo.csv"
 TIME_SERIES_METRIC_LABELS = {
     "pasajeros_total": "Pasajeros totales",
     "despachos_count": "Despachos",
@@ -182,6 +183,19 @@ def _style_ts_summary(df: pd.DataFrame):
     return styler
 
 
+def _style_gaps_comparison(df: pd.DataFrame):
+    styler = df.style
+    if "pct_gaps_op" in df.columns:
+        styler = styler.background_gradient(
+            subset=["pct_gaps_op"], cmap="Oranges", vmin=0, vmax=100
+        )
+    if "pct_gaps_24h" in df.columns:
+        styler = styler.background_gradient(subset=["pct_gaps_24h"], cmap="Reds", vmin=0, vmax=100)
+    if "reduccion_pct_pts" in df.columns:
+        styler = styler.background_gradient(subset=["reduccion_pct_pts"], cmap="Greens")
+    return styler
+
+
 def _style_operational_hours(df: pd.DataFrame):
     styler = df.style
     if "pct_cobertura_dentro_horario" in df.columns:
@@ -310,6 +324,13 @@ def load_operational_hours_outputs() -> pd.DataFrame:
         return pd.read_parquet(OPERATIONAL_HOURS_PATH)
     if OPERATIONAL_HOURS_SUMMARY_PATH.exists():
         return pd.read_csv(OPERATIONAL_HOURS_SUMMARY_PATH, encoding="utf-8")
+    return pd.DataFrame()
+
+
+@st.cache_data(ttl=300, show_spinner="Cargando analisis de gaps por horario...")
+def load_gaps_horario_operativo() -> pd.DataFrame:
+    if GAPS_HORARIO_PATH.exists():
+        return pd.read_csv(GAPS_HORARIO_PATH, encoding="utf-8")
     return pd.DataFrame()
 
 
@@ -933,6 +954,44 @@ def build_gap_type_summary(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("franjas", ascending=False)
 
 
+def plot_gaps_comparison_bars(gaps_df: pd.DataFrame, route: int, gran: int) -> None:
+    sub = gaps_df[(gaps_df["ruta"] == route) & (gaps_df["granularidad_min"] == gran)].copy()
+    if sub.empty:
+        st.info("No hay datos de comparacion de gaps para esta combinacion ruta/granularidad.")
+        return
+    sub["tipo_dia"] = pd.Categorical(sub["tipo_dia"], categories=DAY_TYPE_ORDER, ordered=True)
+    sub = sub.sort_values("tipo_dia").reset_index(drop=True)
+
+    _apply_chart_theme()
+    fig, ax = plt.subplots(figsize=(10, 5))
+    x = np.arange(len(sub))
+    width = 0.38
+    ax.bar(
+        x - width / 2,
+        sub["pct_gaps_24h"],
+        width,
+        label="Gaps 24h (%)",
+        color=PALETTE["accent"],
+        alpha=0.75,
+    )
+    ax.bar(
+        x + width / 2,
+        sub["pct_gaps_op"],
+        width,
+        label="Gaps horario operativo (%)",
+        color=PALETTE["primary"],
+    )
+    ax.set_xticks(x)
+    ax.set_xticklabels(sub["tipo_dia"].astype(str), rotation=0, fontsize=9)
+    ax.set_ylabel("% de franjas como gap")
+    ax.set_title(f"Gaps: horario operativo vs 24h — Ruta {route} | {gran} min")
+    ax.legend(fontsize=9)
+    ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:.0f}%"))
+    ax.yaxis.set_major_locator(MaxNLocator(nbins=6))
+    ax.margins(y=0.15)
+    _render_figure(fig)
+
+
 def plot_gap_type_heatmap_inline(df: pd.DataFrame, gap_type: str) -> None:
     if df.empty or "gap_tipo" not in df.columns:
         plot_gap_heatmap_inline(df)
@@ -1303,6 +1362,53 @@ def render_time_series_page() -> None:
                 mime="text/csv",
             )
 
+    _gaps_df_global = load_gaps_horario_operativo()
+    if not _gaps_df_global.empty:
+        _valid_gaps = _gaps_df_global.dropna(subset=["pct_gaps_op"])
+        if not _valid_gaps.empty:
+            _agg_rows = []
+            for (_gran_g, _ruta_g), _grp in _valid_gaps.groupby(["granularidad_min", "ruta"]):
+                _n_op = int(_grp["n_franjas_op"].sum())
+                _n_gaps_op = int(_grp["n_gaps_op"].sum())
+                _n_24h = int(_grp["n_franjas_24h"].sum())
+                _n_gaps_24h = int(_grp["n_gaps_24h"].sum()) if "n_gaps_24h" in _grp.columns else 0
+                _pct_op = round(100.0 * _n_gaps_op / _n_op, 2) if _n_op > 0 else 0.0
+                _pct_24h = round(100.0 * _n_gaps_24h / _n_24h, 2) if _n_24h > 0 else 0.0
+                _agg_rows.append(
+                    {
+                        "granularidad_min": _gran_g,
+                        "ruta": _ruta_g,
+                        "n_franjas_op": _n_op,
+                        "n_gaps_op": _n_gaps_op,
+                        "pct_gaps_op (%)": _pct_op,
+                        "n_franjas_24h": _n_24h,
+                        "pct_gaps_24h (%)": _pct_24h,
+                        "reduccion_pct_pts": round(_pct_24h - _pct_op, 2),
+                    }
+                )
+            _agg_df = pd.DataFrame(_agg_rows)
+            with st.expander("Gaps: horario operativo vs 24h (resumen global)", expanded=False):
+                st.caption(
+                    "Porcentaje de gaps calculado solo sobre franjas dentro del horario "
+                    "operativo estimado (`pct_gaps_op`) comparado con la base 24h. "
+                    "`reduccion_pct_pts` indica cuanto se reduce el % al excluir los gaps nocturnos."
+                )
+                st.dataframe(
+                    _agg_df.style.background_gradient(
+                        subset=["pct_gaps_op (%)"], cmap="Oranges", vmin=0, vmax=100
+                    )
+                    .background_gradient(subset=["pct_gaps_24h (%)"], cmap="Reds", vmin=0, vmax=100)
+                    .background_gradient(subset=["reduccion_pct_pts"], cmap="Greens"),
+                    use_container_width=True,
+                    hide_index=True,
+                )
+                st.download_button(
+                    "Descargar resumen global CSV",
+                    data=_df_to_csv(_agg_df),
+                    file_name="gaps_horario_global.csv",
+                    mime="text/csv",
+                )
+
     available_routes = sorted({ruta for ruta, _ in series_by_combo})
     available_grans = sorted({gran for _, gran in series_by_combo})
 
@@ -1461,6 +1567,33 @@ def render_time_series_page() -> None:
                 gap_summary.sort_values("gap_pct", ascending=False).head(40),
                 use_container_width=True,
                 hide_index=True,
+            )
+
+        gaps_df = load_gaps_horario_operativo()
+        if not gaps_df.empty:
+            st.subheader("Gaps dentro del horario operativo vs 24h")
+            st.caption(
+                "Los gaps fuera del horario operativo (madrugada/noche estructural) "
+                "no se cuentan en `pct_gaps_op`, lo que refleja mejor la calidad real del servicio."
+            )
+            plot_gaps_comparison_bars(gaps_df, route, gran)
+            sub_gaps = gaps_df[
+                (gaps_df["ruta"] == route) & (gaps_df["granularidad_min"] == gran)
+            ].drop(columns=["n_gaps_24h"], errors="ignore")
+            if not sub_gaps.empty:
+                st.dataframe(
+                    _style_gaps_comparison(sub_gaps), use_container_width=True, hide_index=True
+                )
+                st.download_button(
+                    "Descargar comparacion gaps CSV",
+                    data=_df_to_csv(sub_gaps),
+                    file_name=f"gaps_horario_ruta{route}_g{gran}min.csv",
+                    mime="text/csv",
+                )
+        elif not GAPS_HORARIO_PATH.exists():
+            st.info(
+                "Ejecuta `calcular_gaps_horario_operativo()` desde "
+                "`eda/temporal_analysis.py` para ver la comparacion con base 24h."
             )
 
     with tabs[5]:
@@ -2288,6 +2421,87 @@ def render_eda_cli_outputs(arts: dict[str, pd.DataFrame], route: int, gran: int)
         st.info("No se encontraron artefactos EDA en disco.")
 
 
+def render_eda_block_g(route: int, gran: int) -> None:
+    """Bloque G - comparacion de gaps: horario operativo vs 24h."""
+    gaps_df = load_gaps_horario_operativo()
+    if gaps_df.empty:
+        st.info(
+            "Archivo `gaps_horario_operativo.csv` no encontrado. "
+            "Ejecuta `calcular_gaps_horario_operativo()` desde `eda/temporal_analysis.py`."
+        )
+        st.code(
+            "from proyecto_grado.eda.temporal_analysis import calcular_gaps_horario_operativo\n"
+            "import pandas as pd\n"
+            "op_df = pd.read_parquet('data/processed/operational_hours.parquet')\n"
+            "# series_dict = builder.build_all(df_model_ready)\n"
+            "result = calcular_gaps_horario_operativo(series_dict, op_df)",
+            language="python",
+        )
+        return
+
+    st.subheader(f"Gaps: horario operativo vs 24h — Ruta {route} | {gran} min")
+    st.caption(
+        "Comparacion del porcentaje de gaps calculado **solo dentro del horario operativo** "
+        "estimado por `OperationalHoursEstimator` vs el calculo tradicional sobre las 24h "
+        "completas. Los gaps nocturnos estructurales pueden inflar artificialmente el "
+        "`%gaps` hasta **34-38 pp** si no se filtra por horario."
+    )
+
+    plot_gaps_comparison_bars(gaps_df, route, gran)
+
+    sub = gaps_df[(gaps_df["ruta"] == route) & (gaps_df["granularidad_min"] == gran)].drop(
+        columns=["n_gaps_24h"], errors="ignore"
+    )
+    if not sub.empty:
+        st.dataframe(_style_gaps_comparison(sub), use_container_width=True, hide_index=True)
+
+    with st.expander("Resumen global — todas las rutas y granularidades", expanded=True):
+        valid = gaps_df.dropna(subset=["pct_gaps_op"])
+        if not valid.empty:
+            agg_rows: list[dict] = []
+            for (gran_g, ruta_g), grp in valid.groupby(["granularidad_min", "ruta"]):
+                n_op = int(grp["n_franjas_op"].sum())
+                n_gaps_op = int(grp["n_gaps_op"].sum())
+                n_24h = int(grp["n_franjas_24h"].sum())
+                n_gaps_24h = int(grp["n_gaps_24h"].sum()) if "n_gaps_24h" in grp.columns else 0
+                pct_op = round(100.0 * n_gaps_op / n_op, 2) if n_op > 0 else 0.0
+                pct_24h = round(100.0 * n_gaps_24h / n_24h, 2) if n_24h > 0 else 0.0
+                agg_rows.append(
+                    {
+                        "granularidad_min": gran_g,
+                        "ruta": ruta_g,
+                        "n_franjas_op": n_op,
+                        "n_gaps_op": n_gaps_op,
+                        "pct_gaps_op (%)": pct_op,
+                        "n_franjas_24h": n_24h,
+                        "pct_gaps_24h (%)": pct_24h,
+                        "reduccion_pct_pts": round(pct_24h - pct_op, 2),
+                    }
+                )
+            agg = pd.DataFrame(agg_rows)
+            st.dataframe(
+                agg.style.background_gradient(
+                    subset=["pct_gaps_op (%)"], cmap="Oranges", vmin=0, vmax=100
+                )
+                .background_gradient(subset=["pct_gaps_24h (%)"], cmap="Reds", vmin=0, vmax=100)
+                .background_gradient(subset=["reduccion_pct_pts"], cmap="Greens"),
+                use_container_width=True,
+                hide_index=True,
+            )
+            st.download_button(
+                "Descargar resumen global CSV",
+                data=_df_to_csv(agg),
+                file_name="gaps_horario_global.csv",
+                mime="text/csv",
+            )
+    st.download_button(
+        "Descargar detalle completo CSV",
+        data=_df_to_csv(gaps_df),
+        file_name="gaps_horario_operativo.csv",
+        mime="text/csv",
+    )
+
+
 def render_eda_temporal_page() -> None:
     """Pagina EDA Temporal: resultados del analisis exploratorio temporal."""
     st.title("EDA Temporal")
@@ -2346,6 +2560,7 @@ def render_eda_temporal_page() -> None:
             "D. Tendencia y ACF",
             "E. Atipicos",
             "F. Figuras CLI",
+            "G. Gaps horario operativo",
         ]
     )
 
@@ -2366,6 +2581,9 @@ def render_eda_temporal_page() -> None:
 
     with tabs[5]:
         render_eda_cli_outputs(arts, route, gran)
+
+    with tabs[6]:
+        render_eda_block_g(route, gran)
 
     st.divider()
     if st.button("Regenerar artefactos EDA", use_container_width=False):
