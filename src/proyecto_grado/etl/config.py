@@ -108,7 +108,7 @@ def inicializar_entorno(cargar_env=True, crear_directorios=True, verbose=True):
     global _ENV_LOADED
 
     if cargar_env and not _ENV_LOADED:
-        load_dotenv(PROJECT_ROOT / ".env")
+        load_dotenv(PROJECT_ROOT / ".env", override=True)
         _ENV_LOADED = True
 
     if crear_directorios:

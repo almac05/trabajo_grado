@@ -1,0 +1,6 @@
+# Temporal validation settings.
+seed: 42
+test_weeks: 10
+validation_weeks: 2
+step_weeks: 2
+min_train_weeks: 26

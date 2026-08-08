@@ -6,7 +6,12 @@ def test_inicializar_entorno_carga_env_una_sola_vez_y_crea_directorios(monkeypat
     mkdir_calls = []
 
     monkeypatch.setattr(config, "_ENV_LOADED", False)
-    monkeypatch.setattr(config, "load_dotenv", lambda path: env_calls.append(path) or True)
+
+    def fake_load_dotenv(path, *args, **kwargs):
+        env_calls.append(path)
+        return True
+
+    monkeypatch.setattr(config, "load_dotenv", fake_load_dotenv)
     monkeypatch.setattr(
         config.os,
         "makedirs",

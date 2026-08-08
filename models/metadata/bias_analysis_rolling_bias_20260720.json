@@ -1,0 +1,32 @@
+{
+  "run_id": "rolling_bias_20260720",
+  "predictions_path": "C:\\Users\\regis\\proyecto_grado\\reports\\tables\\modeling\\predictions_multitarget_rolling_bias_20260720.parquet",
+  "folds_path": "C:\\Users\\regis\\proyecto_grado\\reports\\tables\\modeling\\backtesting_folds_multitarget_rolling_bias_20260720.csv",
+  "fleet_monthly_path": "C:\\Users\\regis\\proyecto_grado\\reports\\tables\\baseline\\diagnostico_flota_mensual.csv",
+  "fleet_correlation_split": "validation",
+  "outputs": {
+    "bias_decomposition": "C:\\Users\\regis\\proyecto_grado\\reports\\tables\\modeling\\bias_decomposition_rolling_bias_20260720.csv",
+    "bias_temporal": "C:\\Users\\regis\\proyecto_grado\\reports\\tables\\modeling\\bias_temporal_rolling_bias_20260720.csv",
+    "bias_temporal_correlation": "C:\\Users\\regis\\proyecto_grado\\reports\\tables\\modeling\\bias_temporal_correlation_rolling_bias_20260720.csv",
+    "bias_by_slot": "C:\\Users\\regis\\proyecto_grado\\reports\\tables\\modeling\\bias_by_slot_rolling_bias_20260720.csv",
+    "rolling_fallback_levels": "C:\\Users\\regis\\proyecto_grado\\reports\\tables\\modeling\\rolling_fallback_levels_rolling_bias_20260720.csv",
+    "bias_vs_fleet": "C:\\Users\\regis\\proyecto_grado\\reports\\tables\\modeling\\bias_vs_fleet_rolling_bias_20260720.csv"
+  },
+  "figures": {
+    "bias_por_fold": "C:\\Users\\regis\\proyecto_grado\\reports\\figures\\modeling\\bias_por_fold_rolling_bias_20260720.png",
+    "bias_mensual": "C:\\Users\\regis\\proyecto_grado\\reports\\figures\\modeling\\bias_mensual_rolling_bias_20260720.png",
+    "bias_por_hora": "C:\\Users\\regis\\proyecto_grado\\reports\\figures\\modeling\\bias_por_hora_rolling_bias_20260720.png",
+    "mae_vs_ventana": "C:\\Users\\regis\\proyecto_grado\\reports\\figures\\modeling\\mae_vs_ventana_rolling_bias_20260720.png"
+  },
+  "n_predictions": 804528,
+  "models": [
+    "historical_average_route_day_type_slot",
+    "naive",
+    "rolling_average_12w",
+    "rolling_average_26w",
+    "rolling_average_4w",
+    "rolling_average_8w",
+    "seasonal_naive_daily",
+    "seasonal_naive_weekly"
+  ]
+}

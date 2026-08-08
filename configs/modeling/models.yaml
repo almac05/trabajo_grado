@@ -1,0 +1,41 @@
+# Only simple baselines are enabled in this phase.
+scenarios:
+  - name: sin_oferta
+    target: pasajeros_total
+    feature_set: calendario_ruta_lags_demanda
+    description: Predice pasajeros por franja sin usar variables de oferta.
+  - name: oferta_historica_rezagada
+    target: pasajeros_total
+    feature_set: calendario_ruta_lags_demanda_lags_despachos
+    description: Predice pasajeros por franja usando solo oferta historica rezagada.
+  - name: productividad_por_despacho
+    target: pasajeros_por_despacho
+    feature_set: calendario_ruta_lags_productividad_lags_demanda_lags_despachos
+    description: Predice productividad por despacho sin multiplicar por oferta futura.
+
+baselines:
+  - name: naive
+    description: franja anterior de la misma ruta
+  - name: seasonal_naive_daily
+    description: misma franja del dia anterior
+  - name: seasonal_naive_weekly
+    description: misma franja de la semana anterior
+  - name: historical_average_route_day_type_slot
+    description: promedio historico por ruta, tipo de dia y franja de 30 minutos
+  - name: rolling_average_4w
+    description: promedio movil ultimas 4 semanas por ruta, tipo de dia y franja de 30 minutos
+  - name: rolling_average_8w
+    description: promedio movil ultimas 8 semanas por ruta, tipo de dia y franja de 30 minutos
+  - name: rolling_average_12w
+    description: promedio movil ultimas 12 semanas por ruta, tipo de dia y franja de 30 minutos
+  - name: rolling_average_26w
+    description: promedio movil ultimas 26 semanas por ruta, tipo de dia y franja de 30 minutos
+
+# XGBoost, Fase 3: un modelo por ruta, registrado con el mismo mecanismo
+# de backtesting que los baselines. early_stopping usa las ultimas 2
+# semanas del train de cada fold (ver xgboost_models.py).
+xgboost_models:
+  - name: xgboost_l2
+    description: XGBoost con perdida reg:squarederror (aprende la media condicional)
+  - name: xgboost_l1
+    description: XGBoost con perdida reg:absoluteerror (aprende la mediana condicional)

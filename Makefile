@@ -199,7 +199,7 @@ post-etl-report:  ## Genera diagnosticos, KPIs y figuras post-ETL
 	$(PYTHON) -m $(PACKAGE).analytics.report
 
 dashboard: ## Inicia el dashboard de Streamlit para visualización de resultados
-	$(PY_UTF8_RUN) $(PYTHON) -c "from $(PACKAGE).dashboard.app import main; main()"
+	$(PY_UTF8_RUN) $(VENV_BIN)\streamlit run $(SRC_DIR)\dashboard\app.py --server.port 8502
 
 # =============================================================================
 # Limpieza

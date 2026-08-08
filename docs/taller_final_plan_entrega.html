@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan de Ingeniería y Entrega del Producto de Datos — Montebello</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&family=Arial:wght@400;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 12pt;
+    line-height: 1.6;
+    color: #000;
+    background: #fff;
+    max-width: 210mm;
+    margin: 0 auto;
+    padding: 25mm 25mm 25mm 30mm;
+  }
+
+  /* ── Portada ── */
+  .cover {
+    text-align: center;
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    page-break-after: always;
+    padding: 20mm 0;
+  }
+  .cover-logo { font-size: 28pt; font-weight: bold; color: #c00; letter-spacing: 2px; }
+  .cover-uni { font-size: 14pt; color: #c00; margin-top: 4px; }
+  .cover-title {
+    font-size: 16pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    line-height: 1.4;
+    margin: 0 10mm;
+  }
+  .cover-subtitle { font-size: 13pt; font-weight: bold; margin-top: 10px; }
+  .cover-meta { font-size: 11pt; line-height: 2; }
+  .cover-bottom { font-size: 11pt; }
+
+  /* ── Encabezados ── */
+  h1 {
+    font-size: 13pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 24pt;
+    margin-bottom: 8pt;
+    border-bottom: 1.5px solid #000;
+    padding-bottom: 3pt;
+  }
+  h2 {
+    font-size: 12pt;
+    font-weight: bold;
+    margin-top: 16pt;
+    margin-bottom: 6pt;
+  }
+  h3 {
+    font-size: 12pt;
+    font-weight: bold;
+    font-style: italic;
+    margin-top: 12pt;
+    margin-bottom: 4pt;
+  }
+
+  /* ── Párrafos ── */
+  p { margin-bottom: 8pt; text-align: justify; }
+
+  /* ── Tablas ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10pt 0 14pt 0;
+    font-size: 10.5pt;
+  }
+  th {
+    background: #2c3e50;
+    color: #fff;
+    padding: 6pt 8pt;
+    text-align: left;
+    font-weight: bold;
+    border: 1px solid #555;
+  }
+  td {
+    padding: 5pt 8pt;
+    border: 1px solid #aaa;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: #f7f7f7; }
+  .table-caption {
+    font-size: 10.5pt;
+    font-style: italic;
+    text-align: center;
+    margin-bottom: 4pt;
+    font-weight: bold;
+  }
+
+  /* ── Código / preformateado ── */
+  pre, code {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 9.5pt;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+  }
+  pre {
+    padding: 8pt 10pt;
+    margin: 8pt 0 12pt 0;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+  code { padding: 1px 4px; }
+  p code, li code { background: #eee; }
+
+  /* ── Listas ── */
+  ul, ol { margin: 6pt 0 8pt 20pt; }
+  li { margin-bottom: 3pt; }
+
+  /* ── Cajas especiales ── */
+  .info-box {
+    border-left: 4px solid #2c3e50;
+    background: #f0f4f8;
+    padding: 8pt 12pt;
+    margin: 10pt 0;
+    font-size: 11pt;
+  }
+  .user-story {
+    border: 1.5px solid #2c3e50;
+    border-radius: 4px;
+    padding: 10pt 14pt;
+    margin: 10pt 0;
+    background: #fafafa;
+  }
+  .user-story .badge {
+    display: inline-block;
+    background: #2c3e50;
+    color: #fff;
+    font-size: 9pt;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-bottom: 6pt;
+    font-family: Arial, sans-serif;
+  }
+  .dod-list { list-style: none; margin-left: 0; }
+  .dod-list li::before { content: "☐ "; font-size: 11pt; }
+
+  /* ── Ruta crítica ── */
+  .critical-path {
+    background: #fff3cd;
+    border: 1px solid #f0a500;
+    border-radius: 4px;
+    padding: 8pt 12pt;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 10pt;
+    margin: 10pt 0;
+    line-height: 2;
+  }
+
+  /* ── Saltos de página ── */
+  .page-break { page-break-before: always; }
+
+  /* ── Impresión ── */
+  @media print {
+    body { padding: 15mm 20mm 15mm 25mm; font-size: 11pt; }
+    pre, code { font-size: 9pt; }
+    table { font-size: 10pt; }
+    .cover { page-break-after: always; }
+    h1 { page-break-before: auto; }
+    tr { page-break-inside: avoid; }
+    pre { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════
+     PORTADA
+═══════════════════════════════════════════════════════════════ -->
+<div class="cover">
+  <div>
+    <div class="cover-logo">UAO</div>
+    <div class="cover-uni">Universidad Autónoma de Occidente</div>
+    <div style="font-size:11pt;margin-top:4px;">Facultad de Ingeniería y Ciencias Básicas</div>
+    <div style="font-size:11pt;">Maestría en Inteligencia Artificial y Ciencia de Datos</div>
+  </div>
+
+  <div>
+    <div class="cover-title">
+      Plan de Ingeniería y Entrega del Producto de Datos<br>
+      <span style="font-size:13pt;">(Data Product Delivery Plan)</span>
+    </div>
+    <div style="margin-top:16pt;font-size:12pt;font-style:italic;">
+      Predicción Inteligente de la Demanda de Pasajeros mediante Técnicas de<br>
+      Aprendizaje Automático para Apoyar la Optimización del Despacho<br>
+      Vehicular en la Empresa Montebello
+    </div>
+  </div>
+
+  <div class="cover-meta">
+    <strong>Asignatura:</strong> Gestión de Proyecto en IA y CD<br>
+    <strong>Estudiante:</strong> Carlos Alex Macías Perdomo — Código 22500208<br>
+    <strong>Correo:</strong> carlos_ale.macias@uao.edu.co<br>
+    <strong>Director de tesis:</strong> Maritza Correa Valencia<br>
+    <strong>Programa:</strong> Maestría en IA y Ciencia de Datos<br>
+  </div>
+
+  <div class="cover-bottom">
+    Santiago de Cali, Mayo de 2026
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECCIÓN 1
+═══════════════════════════════════════════════════════════════ -->
+<h1>Sección 1: Estrategia de Gestión y Ciclo Sprints (Scrum-ML)</h1>
+
+<p>
+El proyecto adopta una variante de Scrum adaptada a proyectos de Machine Learning (Scrum-ML), en la que cada sprint de dos semanas produce un incremento verificable: desde un dataset limpio hasta un experimento registrado en MLflow. Antes de los sprints de modelado se ejecutan <em>spikes</em> de viabilidad cortos que reducen el riesgo de invertir semanas en un camino técnico inviable.
+</p>
+
+<h2>1.1 Identificación de Spikes</h2>
+
+<p>
+Un <em>spike</em> es una tarea exploratoria de investigación acotada en tiempo (1 a 3 días) cuyo objetivo es resolver una incertidumbre técnica crítica antes de comprometer el equipo con un plan de implementación. Para este proyecto se identifican tres spikes previos al modelado:
+</p>
+
+<!-- ── Spike 1 ── -->
+<h3>Spike S-01: Auditoría de Completitud y Calidad del Dataset APC/GPS (2 días)</h3>
+
+<div class="info-box">
+  <strong>Objetivo:</strong> Verificar que los registros de conteo APC y telemetría GPS en la base de datos <code>bd_montebello_rdw</code> (Registel MySQL) cubren el período 2022–2025 con suficiente densidad temporal para entrenar modelos de series de tiempo en Ruta 1 y Ruta 3.
+</div>
+
+<p><strong>Actividades concretas:</strong></p>
+<ul>
+  <li>Ejecutar consultas SQL de conteo de registros por mes × ruta × fuente (APC, GPS, despacho).</li>
+  <li>Calcular porcentaje de nulos por columna clave (<code>PASAJEROS</code>, <code>LATITUD</code>, <code>HORA_INICIAL_REAL</code>).</li>
+  <li>Identificar gaps temporales consecutivos mayores a 30 minutos y su distribución mensual.</li>
+  <li>Comparar cobertura entre Ruta 1 y Ruta 3 para anticipar tratamientos diferenciados.</li>
+</ul>
+
+<p><strong>Criterio de salida (Done):</strong> Reporte de cobertura con ≥ 85% de registros válidos por mes-ruta; listado explícito de los períodos con datos insuficientes y la estrategia de imputación acordada (forward-fill ≤ 2 h; exclusión si el gap supera 4 h continuadas).</p>
+
+<p><strong>Riesgo mitigado:</strong> Evitar iniciar el feature engineering y el entrenamiento de modelos LSTM/ARIMA sobre ventanas con gaps que invalidan la autocorrelación temporal y generan data leakage.</p>
+
+<!-- ── Spike 2 ── -->
+<h3>Spike S-02: Validación del Baseline Naive y Umbral de Predictibilidad (1 día)</h3>
+
+<div class="info-box">
+  <strong>Objetivo:</strong> Establecer un <em>floor</em> de métricas con un predictor naive (promedio histórico por franja horaria y día de semana) sobre el conjunto de test holdout, antes de entrenar modelos complejos.
+</div>
+
+<p><strong>Actividades concretas:</strong></p>
+<ul>
+  <li>Implementar <code>NaiveMeanPredictor</code>: para cada franja horaria de 30 min × día de semana, usar la media histórica del mismo período en los años anteriores.</li>
+  <li>Calcular MAE, RMSE y MAPE sobre los últimos 3 meses de datos (conjunto de test).</li>
+  <li>Registrar el experimento en MLflow bajo el tag <code>experiment_phase=spike</code>.</li>
+</ul>
+
+<p><strong>Criterio de salida:</strong> Métricas del baseline documentadas en MLflow; confirmación de que el MAPE naive &lt; 40% (señal temporal predecible). Si MAPE naive ≥ 40%, se revisará la granularidad de la variable objetivo antes de continuar.</p>
+
+<p><strong>Riesgo mitigado:</strong> Si la señal no es predecible ni con el estimador más simple, no tiene sentido invertir 4 semanas en LSTM. El spike genera la evidencia para tomar esa decisión el día 3 del proyecto, no el mes 4.</p>
+
+<!-- ── Spike 3 ── -->
+<h3>Spike S-03: Factibilidad de Integración de Variables Climáticas (1 día)</h3>
+
+<div class="info-box">
+  <strong>Objetivo:</strong> Determinar si los datos de precipitación para Cali (fuente: IDEAM o API meteorológica abierta) son integrables temporalmente con los registros de Montebello y si correlacionan estadísticamente con el conteo de pasajeros.
+</div>
+
+<p><strong>Actividades concretas:</strong></p>
+<ul>
+  <li>Descargar datos históricos de precipitación diaria/horaria para Cali 2022–2025 (estación IDEAM más cercana o API Open-Meteo).</li>
+  <li>Calcular correlación de Spearman entre lluvia (mm/h) y conteo APC por franja horaria.</li>
+  <li>Evaluar cobertura temporal: ¿existen huecos que coincidan con los huecos del dataset principal?</li>
+</ul>
+
+<p><strong>Criterio de salida:</strong> Correlación significativa en al menos una franja horaria (|ρ| &gt; 0.15, p &lt; 0.05). Si la correlación no es significativa, se excluye la variable climática y se usa únicamente una variable binaria <code>is_rainy_season</code> derivada del calendario.</p>
+
+<p><strong>Riesgo mitigado:</strong> Evitar añadir complejidad de integración (API externa, gaps adicionales) si la variable climática no aporta señal estadística real en este contexto operativo.</p>
+
+
+<h2>1.2 Historia de Usuario de Modelado Crítica</h2>
+
+<div class="user-story">
+  <div class="badge">HU-ML-01 — CRÍTICA</div>
+  <p style="font-size:13pt;font-weight:bold;margin-bottom:8pt;">Predicción de Demanda de Pasajeros por Franja Horaria</p>
+
+  <p>
+    <strong>Como</strong> despachador operativo de Transportes Montebello,<br>
+    <strong>Quiero</strong> recibir una estimación del número de pasajeros esperados por ruta (Ruta 1 y Ruta 3) para las próximas 3 franjas horarias de 30 minutos a partir del momento actual,<br>
+    <strong>Para</strong> planificar con anticipación cuántos vehículos despachar, reducir el headway irregular y mejorar la equidad entre conductores.
+  </p>
+</div>
+
+<p class="table-caption">Tabla 1. Criterios de aceptación cuantitativos — HU-ML-01</p>
+<table>
+  <tr>
+    <th style="width:8%;">#</th>
+    <th style="width:38%;">Criterio</th>
+    <th style="width:15%;">Métrica</th>
+    <th style="width:39%;">Umbral de Aceptación</th>
+  </tr>
+  <tr><td>CA-1</td><td>Precisión global del modelo ganador (test holdout 3 meses)</td><td>MAPE</td><td>≤ 15% sobre el conjunto de test</td></tr>
+  <tr><td>CA-2</td><td>Error absoluto medio global</td><td>MAE</td><td>≤ 8 pasajeros por franja de 30 min</td></tr>
+  <tr><td>CA-3</td><td>Error cuadrático medio global</td><td>RMSE</td><td>≤ 12 pasajeros por franja de 30 min</td></tr>
+  <tr><td>CA-4</td><td>Precisión en hora pico (06:00–09:00 y 17:00–20:00)</td><td>MAPE pico</td><td>≤ 18% (pico admite mayor tolerancia por variabilidad)</td></tr>
+  <tr><td>CA-5</td><td>Latencia de inferencia (batch completo: 144 predicciones = 3 días)</td><td>Tiempo de respuesta</td><td>≤ 2 segundos en CPU (sin GPU)</td></tr>
+  <tr><td>CA-6</td><td>Horizonte de predicción útil para el despachador</td><td>Franjas adelante</td><td>Mínimo 3 franjas = 90 minutos de anticipación</td></tr>
+  <tr><td>CA-7</td><td>Consistencia entre rutas (no debe sobre-ajustar a una ruta)</td><td>Δ MAPE (R1 vs R3)</td><td>Diferencia ≤ 5 puntos porcentuales</td></tr>
+</table>
+
+<h3>Definition of Done (DoD) de Ingeniería</h3>
+<ul class="dod-list">
+  <li>Código del modelo versionado en Git con tag semántico (<code>v1.0.0-model</code>); rama <code>feature/demand-model</code> fusionada a <code>main</code> con Pull Request revisado.</li>
+  <li>Experimento registrado en MLflow con: todos los hiperparámetros, las 10 métricas técnicas definidas en §3.1, artefactos (modelo serializado, scaler, <code>feature_list.json</code>).</li>
+  <li>Suite de pruebas <code>pytest</code> ejecutada con resultado verde; cobertura ≥ 75% sobre módulos <code>features/</code>, <code>etl/</code> y <code>evaluation/</code>.</li>
+  <li>Comparativa documentada de al menos 4 modelos candidatos (Naive, SARIMA/Prophet, XGBoost, LSTM o GRU) con tabla resumen de métricas en el notebook <code>notebooks/04_evaluation/</code>.</li>
+  <li>Imagen Docker construida y ejecutada exitosamente en máquina limpia (sin dependencias preinstaladas), con comando <code>docker compose up training</code>.</li>
+  <li>Los criterios CA-1 a CA-7 verificados sobre test set independiente, sin data leakage (walk-forward validation).</li>
+  <li>Revisión y aprobación del director de tesis: Dra. Maritza Correa Valencia.</li>
+</ul>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECCIÓN 2
+═══════════════════════════════════════════════════════════════ -->
+<div class="page-break"></div>
+<h1>Sección 2: Arquitectura del Repositorio y Reproducibilidad</h1>
+
+<h2>2.1 Layout del Repositorio</h2>
+
+<p>
+El repositorio sigue el estándar <strong>TDSP</strong> (Microsoft Team Data Science Process) con extensiones para MLOps moderno. La estructura promueve la separación entre código fuente (paquete Python instalable), datos, notebooks, configuraciones y artefactos de experimentos. El código de producción reside en <code>src/</code>, no exclusivamente en notebooks.
+</p>
+
+<pre>
+proyecto_grado/                          ← Raíz del repositorio Git
+├── src/
+│   └── proyecto_grado/                  ← Paquete Python instalable (pip install -e .)
+│       ├── __init__.py
+│       ├── data/                        ← Schemas, contratos de datos (Pydantic/dataclasses)
+│       ├── etl/                         ← Pipeline ETL completo [COMPLETADO ~1 901 LOC]
+│       │   ├── pipeline.py              ← Orquestador principal (Bloques 3–9)
+│       │   ├── extractor.py             ← Conexión SQLAlchemy → bd_montebello_rdw
+│       │   ├── transforms.py            ← Limpieza, normalización, GPS enrichment
+│       │   ├── qc.py                    ← Validaciones de calidad de datos
+│       │   ├── trip_end.py              ← Cálculo de fin de viaje
+│       │   ├── model_ready.py           ← Carga a data/processed/ (Parquet)
+│       │   └── operational_hours.py     ← Clasificación franjas pico/valle
+│       ├── features/                    ← Feature engineering [EN DESARROLLO]
+│       │   ├── temporal.py              ← Variables hora/día/semana, festivos Colombia
+│       │   ├── operational.py           ← Variables operativas (headway, ocupación histórica)
+│       │   └── weather.py               ← Integración precipitación (condicional a S-03)
+│       ├── models/
+│       │   ├── baselines/               ← NaiveMean, SARIMA, Prophet [STUBS]
+│       │   ├── ml/                      ← XGBoost, Random Forest [STUBS]
+│       │   └── dl/                      ← LSTM, GRU (PyTorch) [STUBS]
+│       ├── evaluation/                  ← MAE/RMSE/MAPE; comparativa de modelos [STUB]
+│       ├── dispatch/                    ← Módulo heurístico DSS básico [STUB]
+│       └── utils/                       ← Logging, configuración YAML, helpers
+├── tests/
+│   ├── unit/                            ← Pruebas unitarias por módulo [COMPLETADO 478 LOC]
+│   │   ├── test_transforms.py           ← Tests para etl/transforms.py
+│   │   ├── test_qc.py                   ← Tests para etl/qc.py
+│   │   ├── test_gps.py                  ← Tests para enriquecimiento GPS
+│   │   ├── test_analytics.py            ← Tests para KPIs post-ETL
+│   │   ├── test_time_series_builder.py  ← Tests para secuencias LSTM
+│   │   └── …                           ← (7 archivos en total)
+│   └── integration/
+│       └── test_etl_pipeline.py         ← Test end-to-end del pipeline ETL
+├── data/
+│   ├── raw/            ← Datos originales inmutables (no versionados en Git, montados vía Docker)
+│   ├── interim/        ← Datos en transformación intermedia
+│   ├── processed/      ← Datasets ML-ready en formato Parquet
+│   └── external/       ← Datos climáticos IDEAM, calendario festivos Colombia
+├── notebooks/
+│   ├── 01_eda/                          ← EDA por ruta y variable [PENDIENTE]
+│   ├── 02_preprocessing/                ← Validación visual del pipeline ETL
+│   ├── 03_modeling/                     ← Experimentos de entrenamiento
+│   └── 04_evaluation/                   ← Evaluación comparativa final
+├── configs/
+│   ├── etl_config.yaml                  ← Parámetros conexión MySQL, rutas, QC thresholds
+│   └── model_config.yaml                ← Hiperparámetros por modelo
+├── reports/
+│   ├── figures/         ← Gráficas exportadas (PNG, SVG)
+│   └── tables/          ← Tablas de métricas (CSV)
+├── scripts/
+│   ├── run_etl.py        ← Lanza el pipeline ETL completo
+│   ├── run_features.py   ← Genera features y guarda en data/processed/
+│   └── run_training.py   ← Entrenamiento + registro en MLflow
+├── mlruns/               ← Artefactos MLflow Tracking (excluido de Git via .gitignore)
+├── Dockerfile            ← Multi-stage build: builder → runtime (Python 3.11-slim)
+├── docker-compose.yml    ← Servicios: app (ETL/entrenamiento), db (MySQL 8.0 local)
+├── pyproject.toml        ← Gestión de dependencias (hatchling + pip; migrando a uv lock)
+├── Makefile              ← Comandos de orquestación: make etl, make train, make test
+└── .env                  ← Credenciales BD Registel (nunca versionado)
+</pre>
+
+<p><strong>Justificación de la alineación TDSP:</strong> El ciclo <code>raw → interim → processed</code> refleja las etapas TDSP de ingesta, limpieza y preparación para modelado. El paquete <code>src/proyecto_grado/</code> instalable garantiza que los notebooks importen código versionado, no fragmentos ad hoc. Los <code>configs/</code> externalizan todos los parámetros, condición necesaria para reproducibilidad. El directorio <code>mlruns/</code> permite trazabilidad de todos los experimentos locales antes de migrar al servidor MLflow en AWS.</p>
+
+
+<h2>2.2 Plan de Containerización (Docker)</h2>
+
+<p>
+El objetivo es garantizar que cualquier colaborador, servidor AWS o máquina de evaluación académica pueda ejecutar el pipeline completo — desde la extracción de datos hasta la inferencia del modelo — con un único comando, sin necesidad de configurar el entorno local.
+</p>
+
+<h3>Stack del entorno de ejecución</h3>
+
+<p class="table-caption">Tabla 2. Especificación del entorno de ejecución en Docker</p>
+<table>
+  <tr><th>Componente</th><th>Versión / Especificación</th><th>Justificación</th></tr>
+  <tr><td>Imagen base</td><td><code>python:3.11-slim-bookworm</code> (Debian 12)</td><td>Mínima: elimina herramientas de desarrollo que no se usan en producción</td></tr>
+  <tr><td>Python</td><td>3.11.x</td><td>Compatible con PyTorch 2.2+, Prophet 1.1, XGBoost 2.0</td></tr>
+  <tr><td>Gestor de paquetes</td><td>pip + hatchling (pyproject.toml); migración planificada a <code>uv lock</code></td><td>Lock file garantiza versiones exactas de cada dependencia</td></tr>
+  <tr><td>CUDA / GPU</td><td>No aplica en imagen de inferencia/ETL</td><td>Entrenamiento DL delegado a AWS SageMaker con imagen separada <code>pytorch:2.2-gpu</code></td></tr>
+  <tr><td>BD fuente</td><td>MySQL 8.0 (host externo Registel, o servicio <code>db</code> local para pruebas)</td><td>Acceso vía SQLAlchemy + PyMySQL; credenciales en <code>.env</code> (no en imagen)</td></tr>
+  <tr><td>Dependencias de sistema</td><td><code>libgomp1</code>, <code>default-libmysqlclient-dev</code></td><td>Requeridas por XGBoost (OpenMP) y el conector MySQL C</td></tr>
+</table>
+
+<h3>Arquitectura multi-stage del Dockerfile</h3>
+
+<p>
+El Dockerfile actual del proyecto implementa un patrón multi-stage que separa el entorno de compilación del entorno de ejecución, reduciendo el tamaño de la imagen final en aproximadamente un 60%:
+</p>
+
+<pre>
+# Stage 1: Builder — compila wheels nativos (gcc, g++, libmysqlclient-dev)
+FROM python:3.11-slim AS builder
+RUN apt-get install -y build-essential gcc g++ default-libmysqlclient-dev ...
+WORKDIR /app
+COPY pyproject.toml README.md ./
+COPY src/ ./src/
+RUN pip install --prefix=/install .   # instala el paquete + todas sus dependencias
+
+# Stage 2: Runtime — imagen mínima, sin herramientas de compilación
+FROM python:3.11-slim AS runtime
+RUN apt-get install -y libgomp1 default-libmysqlclient-dev  # solo runtime libs
+COPY --from=builder /install /usr/local     # copia wheels compilados
+COPY --chown=app:app src/ ./src/
+ENV PYTHONPATH=/app/src
+USER app   # principio de menor privilegio
+CMD ["python", "-m", "proyecto_grado.etl.pipeline"]
+</pre>
+
+<h3>Estrategia de containerización por fase del proyecto</h3>
+
+<p class="table-caption">Tabla 3. Imágenes Docker por fase del ciclo de vida</p>
+<table>
+  <tr><th>Imagen</th><th>Propósito</th><th>Comando de ejecución</th></tr>
+  <tr><td><code>proyecto_grado:etl</code></td><td>Pipeline ETL completo: extrae de MySQL Registel, transforma y persiste en <code>data/processed/</code></td><td><code>docker compose --profile etl up</code></td></tr>
+  <tr><td><code>proyecto_grado:training</code></td><td>Entrenamiento de modelos ML/DL + registro automático en MLflow</td><td><code>docker compose run training</code></td></tr>
+  <tr><td><code>proyecto_grado:inference</code></td><td>Carga el modelo ganador (artefacto MLflow) y expone predicciones</td><td><code>docker compose up inference</code></td></tr>
+  <tr><td><code>proyecto_grado:test</code></td><td>Ejecuta suite pytest completa en entorno aislado</td><td><code>docker compose run test</code></td></tr>
+</table>
+
+<h3>Variables de entorno críticas (.env)</h3>
+<pre>
+# Conexión base de datos Registel (nunca versionado en Git)
+REGISTEL_DB_HOST=mysql.registel.co
+REGISTEL_DB_PORT=3306
+REGISTEL_DB_NAME=bd_montebello_rdw
+REGISTEL_DB_USER=&lt;usuario&gt;
+REGISTEL_DB_PASSWORD=&lt;contraseña&gt;
+
+# MLflow Tracking (local o servidor AWS)
+MLFLOW_TRACKING_URI=http://localhost:5000   # local dev
+# MLFLOW_TRACKING_URI=http://mlflow.ec2.internal:5000  # AWS producción
+
+# MySQL local para pruebas de integración (servicio db en docker-compose)
+MYSQL_ROOT_PASSWORD=rootpass
+</pre>
+
+<h3>Flujo de reproducción completo en máquina limpia</h3>
+<pre>
+git clone https://github.com/&lt;repo&gt;/proyecto_grado.git
+cd proyecto_grado
+cp .env.example .env          # editar con credenciales reales
+docker compose --profile db up -d          # BD MySQL local (para pruebas)
+docker compose --profile etl up            # ejecuta el ETL
+docker compose run --rm app \
+  python scripts/run_training.py           # entrena + registra en MLflow
+docker compose run --rm app \
+  python -m pytest tests/ -v               # ejecuta suite de pruebas
+</pre>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECCIÓN 3
+═══════════════════════════════════════════════════════════════ -->
+<div class="page-break"></div>
+<h1>Sección 3: Trazabilidad (MLflow) y Calidad de Código (pytest)</h1>
+
+<h2>3.1 Plan de Trazabilidad con MLflow Tracking</h2>
+
+<p>
+Todo experimento de modelado se registra en un servidor MLflow Tracking local (desarrollo) o en AWS EC2 (producción). El experimento raíz se denomina <strong><code>montebello-demand-forecast</code></strong> y cada ejecución (<em>run</em>) corresponde a un modelo entrenado sobre una combinación de ruta, período y configuración de features.
+</p>
+
+<h3>Parámetros registrados por modelo</h3>
+
+<p class="table-caption">Tabla 4. Hiperparámetros registrados en MLflow por familia de modelo</p>
+<table>
+  <tr><th>Modelo</th><th>Parámetros específicos registrados</th></tr>
+  <tr><td>Naive Baseline</td><td><code>window_size</code>, <code>aggregation_func</code> (mean/median)</td></tr>
+  <tr><td>SARIMA</td><td><code>p</code>, <code>d</code>, <code>q</code>, <code>P</code>, <code>D</code>, <code>Q</code>, <code>seasonal_period</code> (48 = franjas/día)</td></tr>
+  <tr><td>Prophet</td><td><code>changepoint_prior_scale</code>, <code>seasonality_prior_scale</code>, <code>holidays_country</code> (CO)</td></tr>
+  <tr><td>XGBoost</td><td><code>n_estimators</code>, <code>max_depth</code>, <code>learning_rate</code>, <code>subsample</code>, <code>colsample_bytree</code>, <code>reg_alpha</code>, <code>reg_lambda</code></td></tr>
+  <tr><td>Random Forest</td><td><code>n_estimators</code>, <code>max_depth</code>, <code>min_samples_split</code>, <code>max_features</code></td></tr>
+  <tr><td>LSTM</td><td><code>hidden_size</code>, <code>num_layers</code>, <code>dropout</code>, <code>sequence_length</code>, <code>batch_size</code>, <code>learning_rate</code>, <code>epochs</code>, <code>optimizer</code></td></tr>
+  <tr><td>GRU</td><td>Idéntico a LSTM; adicionalmente <code>bidirectional</code> (bool)</td></tr>
+</table>
+
+<p><strong>Parámetros globales comunes a todos los modelos:</strong></p>
+<ul>
+  <li><code>route_id</code>: 1, 3 o "all"</li>
+  <li><code>time_granularity</code>: 30min</li>
+  <li><code>train_period_start</code> / <code>train_period_end</code> / <code>test_period_start</code> / <code>test_period_end</code></li>
+  <li><code>feature_set_version</code>: hash SHA del archivo <code>feature_list.json</code> para rastrear qué variables se usaron</li>
+  <li><code>random_seed</code>: 42 (fijo para reproducibilidad completa)</li>
+  <li><code>scaler_type</code>: StandardScaler | MinMaxScaler | None</li>
+  <li><code>validation_strategy</code>: walk_forward | time_split (sin shuffle temporal)</li>
+</ul>
+
+<h3>Métricas registradas</h3>
+
+<p class="table-caption">Tabla 5. Métricas técnicas y de negocio registradas en MLflow</p>
+<table>
+  <tr><th>Categoría</th><th>Métrica</th><th>Descripción</th></tr>
+  <tr><td rowspan="7">Técnicas</td><td><code>mae_train</code>, <code>mae_val</code>, <code>mae_test</code></td><td>Error absoluto medio en cada partición</td></tr>
+  <tr><td><code>rmse_train</code>, <code>rmse_val</code>, <code>rmse_test</code></td><td>Raíz del error cuadrático medio</td></tr>
+  <tr><td><code>mape_train</code>, <code>mape_val</code>, <code>mape_test</code></td><td>Error porcentual absoluto medio (excluye ceros)</td></tr>
+  <tr><td><code>mae_peak</code> / <code>mae_offpeak</code></td><td>MAE diferenciado para hora pico (06–09 h y 17–20 h) y valle</td></tr>
+  <tr><td><code>mape_weekday</code> / <code>mape_weekend</code></td><td>Rendimiento diferenciado laboral vs fin de semana/festivo</td></tr>
+  <tr><td><code>training_time_seconds</code></td><td>Duración del entrenamiento para comparativa de costo computacional</td></tr>
+  <tr><td><code>inference_time_ms</code></td><td>Latencia para un batch de 144 predicciones (verificar CA-5)</td></tr>
+  <tr><td rowspan="2">Negocio</td><td><code>coverage_within_20pct</code></td><td>% de franjas en que el error relativo ≤ 20% (tolerancia operativa)</td></tr>
+  <tr><td><code>delta_mape_r1_r3</code></td><td>Diferencia de MAPE entre Ruta 1 y Ruta 3 (verificar CA-7)</td></tr>
+</table>
+
+<h3>Artefactos registrados por experimento</h3>
+<ul>
+  <li><strong>Modelo serializado:</strong> <code>model.pkl</code> (scikit-learn/XGBoost) o <code>model.pt</code> (PyTorch state dict)</li>
+  <li><strong>Scaler:</strong> <code>scaler.pkl</code> (mismo objeto usado en train, para evitar data leakage en inferencia)</li>
+  <li><strong>Lista de features:</strong> <code>feature_list.json</code> (orden y nombres exactos de columnas de entrada)</li>
+  <li><strong>Gráfica de predicción vs real:</strong> <code>prediction_plot.png</code> (primeras 2 semanas del test set)</li>
+  <li><strong>Reporte de escenarios:</strong> <code>scenario_report.csv</code> (métricas por tipo de día, franja y ruta)</li>
+</ul>
+
+<h3>Tags MLflow</h3>
+<ul>
+  <li><code>model_family</code>: baseline | ml | dl</li>
+  <li><code>route</code>: R1 | R3 | all</li>
+  <li><code>experiment_phase</code>: spike | lofi | mvp | alpha | beta</li>
+  <li><code>candidate</code>: true | false (marca los runs candidatos finales)</li>
+</ul>
+
+<h3>Fragmento de código de trazabilidad</h3>
+<pre>
+import mlflow
+import mlflow.sklearn
+
+with mlflow.start_run(run_name=f"xgboost_R1_{fecha}") as run:
+    # Registrar parámetros
+    mlflow.log_params({
+        "model_family":         "xgboost",
+        "route_id":             1,
+        "n_estimators":         300,
+        "max_depth":            6,
+        "learning_rate":        0.05,
+        "feature_set_version":  feature_hash,
+        "random_seed":          42,
+        "validation_strategy":  "walk_forward",
+    })
+    # ... entrenamiento ...
+    # Registrar métricas
+    mlflow.log_metrics({
+        "mae_test":              6.8,
+        "rmse_test":             9.4,
+        "mape_test":             12.3,
+        "mae_peak":              8.1,
+        "coverage_within_20pct": 0.87,
+        "training_time_seconds": 48.2,
+        "inference_time_ms":     340,
+    })
+    # Registrar artefactos
+    mlflow.sklearn.log_model(model, "model")
+    mlflow.log_artifact("reports/figures/prediction_plot.png")
+    mlflow.log_artifact("configs/feature_list.json")
+    # Tags
+    mlflow.set_tags({"model_family": "ml", "route": "R1",
+                     "experiment_phase": "mvp", "candidate": "true"})
+</pre>
+
+
+<h2>3.2 Estrategia de Pruebas con pytest (Patrón AAA)</h2>
+
+<p>
+Las pruebas unitarias se enfocan en las <strong>funciones críticas de soporte</strong> que rodean el modelo: preprocesamiento, ETL, feature engineering, construcción de secuencias y el módulo heurístico de despacho. El modelo en sí se verifica a través de sus criterios de aceptación cuantitativos (§1.2), no a través de pruebas unitarias. Todas las pruebas siguen el patrón <strong>AAA (Arrange–Act–Assert)</strong>.
+</p>
+
+<p>
+El proyecto ya cuenta con 478 LOC de pruebas unitarias en 7 archivos para el pipeline ETL (<code>tests/unit/</code>). Los siguientes tests amplían la cobertura hacia los módulos de features, modelos y dispatch.
+</p>
+
+<h3>Test existente representativo: <code>test_transforms.py</code></h3>
+<pre>
+# Prueba existente — patrón AAA aplicado al ETL
+def test_combinar_fecha_hora_crea_datetime_y_marca_invalidos():
+    # Arrange
+    df = pd.DataFrame({
+        "FECHA": ["2024-04-16", "2024-04-16", "bad-date"],
+        "HORA":  ["08:30:00",  "sin hora",   "09:15:00"],
+    })
+    # Act
+    result = transforms.combinar_fecha_hora(df, "FECHA", "HORA", "FECHA_HORA")
+    # Assert
+    assert result.loc[0, "FECHA_HORA"] == pd.Timestamp("2024-04-16 08:30:00")
+    assert pd.isna(result.loc[1, "FECHA_HORA"])   # hora inválida → NaT
+    assert pd.isna(result.loc[2, "FECHA_HORA"])   # fecha inválida → NaT
+</pre>
+
+<h3>Nuevos tests planificados para features y modelos</h3>
+
+<p><strong>Test 2: Festivos colombianos en feature engineering</strong></p>
+<pre>
+# tests/unit/test_temporal_features.py
+def test_add_temporal_features_incluye_festivos_colombia():
+    # Arrange
+    dates = pd.date_range("2024-12-23", "2025-01-03", freq="D")
+    df = pd.DataFrame({"datetime": dates})
+
+    # Act
+    result = add_temporal_features(df, country="CO")
+
+    # Assert
+    christmas = result.loc[result["datetime"] == "2024-12-25", "is_holiday"]
+    new_year  = result.loc[result["datetime"] == "2025-01-01", "is_holiday"]
+    assert christmas.values[0] == True
+    assert new_year.values[0]  == True
+    assert "hour_sin" in result.columns    # encoding circular para hora
+    assert "hour_cos" in result.columns
+    assert "day_of_week" in result.columns
+</pre>
+
+<p><strong>Test 3: Validación de conteos negativos de pasajeros</strong></p>
+<pre>
+# tests/unit/test_apc_validation.py
+def test_validate_passenger_counts_rechaza_negativos_y_sobre_capacidad():
+    # Arrange
+    df = pd.DataFrame({
+        "PASAJEROS": [15, -3, 0, 42, 200, -1],
+        "vehicle_id": ["V01"] * 6
+    })
+    MAX_CAPACITY = 80
+
+    # Act
+    result = validate_passenger_counts(df, max_capacity=MAX_CAPACITY)
+
+    # Assert
+    assert result["is_valid"].sum() == 3      # 15, 0, 42 son válidos
+    assert not result.loc[1, "is_valid"]      # -3 es inválido
+    assert not result.loc[4, "is_valid"]      # 200 > 80, sobre capacidad
+    assert result.loc[2, "is_valid"]          # 0 pasajeros es válido (bus vacío)
+</pre>
+
+<p><strong>Test 4: Constructor de secuencias para LSTM/GRU</strong></p>
+<pre>
+# tests/unit/test_sequence_builder.py
+def test_build_sequences_genera_dimensiones_correctas():
+    # Arrange
+    n_obs    = 100
+    seq_len  = 24      # 12 horas de contexto (franjas de 30 min)
+    horizon  = 3       # predicción a 90 minutos
+    series   = np.arange(n_obs, dtype=float)
+
+    # Act
+    X, y = build_sequences(series, seq_len, horizon)
+
+    # Assert
+    expected_samples = n_obs - seq_len - horizon + 1   # = 73
+    assert X.shape == (expected_samples, seq_len)
+    assert y.shape == (expected_samples, horizon)
+    assert X[0, -1] == float(seq_len - 1)   # último valor de la 1ª secuencia
+    assert y[0,  0] == float(seq_len)        # primer valor objetivo
+</pre>
+
+<p><strong>Test 5: MAPE robusto ante denominadores cero</strong></p>
+<pre>
+# tests/unit/test_metrics.py
+def test_mape_excluye_ceros_en_denominador():
+    # Arrange
+    y_true = np.array([10.0, 0.0, 20.0, 15.0])
+    y_pred = np.array([9.0,  1.0, 18.0, 16.0])
+
+    # Act
+    mape = calculate_mape(y_true, y_pred)
+
+    # Assert: solo calcula sobre [10, 20, 15] — excluye el cero
+    expected = np.mean([abs(10-9)/10, abs(20-18)/20, abs(15-16)/15]) * 100
+    assert abs(mape - expected) < 0.001
+    assert not np.isnan(mape)    # nunca debe devolver NaN
+</pre>
+
+<p><strong>Test 6: Módulo heurístico de despacho</strong></p>
+<pre>
+# tests/unit/test_dispatch_heuristic.py
+def test_dispatch_recomendacion_no_reduce_buses_en_hora_pico():
+    # Arrange
+    prediccion = {
+        "route_id":            1,
+        "expected_passengers": 75,
+        "time_slot":           "07:30",
+        "is_peak_hour":        True,
+    }
+    estado_actual = {"buses_despachados": 2, "capacidad_por_bus": 40}
+
+    # Act
+    recomendacion = generate_dispatch_recommendation(prediccion, estado_actual)
+
+    # Assert
+    # 2 buses × 40 pasajeros = 80 ≥ 75: la flota actual es suficiente
+    assert recomendacion["buses_sugeridos"] >= 2    # nunca bajar en pico
+    assert recomendacion["buses_sugeridos"] == 2    # no añadir si hay capacidad
+    assert "justificacion" in recomendacion
+</pre>
+
+<h3>Configuración de cobertura en <code>pyproject.toml</code></h3>
+<pre>
+[tool.pytest.ini_options]
+testpaths  = ["tests"]
+addopts    = "-ra --strict-markers --cov=src/proyecto_grado \
+              --cov-report=html --cov-report=term-missing \
+              --cov-fail-under=75"
+markers    = [
+    "unit:        pruebas unitarias rápidas",
+    "integration: pruebas de integración (requieren BD)",
+    "slow:        pruebas lentas (entrenamiento real)",
+]
+</pre>
+
+<p>Las pruebas de integración (<code>tests/integration/</code>) se excluyen del pipeline CI normal con el marcador <code>-m "not integration"</code> y se ejecutan únicamente cuando el contenedor MySQL está disponible.</p>
+
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECCIÓN 4
+═══════════════════════════════════════════════════════════════ -->
+<div class="page-break"></div>
+<h1>Sección 4: Cronograma de Prototipado y Ruta Crítica</h1>
+
+<h2>4.1 Cronograma (Roadmap de 6 Meses — WBS / EDT)</h2>
+
+<p>
+El cronograma cubre el período <strong>junio – noviembre de 2026</strong>, estructurado en seis fases evolutivas de fidelidad creciente: Data Thinking → Prototipo Lo-Fi → MVP → Alfa → Beta → Release. Cada fase produce un incremento verificable que se puede mostrar al director de tesis para retroalimentación temprana.
+</p>
+
+<p class="table-caption">Tabla 6. Cronograma detallado WBS — 6 meses</p>
+<table style="font-size:10pt;">
+  <tr>
+    <th style="width:25%;">Fase / Actividad</th>
+    <th style="width:30%;">Descripción</th>
+    <th style="width:20%;">Período (2026)</th>
+    <th style="width:25%;">Entregable verificable</th>
+  </tr>
+
+  <!-- DATA THINKING -->
+  <tr>
+    <td colspan="4" style="background:#2c3e50;color:#fff;font-weight:bold;padding:5pt 8pt;">
+      FASE 1 — DATA THINKING (3 semanas)
+    </td>
+  </tr>
+  <tr><td>1.1 Spike S-01: Auditoría APC/GPS</td><td>Verificar cobertura y calidad de datos 2022–2025 en bd_montebello_rdw</td><td>01–02 Jun</td><td>Reporte de cobertura (notebook + tabla)</td></tr>
+  <tr><td>1.2 Spike S-02: Baseline naive</td><td>Entrenar predictor naive; confirmar predictibilidad de la señal</td><td>03 Jun</td><td>Run MLflow con métricas baseline</td></tr>
+  <tr><td>1.3 Spike S-03: Variables climáticas</td><td>Evaluar correlación lluvia vs. pasajeros con datos IDEAM/Open-Meteo</td><td>04 Jun</td><td>Análisis de correlación + decisión go/no-go</td></tr>
+  <tr><td>1.4 EDA Ruta 1</td><td>Análisis exploratorio: distribuciones, estacionalidad, outliers, headway</td><td>05–10 Jun</td><td>Notebook <code>01_eda/eda_ruta1.ipynb</code></td></tr>
+  <tr><td>1.5 EDA Ruta 3</td><td>Mismo análisis para Ruta 3; comparativa con Ruta 1</td><td>11–13 Jun</td><td>Notebook <code>01_eda/eda_ruta3.ipynb</code></td></tr>
+  <tr><td>1.6 Diccionario de datos y selección de features</td><td>Definir variables finales del modelo; documentar en configs/</td><td>16–18 Jun</td><td><code>configs/feature_list_v1.json</code></td></tr>
+  <tr><td>1.7 Reunión de revisión con directora</td><td>Presentar hallazgos del EDA y plan de modelado</td><td>19–20 Jun</td><td>Minuta de reunión + ajustes al plan</td></tr>
+
+  <!-- LO-FI -->
+  <tr>
+    <td colspan="4" style="background:#2c3e50;color:#fff;font-weight:bold;padding:5pt 8pt;">
+      FASE 2 — PROTOTIPO LO-FI (3 semanas)
+    </td>
+  </tr>
+  <tr><td>2.1 Feature engineering temporal</td><td>Hora (encoding circular sin/cos), día de semana, festivos Colombia, franja pico/valle</td><td>23–27 Jun</td><td>Módulo <code>features/temporal.py</code> + tests</td></tr>
+  <tr><td>2.2 Feature engineering operativo</td><td>Headway promedio histórico, ocupación relativa, ruta, tipo de jornada</td><td>30 Jun–02 Jul</td><td>Módulo <code>features/operational.py</code> + tests</td></tr>
+  <tr><td>2.3 Integración datos climáticos (condicional S-03)</td><td>Si S-03 fue go: integrar precipitación como feature adicional</td><td>03–04 Jul</td><td>Módulo <code>features/weather.py</code></td></tr>
+  <tr><td>2.4 Pipeline features → Parquet ML-ready</td><td>Script <code>run_features.py</code>; guardar en <code>data/processed/features_v1.parquet</code></td><td>07–09 Jul</td><td>Dataset Parquet reproducible desde ETL</td></tr>
+  <tr><td>2.5 Modelos estadísticos: SARIMA + Prophet</td><td>Entrenamiento, tuning básico, registro en MLflow tag=lofi</td><td>10–11 Jul</td><td>2 runs MLflow con métricas completas</td></tr>
+
+  <!-- MVP -->
+  <tr>
+    <td colspan="4" style="background:#2c3e50;color:#fff;font-weight:bold;padding:5pt 8pt;">
+      FASE 3 — MVP (5 semanas)
+    </td>
+  </tr>
+  <tr><td>3.1 Splits train/val/test walk-forward</td><td>Implementar validación temporal sin data leakage; 3 folds walk-forward</td><td>14–16 Jul</td><td>Función <code>build_walk_forward_splits()</code> + tests</td></tr>
+  <tr><td>3.2 XGBoost: entrenamiento y tuning</td><td>Búsqueda de hiperparámetros con Optuna; 50 trials; registro en MLflow</td><td>17–25 Jul</td><td>Run MLflow candidato XGBoost</td></tr>
+  <tr><td>3.3 Random Forest: entrenamiento</td><td>Entrenamiento paralelo a XGBoost; comparativa de feature importances</td><td>25–28 Jul</td><td>Run MLflow RF (referencia)</td></tr>
+  <tr><td>3.4 Evaluación comparativa ML vs. baselines</td><td>Tabla comparativa MAE/RMSE/MAPE por modelo, ruta y escenario</td><td>29 Jul–01 Ago</td><td>Notebook <code>04_evaluation/comparativa_mvp.ipynb</code></td></tr>
+  <tr><td>3.5 Suite pytest: features + evaluation</td><td>Implementar Tests 2–6 definidos en §3.2; alcanzar cobertura ≥ 75%</td><td>04–08 Ago</td><td>Reporte pytest-cov en verde</td></tr>
+  <tr><td>3.6 Docker funcional: ETL + training</td><td>Verificar reproducibilidad completa en máquina limpia</td><td>11–13 Ago</td><td>Comando <code>docker compose up training</code> funcional</td></tr>
+  <tr><td>3.7 Verificación criterios CA-1 a CA-7</td><td>Confirmar que XGBoost cumple umbrales de la HU-ML-01</td><td>14–15 Ago</td><td>Tabla de criterios de aceptación verificados</td></tr>
+
+  <!-- ALFA -->
+  <tr>
+    <td colspan="4" style="background:#2c3e50;color:#fff;font-weight:bold;padding:5pt 8pt;">
+      FASE 4 — ALFA (4 semanas)
+    </td>
+  </tr>
+  <tr><td>4.1 Implementación LSTM (PyTorch)</td><td>Clase <code>LSTMDemandModel</code>; sequence builder; DataLoader; training loop</td><td>18–22 Ago</td><td>Módulo <code>models/dl/lstm.py</code> funcional</td></tr>
+  <tr><td>4.2 Entrenamiento LSTM: tuning de arquitectura</td><td>Grid search: hidden [64/128/256], layers [1/2], dropout, seq_len [12/24/48]</td><td>25–29 Ago</td><td>≥ 3 runs MLflow LSTM con tag=alpha</td></tr>
+  <tr><td>4.3 GRU: implementación y comparación</td><td>Clase <code>GRUDemandModel</code>; comparativa directa vs LSTM en mismas métricas</td><td>01–05 Sep</td><td>Run MLflow GRU; tabla comparativa DL</td></tr>
+  <tr><td>4.4 Evaluación por escenarios operativos</td><td>Métricas diferenciadas: pico/valle, laboral/festivo, seco/lluvioso, R1/R3</td><td>08–12 Sep</td><td>Reporte <code>scenario_report.csv</code> en MLflow</td></tr>
+
+  <!-- BETA -->
+  <tr>
+    <td colspan="4" style="background:#2c3e50;color:#fff;font-weight:bold;padding:5pt 8pt;">
+      FASE 5 — BETA (4 semanas)
+    </td>
+  </tr>
+  <tr><td>5.1 Selección del modelo ganador</td><td>Decisión documentada con criterios CA-1 a CA-7; registro en MLflow con tag candidate=true</td><td>15–17 Sep</td><td>Documento de decisión de modelo</td></tr>
+  <tr><td>5.2 Módulo heurístico de despacho (DSS)</td><td>Reglas: si demanda_predicha &gt; capacidad_actual → recomendar bus adicional; priorizar hora pico</td><td>18–24 Sep</td><td>Módulo <code>dispatch/heuristic.py</code> + tests</td></tr>
+  <tr><td>5.3 Pruebas de integración end-to-end</td><td>Test ETL → features → modelo → dispatch sobre datos históricos reales</td><td>25–29 Sep</td><td><code>tests/integration/test_full_pipeline.py</code></td></tr>
+  <tr><td>5.4 Dashboard analítico básico (Streamlit)</td><td>Visualización de predicciones vs real, métricas por ruta y período</td><td>30 Sep–08 Oct</td><td>App Streamlit ejecutable en Docker</td></tr>
+  <tr><td>5.5 Validación piloto Montebello</td><td>Aplicar modelo sobre datos históricos recientes; revisión con Montebello</td><td>09–10 Oct</td><td>Informe de validación piloto</td></tr>
+
+  <!-- RELEASE -->
+  <tr>
+    <td colspan="4" style="background:#2c3e50;color:#fff;font-weight:bold;padding:5pt 8pt;">
+      FASE 6 — RELEASE (6 semanas)
+    </td>
+  </tr>
+  <tr><td>6.1 Redacción: metodología + resultados</td><td>Capítulos 6 y siguientes de la tesis; tablas de métricas y figuras exportadas</td><td>13 Oct–24 Oct</td><td>Borrador de capítulos metodológicos</td></tr>
+  <tr><td>6.2 Revisión 1ª directora (Dra. Maritza Correa)</td><td>Envío de borrador + sesión de retroalimentación</td><td>27–31 Oct</td><td>Documento con comentarios incorporados</td></tr>
+  <tr><td>6.3 Correcciones y revisión final</td><td>Ajustes metodológicos, ortografía, formateo UAO</td><td>03–14 Nov</td><td>Documento final listo para evaluación</td></tr>
+  <tr><td>6.4 Preparación video de sustentación</td><td>Guión, grabación y edición del video (máx. 20 min)</td><td>17–21 Nov</td><td>Video MP4 subido al LMS UAO</td></tr>
+  <tr><td>6.5 Entrega final y sustentación</td><td>Carga del PDF + video en plataforma UAO</td><td>28 Nov</td><td>Entrega formal Taller Final</td></tr>
+</table>
+
+
+<h2>4.2 Análisis de Ruta Crítica (Critical Path Method — CPM)</h2>
+
+<p>
+La ruta crítica es la secuencia de actividades encadenadas sin holgura cuya demora retrasaría la fecha de entrega final. Se identificó aplicando el método CPM sobre el grafo de dependencias del WBS. La duración total de la ruta crítica es de <strong>22 semanas</strong> (ajustada al calendario con paralelización de actividades independientes).
+</p>
+
+<h3>Ruta crítica identificada</h3>
+
+<div class="critical-path">
+S-01: Auditoría datos<br>
+&nbsp;&nbsp;&nbsp;→ EDA Ruta 1 + EDA Ruta 3 (paralelo)<br>
+&nbsp;&nbsp;&nbsp;→ Diccionario de features (depende del EDA)<br>
+&nbsp;&nbsp;&nbsp;→ Feature engineering temporal + operativo (paralelo)<br>
+&nbsp;&nbsp;&nbsp;→ Pipeline features → Parquet ML-ready<br>
+&nbsp;&nbsp;&nbsp;→ Train/val/test splits walk-forward<br>
+&nbsp;&nbsp;&nbsp;→ Entrenamiento XGBoost + tuning <strong>[cuello de botella 1]</strong><br>
+&nbsp;&nbsp;&nbsp;→ Entrenamiento LSTM/GRU <strong>[cuello de botella 2]</strong><br>
+&nbsp;&nbsp;&nbsp;→ Evaluación comparativa y selección del modelo ganador<br>
+&nbsp;&nbsp;&nbsp;→ Módulo heurístico de despacho<br>
+&nbsp;&nbsp;&nbsp;→ Pruebas de integración end-to-end<br>
+&nbsp;&nbsp;&nbsp;→ Redacción metodología + resultados<br>
+&nbsp;&nbsp;&nbsp;→ Revisión Dra. Maritza Correa <strong>[cuello de botella 3]</strong><br>
+&nbsp;&nbsp;&nbsp;→ Correcciones y entrega final
+</div>
+
+<h3>Cuellos de botella y planes de mitigación</h3>
+
+<p class="table-caption">Tabla 7. Análisis de cuellos de botella y estrategias de mitigación</p>
+<table>
+  <tr>
+    <th style="width:5%;">#</th>
+    <th style="width:25%;">Cuello de botella</th>
+    <th style="width:20%;">Impacto si ocurre</th>
+    <th style="width:15%;">Holgura</th>
+    <th style="width:35%;">Plan de mitigación</th>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td><strong>Datos APC/GPS con calidad insuficiente</strong><br>(gaps &gt; 4h en períodos extensos, nulos &gt; 15%)</td>
+    <td>Bloquea todo el pipeline; modelos entrenados en datos malos son inútiles</td>
+    <td>0 días</td>
+    <td>Spike S-01 en los primeros 2 días del proyecto. Estrategia de imputación predefinida: forward-fill ≤ 2h; exclusión de registros con gaps &gt; 4h continuas. Si la cobertura de una ruta es &lt; 70%, esa ruta se modela independientemente con menor horizonte temporal.</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td><strong>Entrenamiento LSTM/GRU computacionalmente costoso</strong><br>(tiempo de entrenamiento &gt; 6 h en CPU local)</td>
+    <td>Retrasa la fase Alfa en 1–2 semanas; bloquea la comparativa final DL vs ML</td>
+    <td>0 días</td>
+    <td>Entrenamiento delegado a AWS SageMaker (spot instances ml.p3.2xlarge). Mientras tanto, validar arquitecturas pequeñas (hidden=32, seq_len=12) en CPU local para confirmar que el código es correcto antes de lanzar el job de 8 horas.</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td><strong>Disponibilidad de la directora para revisiones</strong><br>(calendario académico UAO, otros compromisos)</td>
+    <td>Puede retrasar la entrega final 1–3 semanas si solo se revisa al final</td>
+    <td>0 días</td>
+    <td>Programar hitos de revisión parcial en cada fase: revisión 1 al cierre del MVP (15 Aug), revisión 2 al cierre del Alfa (12 Sep), revisión final al cierre del Beta (10 Oct). No acumular toda la revisión en la fase Release.</td>
+  </tr>
+  <tr>
+    <td>4</td>
+    <td><strong>Modelo DL no supera el umbral MAPE ≤ 15%</strong><br>(señal insuficiente, datos limitados para DL)</td>
+    <td>La historia de usuario HU-ML-01 no se puede cerrar con el modelo DL</td>
+    <td>2 semanas</td>
+    <td>Criterio de fall-back documentado: si el mejor modelo DL (LSTM/GRU) no supera a XGBoost en al menos 2 puntos porcentuales de MAPE, XGBoost se adopta como modelo de producción. El trabajo de grado documenta el análisis comparativo completo como contribución metodológica.</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td><strong>Integración de datos climáticos IDEAM con baja disponibilidad</strong></td>
+    <td>Feature engineering climático no disponible; impacta la riqueza del modelo</td>
+    <td>1 semana</td>
+    <td>Spike S-03 decide en el día 4. Alternativa predefinida: variable binaria <code>is_rainy_season</code> basada en el calendario histórico de lluvias de Cali (bimestres octubre–noviembre y marzo–abril), sin necesidad de API externa.</td>
+  </tr>
+</table>
+
+<h3>Actividades con holgura (fuera de la ruta crítica)</h3>
+
+<p>Las siguientes actividades pueden retrasarse hasta 2 semanas sin afectar la fecha de entrega, porque se ejecutan en paralelo con actividades de la ruta crítica o tienen predecesoras opcionales:</p>
+<ul>
+  <li><strong>Dashboard Streamlit</strong>: puede desarrollarse en paralelo con las pruebas de integración (holgura: 2 semanas).</li>
+  <li><strong>Entrenamiento Random Forest</strong>: puede ejecutarse en paralelo con XGBoost; su resultado es de referencia, no determinante del path.</li>
+  <li><strong>Análisis de sensibilidad climática</strong>: complementario; puede incorporarse al informe final aunque no esté completamente refinado.</li>
+  <li><strong>EDA Ruta 3</strong>: puede ejecutarse en paralelo con EDA Ruta 1 (holgura: 3 días).</li>
+</ul>
+
+<h3>Resumen ejecutivo del cronograma</h3>
+
+<p class="table-caption">Tabla 8. Resumen de fases y fechas clave</p>
+<table>
+  <tr><th>Fase</th><th>Inicio</th><th>Fin</th><th>Duración</th><th>Hito de cierre</th></tr>
+  <tr><td>Data Thinking</td><td>01 Jun 2026</td><td>20 Jun 2026</td><td>3 semanas</td><td>Spikes completados + EDA aprobado por directora</td></tr>
+  <tr><td>Prototipo Lo-Fi</td><td>23 Jun 2026</td><td>11 Jul 2026</td><td>3 semanas</td><td>Dataset Parquet reproducible + SARIMA/Prophet en MLflow</td></tr>
+  <tr><td>MVP</td><td>14 Jul 2026</td><td>15 Ago 2026</td><td>5 semanas</td><td>XGBoost con CA-1 a CA-7 verificados + Docker funcional</td></tr>
+  <tr><td>Alfa</td><td>18 Ago 2026</td><td>12 Sep 2026</td><td>4 semanas</td><td>LSTM/GRU evaluados; comparativa final DL vs ML</td></tr>
+  <tr><td>Beta</td><td>15 Sep 2026</td><td>10 Oct 2026</td><td>4 semanas</td><td>Módulo dispatch + validación piloto Montebello</td></tr>
+  <tr><td>Release</td><td>13 Oct 2026</td><td>28 Nov 2026</td><td>6 semanas</td><td>Documento final + video de sustentación entregados</td></tr>
+  <tr style="font-weight:bold;"><td>TOTAL</td><td>01 Jun 2026</td><td>28 Nov 2026</td><td>25 semanas</td><td>Entrega Taller Final UAO</td></tr>
+</table>
+
+<br><br>
+<hr style="border:1px solid #ccc;margin-top:24pt;">
+<p style="text-align:center;font-size:10pt;color:#555;margin-top:8pt;">
+  Carlos Alex Macías Perdomo — Maestría en IA y Ciencia de Datos, UAO — Mayo 2026<br>
+  Director: Maritza Correa Valencia — carlos_ale.macias@uao.edu.co
+</p>
+
+</body>
+</html>

@@ -19,10 +19,10 @@ franjas_horarias:
 
 # Estrategia de imputacion para franjas sin despachos (gaps)
 # Opciones:
-#   zero  — pasajeros=0, despachos=0 (recomendado para modelos de demanda)
+#   zero  — pasajeros=0, despachos=0
 #   ffill — propaga el valor anterior
-#   mark  — deja NaN y marca is_gap=True
-imputacion_gaps: zero
+#   mark — deja NaN y marca is_gap=True (elegido: evita sesgo por ceros artificiales en franjas sin operación)
+imputacion_gaps: mark
 
 # Cobertura minima de dias requerida para considerar la serie valida
 cobertura_minima_dias: 30

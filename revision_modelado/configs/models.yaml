@@ -1,0 +1,10 @@
+# Only simple baselines are enabled in this phase.
+baselines:
+  - name: naive
+    description: franja anterior de la misma ruta
+  - name: seasonal_naive_daily
+    description: misma franja del dia anterior
+  - name: seasonal_naive_weekly
+    description: misma franja de la semana anterior
+  - name: historical_average_route_day_type_slot
+    description: promedio historico por ruta, tipo de dia y franja de 30 minutos

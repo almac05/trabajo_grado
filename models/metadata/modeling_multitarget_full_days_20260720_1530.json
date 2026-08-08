@@ -1,0 +1,66 @@
+{
+  "run_id": "full_days_20260720_1530",
+  "mode": "multitarget",
+  "dataset_path": null,
+  "dataset_paths": {
+    "sin_oferta": "C:\\Users\\regis\\proyecto_grado\\data\\processed\\modeling\\modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet",
+    "oferta_historica_rezagada": "C:\\Users\\regis\\proyecto_grado\\data\\processed\\modeling\\modeling_dataset_pasajeros_total_oferta_historica_rezagada_g30min.parquet",
+    "productividad_por_despacho": "C:\\Users\\regis\\proyecto_grado\\data\\processed\\modeling\\modeling_dataset_pasajeros_por_despacho_productividad_por_despacho_g30min.parquet"
+  },
+  "dataset_hash_sha256": null,
+  "dataset_hashes_sha256": {
+    "sin_oferta": "c6fa7685b86da0355d435bf4780ac8a09cde7a2b78993b3e869d581243d6fa7e",
+    "oferta_historica_rezagada": "7e47a849dda566cedbf19d03fe9e6228b820239f3d2cf4f2ad7734c06cf1d571",
+    "productividad_por_despacho": "64c2ba7646747502724228a6648d1bc7e3684417bd6edcccb66eeb58182d2e18"
+  },
+  "predictions_path": "C:\\Users\\regis\\proyecto_grado\\reports\\tables\\modeling\\predictions_multitarget_full_days_20260720_1530.parquet",
+  "split_alignment_policy": "full_operational_days_half_open",
+  "operational_day_start": "04:00:00",
+  "require_full_operational_days": true,
+  "drop_partial_boundary_days": true,
+  "test_start_aligned": "2026-04-02 04:00:00",
+  "test_end_exclusive_aligned": "2026-06-10 04:00:00",
+  "excluded_partial_start_day": true,
+  "excluded_partial_end_day": true,
+  "alignment_summary_path": "C:\\Users\\regis\\proyecto_grado\\reports\\tables\\modeling\\split_boundary_exclusions_full_days_20260720_1530.csv",
+  "models": [
+    "naive",
+    "seasonal_naive_daily",
+    "seasonal_naive_weekly",
+    "historical_average_route_day_type_slot"
+  ],
+  "n_folds_validation": 38,
+  "includes_final_test": true,
+  "target_config": {
+    "dataset_version": "freeze_20260610_192142",
+    "target": "pasajeros_total",
+    "granularity_min": 30,
+    "horizon": 1,
+    "routes": [
+      1,
+      3
+    ],
+    "operational_only": true,
+    "gap_imputation": "mark",
+    "targets": {
+      "pasajeros_total": "TargetDefinition(name='pasajeros_total', column='pasajeros_total', observed_flag='target_pasajeros_total_observed', unit='pasajeros por franja', description='Pasajeros acumulados en la ruta y franja temporal.')",
+      "pasajeros_por_despacho": "TargetDefinition(name='pasajeros_por_despacho', column='pasajeros_por_despacho_real', observed_flag='target_pasajeros_por_despacho_observed', unit='pasajeros por despacho', description='Productividad observada por despacho real dentro de la franja.')"
+    },
+    "timing": {
+      "origin_timestamp": "timestamp",
+      "target_interval_start": "timestamp",
+      "target_interval_end": "timestamp + granularity_min",
+      "feature_cutoff_timestamp": "origin_timestamp"
+    }
+  },
+  "backtesting_config": {
+    "test_weeks": 10,
+    "validation_weeks": 2,
+    "step_weeks": 2,
+    "min_train_weeks": 26,
+    "seed": 42,
+    "operational_day_start": "04:00:00",
+    "require_full_operational_days": true,
+    "drop_partial_boundary_days": true
+  }
+}

@@ -3781,6 +3781,8 @@ name = "proyecto-grado"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "altair" },
+    { name = "holidays" },
     { name = "matplotlib" },
     { name = "mysql-connector-python" },
     { name = "numpy" },
@@ -3821,7 +3823,9 @@ dl = [
 
 [package.metadata]
 requires-dist = [
+    { name = "altair", specifier = ">=5.0" },
     { name = "boto3", marker = "extra == 'aws'", specifier = ">=1.34" },
+    { name = "holidays", specifier = ">=0.46" },
     { name = "ipykernel", marker = "extra == 'dev'", specifier = ">=6.29" },
     { name = "jupyter", marker = "extra == 'dev'", specifier = ">=1.0" },
     { name = "matplotlib", specifier = ">=3.8" },

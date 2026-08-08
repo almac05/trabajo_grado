@@ -1,0 +1,41 @@
+﻿ruta_en_paquete,ruta_original,tipo_archivo,tama?o_bytes,fecha_modificacion,prop?sito,copiado_completo,observaciones
+revision_modelado/configs/targets.yaml,configs/modeling/targets.yaml,configuracion,612,2026-07-18 17:38:20,configuracion reproducible de modelado,True,
+revision_modelado/configs/backtesting.yaml,configs/modeling/backtesting.yaml,configuracion,111,2026-07-18 17:38:21,definicion o visualizacion de particiones temporales,True,
+revision_modelado/configs/models.yaml,configs/modeling/models.yaml,configuracion,421,2026-07-18 17:38:22,configuracion reproducible de modelado,True,
+revision_modelado/src/proyecto_grado/modeling/config.py,src/proyecto_grado/modeling/config.py,codigo_python,6279,2026-07-18 17:37:25,codigo fuente o script de la fase de modelado,True,
+revision_modelado/src/proyecto_grado/modeling/dataset.py,src/proyecto_grado/modeling/dataset.py,codigo_python,7616,2026-07-18 17:44:27,codigo fuente o script de la fase de modelado,True,
+revision_modelado/src/proyecto_grado/modeling/features.py,src/proyecto_grado/modeling/features.py,codigo_python,5099,2026-07-18 17:44:27,codigo fuente o script de la fase de modelado,True,
+revision_modelado/src/proyecto_grado/modeling/splits.py,src/proyecto_grado/modeling/splits.py,codigo_python,5092,2026-07-18 17:44:33,codigo fuente o script de la fase de modelado,True,
+revision_modelado/src/proyecto_grado/modeling/baselines.py,src/proyecto_grado/modeling/baselines.py,codigo_python,4498,2026-07-18 17:44:27,codigo fuente o script de la fase de modelado,True,
+revision_modelado/src/proyecto_grado/modeling/evaluate.py,src/proyecto_grado/modeling/evaluate.py,codigo_python,2661,2026-07-18 17:45:18,codigo fuente o script de la fase de modelado,True,
+revision_modelado/src/proyecto_grado/modeling/backtesting.py,src/proyecto_grado/modeling/backtesting.py,codigo_python,6218,2026-07-18 17:44:27,definicion o visualizacion de particiones temporales,True,
+revision_modelado/src/proyecto_grado/modeling/error_analysis.py,src/proyecto_grado/modeling/error_analysis.py,codigo_python,6512,2026-07-18 17:44:27,analisis de errores,True,
+revision_modelado/src/proyecto_grado/modeling/__init__.py,src/proyecto_grado/modeling/__init__.py,codigo_python,74,2026-07-18 17:37:23,codigo fuente o script de la fase de modelado,True,
+revision_modelado/scripts/build_modeling_dataset.py,scripts/build_modeling_dataset.py,codigo_python,4013,2026-07-18 17:44:27,codigo fuente o script de la fase de modelado,True,
+revision_modelado/scripts/run_baselines.py,scripts/run_baselines.py,codigo_python,175,2026-07-18 17:44:27,codigo fuente o script de la fase de modelado,True,
+revision_modelado/scripts/run_backtesting.py,scripts/run_backtesting.py,codigo_python,6147,2026-07-18 17:40:11,definicion o visualizacion de particiones temporales,True,
+revision_modelado/scripts/evaluate_models.py,scripts/evaluate_models.py,codigo_python,3788,2026-07-18 17:40:14,codigo fuente o script de la fase de modelado,True,
+revision_modelado/scripts/build_modeling_report.py,scripts/build_modeling_report.py,codigo_python,4898,2026-07-18 17:42:44,codigo fuente o script de la fase de modelado,True,
+revision_modelado/reports/tables/modeling/metrics_by_fold.csv,reports/tables/modeling/metrics_by_fold.csv,tabla_csv,59639,2026-07-18 17:45:35,metricas de evaluacion y comparacion de modelos,True,
+revision_modelado/reports/tables/modeling/metrics_comparison.csv,reports/tables/modeling/metrics_comparison.csv,tabla_csv,3211,2026-07-18 17:45:35,metricas de evaluacion y comparacion de modelos,True,
+revision_modelado/reports/tables/modeling/predictions_baselines.parquet,reports/tables/modeling/predictions_baselines.parquet,tabla_parquet,2128977,2026-07-18 17:43:30,predicciones persistidas para auditoria,True,
+revision_modelado/reports/tables/modeling/error_analysis_by_route.csv,reports/tables/modeling/error_analysis_by_route.csv,tabla_csv,3211,2026-07-18 17:45:35,analisis de errores,True,
+revision_modelado/reports/tables/modeling/error_analysis_by_hour.csv,reports/tables/modeling/error_analysis_by_hour.csv,tabla_csv,22650,2026-07-18 17:45:35,analisis de errores,True,
+revision_modelado/reports/tables/modeling/error_analysis_by_day_type.csv,reports/tables/modeling/error_analysis_by_day_type.csv,tabla_csv,8015,2026-07-18 17:45:35,analisis de errores,True,
+revision_modelado/reports/tables/modeling/backtesting_folds.csv,reports/tables/modeling/backtesting_folds.csv,tabla_csv,7984,2026-07-18 17:43:30,definicion o visualizacion de particiones temporales,True,
+revision_modelado/reports/tables/modeling/modeling_report_baselines.md,reports/tables/modeling/modeling_report_baselines.md,documentacion,1435,2026-07-18 17:45:49,artefacto de revision de modelado,True,
+revision_modelado/reports/figures/modeling/backtesting_folds.png,reports/figures/modeling/backtesting_folds.png,figura_png,73240,2026-07-18 17:45:49,definicion o visualizacion de particiones temporales,True,
+revision_modelado/reports/figures/modeling/error_by_hour_baselines.png,reports/figures/modeling/error_by_hour_baselines.png,figura_png,169305,2026-07-18 17:45:47,analisis de errores,True,
+revision_modelado/reports/figures/modeling/metrics_comparison_baselines.png,reports/figures/modeling/metrics_comparison_baselines.png,figura_png,95720,2026-07-18 17:45:47,metricas de evaluacion y comparacion de modelos,True,
+revision_modelado/reports/figures/modeling/observed_vs_predicted_baselines.png,reports/figures/modeling/observed_vs_predicted_baselines.png,figura_png,805266,2026-07-18 17:45:47,figura de resultados de modelado,True,
+revision_modelado/reports/figures/modeling/residuals_baselines.png,reports/figures/modeling/residuals_baselines.png,figura_png,63619,2026-07-18 17:45:48,figura de resultados de modelado,True,
+revision_modelado/models/metadata/modeling_dataset_metadata.json,models/metadata/modeling_dataset_metadata.json,metadata_json,1507,2026-07-18 17:43:18,metadata de dataset o corrida,True,
+revision_modelado/models/metadata/run_baselines_full_20260718.json,models/metadata/run_baselines_full_20260718.json,metadata_json,867,2026-07-18 17:43:30,metadata de dataset o corrida,True,
+revision_modelado/tests/unit/test_modeling.py,tests/unit/test_modeling.py,codigo_python,4096,2026-07-18 17:40:49,codigo fuente o script de la fase de modelado,True,
+revision_modelado/logs/NO_LOGS_FOUND.txt,generado por Codex,documentacion,71,2026-07-18 18:11:17,artefacto de revision de modelado,False,marcador generado: no existian logs especificos
+revision_modelado/muestras/predictions_sample.csv,reports/tables/modeling/predictions_baselines.parquet,tabla_csv,867018,2026-07-18 18:11:17,predicciones persistidas para auditoria,False,muestra deterministica random_state=42; filas_original=134316; parquet_completo_copiado=True
+revision_modelado/informe_codex.txt,generado por Codex,documentacion,21716,2026-07-18 18:12:37,artefacto de revision de modelado,False,informe tecnico generado desde artefactos existentes
+revision_modelado/README_REVISION.md,generado por Codex,documentacion,2942,2026-07-18 18:11:17,artefacto de revision de modelado,False,README del paquete de revision
+revision_modelado/manifest_archivos.csv,generado por Codex,tabla_csv,7634,2026-07-18 18:11:18,artefacto de revision de modelado,False,manifest del paquete
+revision_modelado/logs/validacion_paquete.json,generado por Codex,metadata_json,340,2026-07-18 18:11:17,metadata de dataset o corrida,False,resultado de validacion del paquete
+revision_modelado/logs/resumen_empaquetado.json,generado por Codex,metadata_json,3941,2026-07-18 18:12:57,metadata de dataset o corrida,False,resumen final de empaquetado

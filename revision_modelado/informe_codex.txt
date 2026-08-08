@@ -1,0 +1,189 @@
+AUDITORIA Y EMPAQUETADO - FASE DE MODELADO PREDICTIVO MONTEBELLO
+Creado: 2026-07-18 18:11:17
+Paquete: revision_modelado
+
+A. RESUMEN EJECUTIVO
+El pipeline actual de modelado esta implementado para granularidad de 30 minutos, rutas 1 y 3, objetivo pasajeros_total y horizonte principal de una franja adelante. La ejecucion exitosa disponible corresponde a baselines simples con backtesting de ventana expansiva y test final temporal. Modelos implementados detectados: historical_average_route_day_type_slot, naive, seasonal_naive_daily, seasonal_naive_weekly. Modelos pendientes/no implementados en esta fase: LSTM, GRU, Prophet, SARIMA, Random Forest, XGBoost, modelos ML/deep learning en train_ml.py/train_dl.py. Se encontraron predicciones persistidas, metricas por fold, comparacion de metricas, analisis de errores por ruta/hora/tipo de dia y figuras de diagnostico de modelado.
+
+B. DATASET USADO
+Ruta fuente declarada: C:\Users\regis\proyecto_grado\data\processed\model_ready\despachos_model_ready_freeze_20260610_192142.parquet
+Snapshot/version: freeze_20260610_192142
+Hash fuente SHA-256: a85ce076cb840d4ea9660f416e986329896163ece324e9d8ddc8449512e0f53a
+Ruta dataset modelado: C:\Users\regis\proyecto_grado\data\processed\modeling\modeling_dataset_g30min.parquet (no copiado al paquete para evitar distribuir dataset de modelado completo)
+Hash dataset modelado: b92af2a5a00cd2f8ac0349b47a5730bf907117eec8a6329f08971f16b1545b3d
+Filas dataset modelado: 43831
+Filas observadas: 38931
+Filas gap: 4900
+Rango temporal: 2024-04-16 04:00:00 -> 2026-06-10 16:00:00
+Rutas incluidas: [1, 3]
+Granularidad: 30 minutos
+Variable objetivo: pasajeros_total
+
+C. TRATAMIENTO DE DATOS
+pasajeros_total se define como suma de PASAJEROS por ruta y franja temporal de 30 minutos, generada desde despachos model-ready. El pipeline trabaja dentro del horario operativo estimado mediante dentro_horario_operativo=True. is_gap se mantiene para identificar franjas sin despacho real. gap_tipo conserva la distincion entre operativo y gap_anomalo dentro del dataset de modelado. La configuracion usa gap_imputation='mark': los gaps no se convierten en cero para el objetivo supervisado. Las metricas se calculan sobre filas evaluables con y_real e y_pred disponibles. Politica de atipicos: no se encontro un modulo especifico de tratamiento de atipicos en la fase de modelado actual; si hay atipicos tratados, provienen de fases previas de ETL/EDA. Variables descartadas por fuga declaradas: pasajeros_promedio, ocupacion_p95, HORA_FIN_FINAL, DURACION_MIN_FINAL, FIN_TIPO, HORA_FIN_FUENTE, RECORRIDO_COMPLETO.
+
+D. FEATURES
+Variables temporales/calendario: hora_del_dia, dia_semana, mes, semana_anio, es_fin_semana, es_festivo, tipo_dia, franja_horaria, FK_RUTA.
+Rezagos: lag_1, lag_2, lag_3, lag_48, lag_96, lag_336.
+Medias/desviaciones moviles: rolling_mean_3, rolling_mean_6, rolling_mean_12, rolling_std_6, rolling_std_12.
+Variables ciclicas: hora_sin, hora_cos, dia_semana_sin, dia_semana_cos.
+Variables operativas conservadas para auditoria: is_gap, gap_tipo, dentro_horario_operativo, target_observed. Las rolling features se calculan sobre la serie desplazada con shift(1), evitando usar la observacion actual.
+
+E. PARTICION TEMPORAL
+Tipo de backtesting: ventana expansiva con validaciones de 2 semanas y avance de 2 semanas; test final reservado de 10 semanas. Numero de folds de validacion: 38. Horizonte: 1 franja. shuffle=False: confirmado metodologicamente por uso de ventanas temporales ordenadas; no se encontro uso de shuffle en el pipeline de backtesting. Mecanismos anti-fuga: splits half-open train < eval, validacion de orden temporal, rezagos y rolling calculados con desplazamiento, modelos ajustados solo con train observado.
+
+Ventanas:
+     split       fold         train_start           train_end          eval_start            eval_end
+validation          1 2024-04-16 04:00:00 2024-10-15 04:00:00 2024-10-15 04:00:00 2024-10-29 04:00:00
+validation          2 2024-04-16 04:00:00 2024-10-29 04:00:00 2024-10-29 04:00:00 2024-11-12 04:00:00
+validation          3 2024-04-16 04:00:00 2024-11-12 04:00:00 2024-11-12 04:00:00 2024-11-26 04:00:00
+validation          4 2024-04-16 04:00:00 2024-11-26 04:00:00 2024-11-26 04:00:00 2024-12-10 04:00:00
+validation          5 2024-04-16 04:00:00 2024-12-10 04:00:00 2024-12-10 04:00:00 2024-12-24 04:00:00
+validation          6 2024-04-16 04:00:00 2024-12-24 04:00:00 2024-12-24 04:00:00 2025-01-07 04:00:00
+validation          7 2024-04-16 04:00:00 2025-01-07 04:00:00 2025-01-07 04:00:00 2025-01-21 04:00:00
+validation          8 2024-04-16 04:00:00 2025-01-21 04:00:00 2025-01-21 04:00:00 2025-02-04 04:00:00
+validation          9 2024-04-16 04:00:00 2025-02-04 04:00:00 2025-02-04 04:00:00 2025-02-18 04:00:00
+validation         10 2024-04-16 04:00:00 2025-02-18 04:00:00 2025-02-18 04:00:00 2025-03-04 04:00:00
+validation         11 2024-04-16 04:00:00 2025-03-04 04:00:00 2025-03-04 04:00:00 2025-03-18 04:00:00
+validation         12 2024-04-16 04:00:00 2025-03-18 04:00:00 2025-03-18 04:00:00 2025-04-01 04:00:00
+validation         13 2024-04-16 04:00:00 2025-04-01 04:00:00 2025-04-01 04:00:00 2025-04-15 04:00:00
+validation         14 2024-04-16 04:00:00 2025-04-15 04:00:00 2025-04-15 04:00:00 2025-04-29 04:00:00
+validation         15 2024-04-16 04:00:00 2025-04-29 04:00:00 2025-04-29 04:00:00 2025-05-13 04:00:00
+validation         16 2024-04-16 04:00:00 2025-05-13 04:00:00 2025-05-13 04:00:00 2025-05-27 04:00:00
+validation         17 2024-04-16 04:00:00 2025-05-27 04:00:00 2025-05-27 04:00:00 2025-06-10 04:00:00
+validation         18 2024-04-16 04:00:00 2025-06-10 04:00:00 2025-06-10 04:00:00 2025-06-24 04:00:00
+validation         19 2024-04-16 04:00:00 2025-06-24 04:00:00 2025-06-24 04:00:00 2025-07-08 04:00:00
+validation         20 2024-04-16 04:00:00 2025-07-08 04:00:00 2025-07-08 04:00:00 2025-07-22 04:00:00
+validation         21 2024-04-16 04:00:00 2025-07-22 04:00:00 2025-07-22 04:00:00 2025-08-05 04:00:00
+validation         22 2024-04-16 04:00:00 2025-08-05 04:00:00 2025-08-05 04:00:00 2025-08-19 04:00:00
+validation         23 2024-04-16 04:00:00 2025-08-19 04:00:00 2025-08-19 04:00:00 2025-09-02 04:00:00
+validation         24 2024-04-16 04:00:00 2025-09-02 04:00:00 2025-09-02 04:00:00 2025-09-16 04:00:00
+validation         25 2024-04-16 04:00:00 2025-09-16 04:00:00 2025-09-16 04:00:00 2025-09-30 04:00:00
+validation         26 2024-04-16 04:00:00 2025-09-30 04:00:00 2025-09-30 04:00:00 2025-10-14 04:00:00
+validation         27 2024-04-16 04:00:00 2025-10-14 04:00:00 2025-10-14 04:00:00 2025-10-28 04:00:00
+validation         28 2024-04-16 04:00:00 2025-10-28 04:00:00 2025-10-28 04:00:00 2025-11-11 04:00:00
+validation         29 2024-04-16 04:00:00 2025-11-11 04:00:00 2025-11-11 04:00:00 2025-11-25 04:00:00
+validation         30 2024-04-16 04:00:00 2025-11-25 04:00:00 2025-11-25 04:00:00 2025-12-09 04:00:00
+validation         31 2024-04-16 04:00:00 2025-12-09 04:00:00 2025-12-09 04:00:00 2025-12-23 04:00:00
+validation         32 2024-04-16 04:00:00 2025-12-23 04:00:00 2025-12-23 04:00:00 2026-01-06 04:00:00
+validation         33 2024-04-16 04:00:00 2026-01-06 04:00:00 2026-01-06 04:00:00 2026-01-20 04:00:00
+validation         34 2024-04-16 04:00:00 2026-01-20 04:00:00 2026-01-20 04:00:00 2026-02-03 04:00:00
+validation         35 2024-04-16 04:00:00 2026-02-03 04:00:00 2026-02-03 04:00:00 2026-02-17 04:00:00
+validation         36 2024-04-16 04:00:00 2026-02-17 04:00:00 2026-02-17 04:00:00 2026-03-03 04:00:00
+validation         37 2024-04-16 04:00:00 2026-03-03 04:00:00 2026-03-03 04:00:00 2026-03-17 04:00:00
+validation         38 2024-04-16 04:00:00 2026-03-17 04:00:00 2026-03-17 04:00:00 2026-03-31 04:00:00
+test_final test_final 2024-04-16 04:00:00 2026-04-01 16:00:00 2026-04-01 16:00:00 2026-06-10 16:30:00
+
+F. MODELOS
+naive | archivo: src/proyecto_grado/modeling/baselines.py | hiperparametros: sin ajuste; usa lag_1 | estado: implementado/evaluado | rutas: 1,3 | granularidad: 30 | horizonte: 1 | salida: prediccion puntual.
+seasonal_naive_daily | archivo: src/proyecto_grado/modeling/baselines.py | hiperparametros: lag_48 para 30 min | estado: implementado/evaluado | rutas: 1,3 | granularidad: 30 | horizonte: 1 | salida: prediccion puntual.
+seasonal_naive_weekly | archivo: src/proyecto_grado/modeling/baselines.py | hiperparametros: lag_336 para 30 min | estado: implementado/evaluado | rutas: 1,3 | granularidad: 30 | horizonte: 1 | salida: prediccion puntual.
+historical_average_route_day_type_slot | archivo: src/proyecto_grado/modeling/baselines.py | hiperparametros: promedio historico por FK_RUTA, tipo_dia y franja_30min, con fallback por ruta/franja y ruta | estado: implementado/evaluado | rutas: 1,3 | granularidad: 30 | horizonte: 1 | salida: prediccion puntual.
+Modelos avanzados: No disponibles en esta fase; no se encontraron train_ml.py, train_dl.py, train_statistical.py ni predict.py.
+
+G. METRICAS
+Metricas detectadas: mae, rmse, smape, wape, bias_mean.
+
+     split                                  model  route     n  n_total  missing_y  missing_pred    mae   rmse  smape   wape  bias_mean
+test_final historical_average_route_day_type_slot      1  1544     1919        375             0 36.082 45.146 35.929 35.684     27.860
+test_final historical_average_route_day_type_slot      3  1583     1976        393             0 38.414 49.957 34.150 32.581     27.098
+test_final                                  naive      1  1394     1919        375           367 43.560 55.867 42.672 41.198      1.247
+test_final                                  naive      3  1443     1976        393           394 55.279 73.231 46.058 44.314      0.299
+test_final                   seasonal_naive_daily      1  1292     1919        375           389 47.505 60.917 50.796 46.850      4.766
+test_final                   seasonal_naive_daily      3  1336     1976        393           404 53.069 68.102 51.101 45.501      6.352
+test_final                  seasonal_naive_weekly      1  1381     1919        375           360 42.846 55.666 44.939 41.290      1.518
+test_final                  seasonal_naive_weekly      3  1423     1976        393           378 47.451 62.552 44.095 39.230      1.545
+validation historical_average_route_day_type_slot      1 13088    14612       1524             0 31.877 41.362 28.561 26.851     17.596
+validation historical_average_route_day_type_slot      3 13297    15072       1775             0 34.320 45.850 27.765 25.095     13.427
+validation                                  naive      1 12189    14612       1524          1597 43.956 57.213 38.509 36.278      2.879
+validation                                  naive      3 12366    15072       1775          1829 53.006 70.217 40.586 37.156      0.827
+validation                   seasonal_naive_daily      1 11933    14612       1524          1644 52.582 68.091 49.588 44.159      3.320
+validation                   seasonal_naive_daily      3 12107    15072       1775          1855 60.208 79.407 51.182 43.930      3.640
+validation                  seasonal_naive_weekly      1 12329    14612       1524          1550 41.394 54.804 37.520 33.909      0.338
+validation                  seasonal_naive_weekly      3 12452    15072       1775          1788 46.399 62.574 37.697 32.806     -0.030
+
+H. ANALISIS DE ERRORES
+Error por ruta (test final si disponible):
+     split                                  model  route        dataset_version                  run_id    n  n_total  missing_y  missing_pred    mae   rmse  smape   wape  bias_mean
+test_final historical_average_route_day_type_slot      1 freeze_20260610_192142 baselines_full_20260718 1544     1919        375             0 36.082 45.146 35.929 35.684     27.860
+test_final historical_average_route_day_type_slot      3 freeze_20260610_192142 baselines_full_20260718 1583     1976        393             0 38.414 49.957 34.150 32.581     27.098
+test_final                                  naive      1 freeze_20260610_192142 baselines_full_20260718 1394     1919        375           367 43.560 55.867 42.672 41.198      1.247
+test_final                                  naive      3 freeze_20260610_192142 baselines_full_20260718 1443     1976        393           394 55.279 73.231 46.058 44.314      0.299
+test_final                   seasonal_naive_daily      1 freeze_20260610_192142 baselines_full_20260718 1292     1919        375           389 47.505 60.917 50.796 46.850      4.766
+test_final                   seasonal_naive_daily      3 freeze_20260610_192142 baselines_full_20260718 1336     1976        393           404 53.069 68.102 51.101 45.501      6.352
+test_final                  seasonal_naive_weekly      1 freeze_20260610_192142 baselines_full_20260718 1381     1919        375           360 42.846 55.666 44.939 41.290      1.518
+test_final                  seasonal_naive_weekly      3 freeze_20260610_192142 baselines_full_20260718 1423     1976        393           378 47.451 62.552 44.095 39.230      1.545
+
+Error por hora (top 10 MAE test final si disponible):
+     split                 model  hora_del_dia        dataset_version                  run_id   n  n_total  missing_y  missing_pred    mae   rmse  smape   wape  bias_mean
+test_final                 naive             4 freeze_20260610_192142 baselines_full_20260718  58      185         29           127 74.259 85.922 83.997 62.547    -70.741
+test_final                 naive             5 freeze_20260610_192142 baselines_full_20260718 216      280         64            64 70.315 93.808 43.453 39.611    -31.426
+test_final                 naive             6 freeze_20260610_192142 baselines_full_20260718 216      280         60            64 65.509 88.323 36.169 37.572      7.306
+test_final  seasonal_naive_daily             6 freeze_20260610_192142 baselines_full_20260718 169      280         60            60 63.651 83.801 38.426 37.092      9.166
+test_final  seasonal_naive_daily            15 freeze_20260610_192142 baselines_full_20260718 191      279         48            48 60.063 74.492 58.412 54.313     10.000
+test_final  seasonal_naive_daily            14 freeze_20260610_192142 baselines_full_20260718 207      280         41            40 57.304 73.050 59.267 54.679      4.483
+test_final  seasonal_naive_daily            13 freeze_20260610_192142 baselines_full_20260718 205      280         39            39 56.224 71.310 56.727 53.020      5.200
+test_final seasonal_naive_weekly             6 freeze_20260610_192142 baselines_full_20260718 198      280         60            58 55.798 70.717 35.282 32.381      0.919
+test_final                 naive             7 freeze_20260610_192142 baselines_full_20260718 233      280         24            41 54.129 70.714 44.250 44.795     14.670
+test_final  seasonal_naive_daily             7 freeze_20260610_192142 baselines_full_20260718 232      280         24            24 53.927 68.135 55.719 47.715      3.220
+
+Error por tipo de dia (test final si disponible):
+     split                                  model       tipo_dia        dataset_version                  run_id    n  n_total  missing_y  missing_pred    mae    rmse   smape    wape  bias_mean
+test_final historical_average_route_day_type_slot        DOMINGO freeze_20260610_192142 baselines_full_20260718  213      510        297             0 12.958  14.906  38.986  42.041      8.283
+test_final historical_average_route_day_type_slot        FESTIVO freeze_20260610_192142 baselines_full_20260718   88      156         68             0 15.123  17.834  47.059  50.164      9.730
+test_final historical_average_route_day_type_slot FESTIVO_PUENTE freeze_20260610_192142 baselines_full_20260718   43      104         61             0 12.008  13.633  39.746  43.319      7.087
+test_final historical_average_route_day_type_slot        LABORAL freeze_20260610_192142 baselines_full_20260718 2298     2565        267             0 41.704  51.912  32.952  32.706     30.462
+test_final historical_average_route_day_type_slot         SABADO freeze_20260610_192142 baselines_full_20260718  485      560         75             0 33.145  41.159  40.528  40.876     26.777
+test_final                                  naive        DOMINGO freeze_20260610_192142 baselines_full_20260718  103      510        297           297 13.544  18.029  41.855  44.244     -0.476
+test_final                                  naive        FESTIVO freeze_20260610_192142 baselines_full_20260718   71      156         68            68 18.803  22.971  59.366  60.792     -0.549
+test_final                                  naive FESTIVO_PUENTE freeze_20260610_192142 baselines_full_20260718   23      104         61            61 12.087  15.803  40.870  43.235     -1.739
+test_final                                  naive        LABORAL freeze_20260610_192142 baselines_full_20260718 2199     2565        267           261 55.050  70.772  43.630  42.529      1.069
+test_final                                  naive         SABADO freeze_20260610_192142 baselines_full_20260718  441      560         75            74 37.247  47.585  46.567  44.681     -0.118
+test_final                   seasonal_naive_daily        DOMINGO freeze_20260610_192142 baselines_full_20260718  204      510        297            47 51.534  61.644  84.903 167.059     50.730
+test_final                   seasonal_naive_daily        FESTIVO freeze_20260610_192142 baselines_full_20260718   84      156         68            23 76.274  94.908  97.793 250.469     75.988
+test_final                   seasonal_naive_daily FESTIVO_PUENTE freeze_20260610_192142 baselines_full_20260718   32      104         61            46 13.344  17.386  42.242  47.287      4.656
+test_final                   seasonal_naive_daily        LABORAL freeze_20260610_192142 baselines_full_20260718 1876     2565        267           586 48.811  62.904  43.995  37.969     -9.422
+test_final                   seasonal_naive_daily         SABADO freeze_20260610_192142 baselines_full_20260718  432      560         75            91 54.074  68.482  56.663  65.057     35.736
+test_final                  seasonal_naive_weekly        DOMINGO freeze_20260610_192142 baselines_full_20260718  118      510        297           306 14.517  20.979  40.191  44.551     -0.059
+test_final                  seasonal_naive_weekly        FESTIVO freeze_20260610_192142 baselines_full_20260718   87      156         68             4 94.517 104.049 118.577 313.257     94.494
+test_final                  seasonal_naive_weekly FESTIVO_PUENTE freeze_20260610_192142 baselines_full_20260718   42      104         61             4 90.595 100.621 118.901 328.300     90.595
+test_final                  seasonal_naive_weekly        LABORAL freeze_20260610_192142 baselines_full_20260718 2101     2565        267           354 46.153  59.715  40.207  35.911     -3.806
+test_final                  seasonal_naive_weekly         SABADO freeze_20260610_192142 baselines_full_20260718  456      560         75            70 35.053  45.311  44.476  42.318      0.596
+
+Error por nivel de demanda: No disponible como artefacto especifico.
+Errores en horas pico: No disponible como artefacto especifico; revisar error_analysis_by_hour.csv para aproximacion por hora.
+Estabilidad entre folds (validacion):
+                                 model  route  mae_mean  mae_std  rmse_mean  rmse_std
+historical_average_route_day_type_slot      1    31.978    3.747     41.249     4.625
+historical_average_route_day_type_slot      3    34.420    3.500     45.744     4.728
+                                 naive      1    43.884    3.329     56.932     4.605
+                                 naive      3    52.919    4.274     69.924     5.276
+                  seasonal_naive_daily      1    52.483    5.831     67.520     7.524
+                  seasonal_naive_daily      3    60.128    6.845     78.730     9.102
+                 seasonal_naive_weekly      1    41.458    4.861     54.498     6.597
+                 seasonal_naive_weekly      3    46.523    5.545     62.178     8.384
+
+Outliers relevantes: No disponible como artefacto especifico de outliers de residual.
+Sesgo: en test final, el promedio historico tiene sesgo positivo alto en ambas rutas; naive y seasonal_naive_weekly tienen sesgos cercanos a cero comparativamente.
+
+I. ADVERTENCIAS METODOLOGICAS
+- Las filas con is_gap=True se conservaron, pero las metricas supervisadas excluyen y_real faltante; no se asumio que gap implica demanda cero.
+- pasajeros_total mide demanda observada/atendida por despachos registrados; no mide demanda no atendida durante ausencia de oferta.
+- El promedio historico muestra sesgo positivo alto en test final, consistente con cambio de nivel operativo por contraccion de oferta.
+- Los baselines de rezago generan y_pred faltante cuando el rezago cae en gap o en borde de serie.
+- No hay artefacto especifico de error por horizonte ni por nivel de demanda; horizonte disponible: 1 franja.
+- No se encontraron logs externos de ejecucion en logs/.
+
+J. COMANDOS DE REPRODUCCION
+Construir dataset de modelado:
+.\.venv\Scripts\python.exe scripts\build_modeling_dataset.py
+Ejecutar baselines/backtesting:
+.\.venv\Scripts\python.exe scripts\run_backtesting.py
+Alias de baselines:
+.\.venv\Scripts\python.exe scripts\run_baselines.py
+Evaluar modelos:
+.\.venv\Scripts\python.exe scripts\evaluate_models.py
+Generar reporte y figuras:
+.\.venv\Scripts\python.exe scripts\build_modeling_report.py
+Pruebas minimas:
+.\.venv\Scripts\python.exe -m pytest tests\unit\test_modeling.py -q

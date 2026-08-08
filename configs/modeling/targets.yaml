@@ -1,0 +1,38 @@
+# Target configuration for the first reproducible modeling phase.
+dataset_version: freeze_20260610_192142
+source_path: data/processed/model_ready/despachos_model_ready_freeze_20260610_192142.parquet
+target: pasajeros_total  # legacy alias; the multitarget pipeline reads targets below.
+granularity_min: 30
+horizon: 1
+routes: [1, 3]
+operational_only: true
+gap_imputation: mark
+
+timing:
+  origin_timestamp: timestamp
+  target_interval_start: timestamp
+  target_interval_end: timestamp + granularity_min
+  feature_cutoff_timestamp: origin_timestamp
+
+targets:
+  pasajeros_total:
+    column: pasajeros_total
+    observed_flag: target_pasajeros_total_observed
+    unit: pasajeros por franja
+    description: Pasajeros acumulados en la ruta y franja temporal.
+  pasajeros_por_despacho:
+    column: pasajeros_por_despacho_real
+    observed_flag: target_pasajeros_por_despacho_observed
+    unit: pasajeros por despacho
+    description: Productividad observada por despacho real dentro de la franja.
+
+# Columns explicitly excluded as predictors because they use current or future
+# operational information relative to the forecast origin.
+exclude_predictors:
+  - pasajeros_promedio
+  - ocupacion_p95
+  - HORA_FIN_FINAL
+  - DURACION_MIN_FINAL
+  - FIN_TIPO
+  - HORA_FIN_FUENTE
+  - RECORRIDO_COMPLETO

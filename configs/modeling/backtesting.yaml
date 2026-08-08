@@ -1,0 +1,9 @@
+# Temporal validation settings.
+seed: 42
+test_weeks: 10
+validation_weeks: 2
+step_weeks: 2
+min_train_weeks: 26
+operational_day_start: "04:00:00"
+require_full_operational_days: true
+drop_partial_boundary_days: true
