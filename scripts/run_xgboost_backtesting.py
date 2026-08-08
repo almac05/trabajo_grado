@@ -1,8 +1,23 @@
-"""Run expanding-window backtesting for XGBoost, integrated with the baselines.
+"""Backtesting de ventana expansiva para XGBoost, integrado con los baselines.
 
-Registers ``xgboost_l2`` and ``xgboost_l1`` (configs/modeling/models.yaml)
-alongside the 8 existing baselines and evaluates all of them on the same
-38 validation folds + final test window, across the 3 multitarget scenarios.
+Registra ``xgboost_l2`` y ``xgboost_l1`` (configs/modeling/models.yaml) junto a
+los 8 baselines existentes y evalua todos los modelos sobre exactamente las
+mismas observaciones: 38 folds de validacion mas la ventana de prueba final, en
+los 3 escenarios multitarget. Esa identidad de conjuntos es lo que hace valida
+la tabla comparativa entre XGBoost y los modelos de referencia.
+
+ALCANCE. Esta corrida emplea la configuracion inicial de la Fase 3: ventana de
+entrenamiento expansiva, conjunto completo de variables (incluidas las de
+calendario anual y los rezagos de corto alcance) y ambas funciones objetivo.
+Sus metricas corresponden a esa etapa exploratoria y fueron las que revelaron
+el sesgo de sobrepredicion analizado posteriormente.
+
+El analisis de ventana de entrenamiento condujo a una configuracion distinta
+--26 semanas, sin calendario anual y con las variables disponibles en el
+momento de la decision de despacho-- evaluada en
+``scripts/run_xgboost_test_final.py``. Las metricas de ambos scripts NO son
+intercambiables y deben reportarse por separado, indicando a que etapa
+corresponde cada una.
 """
 
 from __future__ import annotations
