@@ -1,0 +1,7 @@
+metodo,route,amplitud_predicha,amplitud_observada,proporcion
+SARIMA,1,26.811,136.118,0.197
+SARIMA,3,83.956,220.232,0.381
+Prophet,1,72.609,136.118,0.533
+Prophet,3,171.755,220.232,0.78
+XGBoost,1,69.172,136.118,0.508
+XGBoost,3,170.714,220.232,0.775

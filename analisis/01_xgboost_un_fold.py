@@ -217,3 +217,7 @@ por_dia = val.groupby("dia_op").agg(
     n=("error", "size"), sesgo=("error", "mean"), real=(TARGET, "mean")
 )
 print(por_dia.sort_values("sesgo", ascending=False).head(8).round(2).to_string())
+
+arboles = modelo.get_booster().get_dump()
+print(f"Arboles construidos: {len(arboles)}")
+print(arboles[0])

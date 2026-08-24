@@ -15,7 +15,8 @@ VENV          := .venv
 # Detectar activador de venv segun SO
 ifeq ($(OS),Windows_NT)
 	VENV_BIN       := .\.venv\Scripts
-	ACTIVATE       := $(VENV_BIN)/activate
+	ACTIVATE       := $(VENV_BIN)\Activate.ps1
+	ACTIVATE_SHELL := powershell -NoExit -ExecutionPolicy Bypass -Command "& '$(ACTIVATE)'"
 	RM_RF          := powershell -Command "Remove-Item -Recurse -Force -ErrorAction SilentlyContinue"
 	VENV_PYTHON    := $(VENV_BIN)\python.exe
 	VENV_PIP       := $(VENV_BIN)\pip.exe
@@ -24,6 +25,7 @@ ifeq ($(OS),Windows_NT)
 else
 	VENV_BIN       := $(VENV)/bin
 	ACTIVATE       := $(VENV_BIN)/activate
+	ACTIVATE_SHELL := bash --rcfile "$(ACTIVATE)" -i
 	RM_RF          := rm -rf
 	VENV_PYTHON    := $(VENV_BIN)/python
 	VENV_PIP       := $(VENV_BIN)/pip
@@ -40,7 +42,7 @@ else
 endif
 
 .DEFAULT_GOAL := help
-.PHONY: help venv install dev lint format typecheck test test-eda test-cov \
+.PHONY: help venv activate install dev lint format typecheck test test-eda test-cov \
         clean clean-pyc clean-build clean-cache \
         etl etl-dry-run etl-clean \
         build-ts build-ts-ruta1 build-ts-ruta3 estimate-op-hours \
@@ -65,8 +67,11 @@ help:  ## Muestra esta ayuda
 # Entorno y dependencias
 # =============================================================================
 venv:  ## Crea el entorno virtual en .venv
-	$(PYTHON) -m venv $(VENV)
-	@echo "Entorno creado. Activa con: . $(ACTIVATE)"
+	$(BASE_PYTHON) -m venv $(VENV)
+	@echo "Entorno creado. Abre una sesion activada con: make activate"
+
+activate:  ## Abre una terminal nueva con el entorno virtual activado
+	$(ACTIVATE_SHELL)
 
 install:  ## Instala dependencias de produccion
 	$(PYTHON) -m pip install --upgrade pip
