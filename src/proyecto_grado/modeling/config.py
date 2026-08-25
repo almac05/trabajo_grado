@@ -13,13 +13,15 @@ from typing import Any
 import yaml
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-DEFAULT_DATASET_VERSION = "freeze_20260610_192142"
+# freeze_20260823_203700 corrige el sesgo de conteo APC (PASAJEROS_REALES
+# en vez de PASAJEROS crudo); ver configs/modeling/targets.yaml.
+DEFAULT_DATASET_VERSION = "freeze_20260823_203700"
 DEFAULT_SOURCE_PATH = (
     PROJECT_ROOT
     / "data"
     / "processed"
     / "model_ready"
-    / "despachos_model_ready_freeze_20260610_192142.parquet"
+    / "despachos_model_ready_freeze_20260823_203700.parquet"
 )
 
 

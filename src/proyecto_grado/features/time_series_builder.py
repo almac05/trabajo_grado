@@ -29,6 +29,11 @@ _DEFAULTS: dict = {
     "imputacion_gaps": "zero",
     "cobertura_minima_dias": 30,
     "rutas": [1, 3],
+    # Columna fuente para agregar demanda por bin temporal. PASAJEROS es el
+    # conteo crudo del dispositivo APC (incluye eventos de puerta inflando el
+    # conteo); PASAJEROS_REALES = (PASAJEROS - ALARMAS).clip(lower=0) es la
+    # correccion (ver etl/transforms.py::run_block4).
+    "columna_pasajeros": "PASAJEROS_REALES",
 }
 
 
@@ -73,13 +78,15 @@ class TimeSeriesBuilder:
         self.franjas_horarias: dict[str, list[int]] = base["franjas_horarias"]
         self.imputacion_gaps: ImputacionGaps = base["imputacion_gaps"]
         self.rutas: list[int] = list(base["rutas"])
+        self.columna_pasajeros: str = str(base["columna_pasajeros"])
         self._colombia_holidays: dict[int, set[date]] = {}
 
         logger.info(
-            "TimeSeriesBuilder inicializado: granularidades=%s imputacion=%s rutas=%s",
+            "TimeSeriesBuilder inicializado: granularidades=%s imputacion=%s rutas=%s columna_pasajeros=%s",
             self.granularidades_min,
             self.imputacion_gaps,
             self.rutas,
+            self.columna_pasajeros,
         )
 
     def _get_colombia_holidays(self, year: int) -> set[date]:
@@ -101,8 +108,9 @@ class TimeSeriesBuilder:
         Parameters
         ----------
         df : pd.DataFrame
-            DataFrame filtrado con HORA_INICIAL_REAL, PASAJEROS y
-            PK_INTERVALO_DESPACHO ya limpios.
+            DataFrame filtrado con HORA_INICIAL_REAL, la columna de pasajeros
+            configurada (``self.columna_pasajeros``) y PK_INTERVALO_DESPACHO
+            ya limpios.
         granularidad_min : int
             Tamaño del bin temporal en minutos.
 
@@ -112,16 +120,17 @@ class TimeSeriesBuilder:
             Una fila por bin temporal con las cuatro variables objetivo.
         """
         freq = f"{granularidad_min}min"
+        col = self.columna_pasajeros
         df = df.copy()
         df["_ts_bin"] = df["HORA_INICIAL_REAL"].dt.floor(freq)
 
         agg = (
             df.groupby("_ts_bin", sort=True)
             .agg(
-                pasajeros_total=("PASAJEROS", "sum"),
+                pasajeros_total=(col, "sum"),
                 despachos_count=("PK_INTERVALO_DESPACHO", "count"),
-                pasajeros_promedio=("PASAJEROS", "mean"),
-                ocupacion_p95=("PASAJEROS", lambda x: float(np.percentile(x.to_numpy(), 95))),
+                pasajeros_promedio=(col, "mean"),
+                ocupacion_p95=(col, lambda x: float(np.percentile(x.to_numpy(), 95))),
             )
             .reset_index()
             .rename(columns={"_ts_bin": "timestamp"})
@@ -292,7 +301,8 @@ class TimeSeriesBuilder:
         ----------
         df : pd.DataFrame
             Dataset model-ready con al menos HORA_INICIAL_REAL, FK_RUTA,
-            PASAJEROS y PK_INTERVALO_DESPACHO.
+            la columna de pasajeros configurada (``self.columna_pasajeros``)
+            y PK_INTERVALO_DESPACHO.
         ruta : int | None
             Si se indica, filtra solo esa ruta antes de agregar.
             Si es None, agrega todas las rutas juntas.
@@ -310,11 +320,12 @@ class TimeSeriesBuilder:
         if granularidad_min is None:
             granularidad_min = self.granularidades_min[0]
 
+        col = self.columna_pasajeros
         df = df.copy()
         df["HORA_INICIAL_REAL"] = pd.to_datetime(df["HORA_INICIAL_REAL"], errors="coerce")
         df["FK_RUTA"] = pd.to_numeric(df["FK_RUTA"], errors="coerce")
-        df["PASAJEROS"] = pd.to_numeric(df["PASAJEROS"], errors="coerce")
-        df = df.dropna(subset=["HORA_INICIAL_REAL", "PASAJEROS", "FK_RUTA"])
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+        df = df.dropna(subset=["HORA_INICIAL_REAL", col, "FK_RUTA"])
         df["FK_RUTA"] = df["FK_RUTA"].astype(int)
 
         if ruta is not None:

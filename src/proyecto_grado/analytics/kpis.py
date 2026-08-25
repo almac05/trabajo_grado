@@ -17,8 +17,24 @@ def _as_datetime(df: pd.DataFrame, col: str) -> pd.Series:
     return pd.to_datetime(df[col], errors="coerce")
 
 
+def _resolve_pasajeros_col(df: pd.DataFrame, columna_pasajeros: str) -> str | None:
+    """Resuelve la columna de pasajeros a usar, con fallback al conteo crudo.
+
+    ``PASAJEROS`` es el conteo crudo del dispositivo APC, inflado por eventos
+    de puerta (ver etl/transforms.py::run_block4); ``PASAJEROS_REALES`` es la
+    version corregida y la que se prefiere. El fallback a ``PASAJEROS``
+    sostiene compatibilidad con snapshots anteriores a la correccion.
+    """
+    if columna_pasajeros in df.columns:
+        return columna_pasajeros
+    if "PASAJEROS" in df.columns:
+        return "PASAJEROS"
+    return None
+
+
 def operational_kpis(
     datasets: Mapping[str, pd.DataFrame | None],
+    columna_pasajeros: str = "PASAJEROS_REALES",
 ) -> pd.DataFrame:
     """Return thesis-friendly KPIs for ETL quality and operating behavior."""
     raw = datasets.get("raw")
@@ -48,8 +64,9 @@ def operational_kpis(
 
     final_df = model if model is not None else end
     if final_df is not None and not final_df.empty:
-        if "PASAJEROS" in final_df.columns:
-            pasajeros = pd.to_numeric(final_df["PASAJEROS"], errors="coerce")
+        pax_col = _resolve_pasajeros_col(final_df, columna_pasajeros)
+        if pax_col is not None:
+            pasajeros = pd.to_numeric(final_df[pax_col], errors="coerce")
             rows.extend(
                 [
                     {
@@ -87,14 +104,17 @@ def operational_kpis(
     return pd.DataFrame(rows)
 
 
-def demand_by_route(df: pd.DataFrame | None) -> pd.DataFrame:
+def demand_by_route(
+    df: pd.DataFrame | None, columna_pasajeros: str = "PASAJEROS_REALES"
+) -> pd.DataFrame:
     """Aggregate passenger demand by route."""
     if df is None or df.empty or "FK_RUTA" not in df.columns:
         return pd.DataFrame(
             columns=["FK_RUTA", "despachos", "pasajeros_total", "pasajeros_promedio"]
         )
     out = df.copy()
-    out["PASAJEROS"] = pd.to_numeric(out.get("PASAJEROS"), errors="coerce")
+    pax_col = _resolve_pasajeros_col(out, columna_pasajeros)
+    out["PASAJEROS"] = pd.to_numeric(out.get(pax_col), errors="coerce")
     return (
         out.groupby("FK_RUTA", dropna=False)
         .agg(
@@ -107,7 +127,9 @@ def demand_by_route(df: pd.DataFrame | None) -> pd.DataFrame:
     )
 
 
-def demand_by_hour_weekday(df: pd.DataFrame | None) -> pd.DataFrame:
+def demand_by_hour_weekday(
+    df: pd.DataFrame | None, columna_pasajeros: str = "PASAJEROS_REALES"
+) -> pd.DataFrame:
     """Aggregate passenger demand by weekday and hour."""
     if df is None or df.empty:
         return pd.DataFrame(columns=["dia_semana", "hora", "despachos", "pasajeros_total"])
@@ -122,7 +144,8 @@ def demand_by_hour_weekday(df: pd.DataFrame | None) -> pd.DataFrame:
     else:
         return pd.DataFrame(columns=["dia_semana", "hora", "despachos", "pasajeros_total"])
 
-    out["PASAJEROS"] = pd.to_numeric(out.get("PASAJEROS"), errors="coerce")
+    pax_col = _resolve_pasajeros_col(out, columna_pasajeros)
+    out["PASAJEROS"] = pd.to_numeric(out.get(pax_col), errors="coerce")
     return (
         out.dropna(subset=["dia_semana", "hora"])
         .groupby(["dia_semana", "hora"], dropna=False)

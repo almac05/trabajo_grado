@@ -1,6 +1,13 @@
 # Target configuration for the first reproducible modeling phase.
-dataset_version: freeze_20260610_192142
-source_path: data/processed/model_ready/despachos_model_ready_freeze_20260610_192142.parquet
+#
+# dataset_version freeze_20260823_203700 corrige el sesgo de conteo APC:
+# PASAJEROS (crudo) incluia eventos de puerta de tbl_alarma_info_regis
+# (FK_ALARMA 5/6) contados como abordajes. PASAJEROS_REALES = (PASAJEROS -
+# ALARMAS).clip(lower=0) es la version corregida y ahora alimenta la serie
+# temporal (ver configs/features.yaml::columna_pasajeros). Afecta a 8.938
+# despachos de 109.559 (8.16%); ver reports/tables/etl para el detalle.
+dataset_version: freeze_20260823_203700
+source_path: data/processed/model_ready/despachos_model_ready_freeze_20260823_203700.parquet
 target: pasajeros_total  # legacy alias; the multitarget pipeline reads targets below.
 granularity_min: 30
 horizon: 1

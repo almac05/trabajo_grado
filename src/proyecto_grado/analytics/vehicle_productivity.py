@@ -33,12 +33,17 @@ class ProductivityAnalyzer:
     en formato long (semana × ruta).
     """
 
-    def __init__(self, df: pd.DataFrame) -> None:
+    def __init__(self, df: pd.DataFrame, columna_pasajeros: str = "PASAJEROS_REALES") -> None:
+        # PASAJEROS es el conteo crudo del dispositivo APC (inflado por
+        # eventos de puerta, ver etl/transforms.py::run_block4);
+        # PASAJEROS_REALES es la version corregida y la preferida como base
+        # de productividad. Fallback a PASAJEROS para snapshots anteriores.
+        self._col_pasajeros = columna_pasajeros if columna_pasajeros in df.columns else "PASAJEROS"
         self._df = self._preparar(df)
 
     def _preparar(self, df: pd.DataFrame) -> pd.DataFrame:
         df = df.copy()
-        mask = df["MODEL_READY_OK"].eq(True) & df["PASAJEROS"].notna()
+        mask = df["MODEL_READY_OK"].eq(True) & df[self._col_pasajeros].notna()
         df = df.loc[mask].copy()
         df["FECHA_INICIAL"] = pd.to_datetime(df["FECHA_INICIAL"])
         df["semana"] = df["FECHA_INICIAL"].dt.to_period("W").dt.start_time
@@ -56,8 +61,8 @@ class ProductivityAnalyzer:
         agg = (
             self._df.groupby(["FK_RUTA", "semana"])
             .agg(
-                pasajeros_total=("PASAJEROS", "sum"),
-                despachos_total=("PASAJEROS", "count"),
+                pasajeros_total=(self._col_pasajeros, "sum"),
+                despachos_total=(self._col_pasajeros, "count"),
             )
             .reset_index()
         )

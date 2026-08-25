@@ -30,6 +30,15 @@ cobertura_minima_dias: 30
 # Rutas operativas a procesar (deben coincidir con FK_RUTA en model-ready)
 rutas: [1, 3]
 
+# Columna del dataset model-ready usada para agregar demanda por bin temporal.
+# PASAJEROS es el conteo crudo del dispositivo APC: los eventos de apertura y
+# cierre de puerta (FK_ALARMA 5 y 6 en tbl_alarma_info_regis) se registran
+# como abordajes adicionales, inflando el conteo. PASAJEROS_REALES =
+# (PASAJEROS - ALARMAS).clip(lower=0) corrige ese sesgo (ver
+# etl/transforms.py::run_block4) y es la columna correcta para construir la
+# serie temporal y el dataset de modelado.
+columna_pasajeros: PASAJEROS_REALES
+
 # Estimacion del horario operativo real desde los datos historicos.
 # Se calcula por tipo_dia x ruta x granularidad para distinguir gaps anomalos
 # (dentro del horario pero sin servicio) de franjas fuera de operacion.

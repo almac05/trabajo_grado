@@ -7,6 +7,19 @@ import pytest
 from proyecto_grado.features.time_series_builder import TimeSeriesBuilder
 from proyecto_grado.features.validators import TimeSeriesValidator
 
+
+def _con_reales(df: pd.DataFrame, alarmas: int = 0) -> pd.DataFrame:
+    """Anade PASAJEROS_REALES a un DataFrame de prueba.
+
+    Los datos reales contienen ambas columnas: PASAJEROS con el conteo crudo
+    del dispositivo y PASAJEROS_REALES tras descontar el sesgo de las alarmas
+    de puerta. Los datos sinteticos deben reflejar esa estructura.
+    """
+    df = df.copy()
+    df["PASAJEROS_REALES"] = (df["PASAJEROS"] - alarmas).clip(lower=0)
+    return df
+
+
 # ---------------------------------------------------------------------------
 # Fixtures y helpers
 # ---------------------------------------------------------------------------
@@ -28,13 +41,15 @@ CFG_60: dict = {
 def _make_df(n: int = 20, ruta: int = 1, start: str = "2024-04-16") -> pd.DataFrame:
     """Genera n despachos en intervalos de 10 minutos desde start."""
     rng = pd.date_range(start=start, periods=n, freq="10min")
-    return pd.DataFrame(
-        {
-            "PK_INTERVALO_DESPACHO": range(1, n + 1),
-            "HORA_INICIAL_REAL": rng,
-            "PASAJEROS": [20] * n,
-            "FK_RUTA": ruta,
-        }
+    return _con_reales(
+        pd.DataFrame(
+            {
+                "PK_INTERVALO_DESPACHO": range(1, n + 1),
+                "HORA_INICIAL_REAL": rng,
+                "PASAJEROS": [20] * n,
+                "FK_RUTA": ruta,
+            }
+        )
     )
 
 
@@ -42,13 +57,15 @@ def _make_df_days(n_days: int, ruta: int = 1, start: str = "2024-01-01") -> pd.D
     """Genera despachos cada 10 minutos durante n_days dias completos."""
     rng = pd.date_range(start=start, periods=n_days * 24 * 6, freq="10min")
     n = len(rng)
-    return pd.DataFrame(
-        {
-            "PK_INTERVALO_DESPACHO": range(1, n + 1),
-            "HORA_INICIAL_REAL": rng,
-            "PASAJEROS": [20] * n,
-            "FK_RUTA": ruta,
-        }
+    return _con_reales(
+        pd.DataFrame(
+            {
+                "PK_INTERVALO_DESPACHO": range(1, n + 1),
+                "HORA_INICIAL_REAL": rng,
+                "PASAJEROS": [20] * n,
+                "FK_RUTA": ruta,
+            }
+        )
     )
 
 
@@ -60,20 +77,22 @@ def _make_df_days(n_days: int, ruta: int = 1, start: str = "2024-01-01") -> pd.D
 class TestAgregacion:
     def test_despachos_count_por_bin(self):
         """despachos_count debe contar los despachos reales de cada bin horario."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1, 2, 3, 4],
-                "HORA_INICIAL_REAL": pd.to_datetime(
-                    [
-                        "2024-04-16 08:00",
-                        "2024-04-16 08:45",
-                        "2024-04-16 09:10",
-                        "2024-04-16 09:50",
-                    ]
-                ),
-                "PASAJEROS": [10, 20, 30, 40],
-                "FK_RUTA": [1, 1, 1, 1],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1, 2, 3, 4],
+                    "HORA_INICIAL_REAL": pd.to_datetime(
+                        [
+                            "2024-04-16 08:00",
+                            "2024-04-16 08:45",
+                            "2024-04-16 09:10",
+                            "2024-04-16 09:50",
+                        ]
+                    ),
+                    "PASAJEROS": [10, 20, 30, 40],
+                    "FK_RUTA": [1, 1, 1, 1],
+                }
+            )
         )
         builder = TimeSeriesBuilder(CFG_60)
         serie = builder.build(df, ruta=1)
@@ -89,13 +108,15 @@ class TestAgregacion:
 
     def test_pasajeros_total_es_suma(self):
         """pasajeros_total debe ser la suma de PASAJEROS en el bin."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1, 2],
-                "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 08:45"]),
-                "PASAJEROS": [10, 20],
-                "FK_RUTA": [1, 1],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1, 2],
+                    "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 08:45"]),
+                    "PASAJEROS": [10, 20],
+                    "FK_RUTA": [1, 1],
+                }
+            )
         )
         builder = TimeSeriesBuilder(CFG_60)
         serie = builder.build(df, ruta=1)
@@ -107,13 +128,15 @@ class TestAgregacion:
 
     def test_pasajeros_promedio_es_media(self):
         """pasajeros_promedio debe ser la media de PASAJEROS en el bin."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1, 2],
-                "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 08:30"]),
-                "PASAJEROS": [10.0, 30.0],
-                "FK_RUTA": [1, 1],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1, 2],
+                    "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 08:30"]),
+                    "PASAJEROS": [10.0, 30.0],
+                    "FK_RUTA": [1, 1],
+                }
+            )
         )
         builder = TimeSeriesBuilder(CFG_60)
         serie = builder.build(df, ruta=1)
@@ -126,13 +149,15 @@ class TestAgregacion:
     def test_ocupacion_p95_es_percentil(self):
         """ocupacion_p95 debe ser el percentil 95 de PASAJEROS en el bin."""
         pasajeros = list(range(1, 21))
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": range(1, 21),
-                "HORA_INICIAL_REAL": [pd.Timestamp("2024-04-16 08:00")] * 20,
-                "PASAJEROS": pasajeros,
-                "FK_RUTA": [1] * 20,
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": range(1, 21),
+                    "HORA_INICIAL_REAL": [pd.Timestamp("2024-04-16 08:00")] * 20,
+                    "PASAJEROS": pasajeros,
+                    "FK_RUTA": [1] * 20,
+                }
+            )
         )
         builder = TimeSeriesBuilder(CFG_60)
         serie = builder.build(df, ruta=1)
@@ -151,13 +176,15 @@ class TestAgregacion:
 class TestTipoDia:
     def test_laboral(self):
         """Martes no festivo = LABORAL."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1],
-                "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00"]),  # martes
-                "PASAJEROS": [10],
-                "FK_RUTA": [1],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1],
+                    "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00"]),  # martes
+                    "PASAJEROS": [10],
+                    "FK_RUTA": [1],
+                }
+            )
         )
         builder = TimeSeriesBuilder(CFG_60)
         serie = builder.build(df, ruta=1)
@@ -165,13 +192,15 @@ class TestTipoDia:
 
     def test_sabado(self):
         """Sabado no festivo = SABADO."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1],
-                "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-20 08:00"]),  # sabado
-                "PASAJEROS": [10],
-                "FK_RUTA": [1],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1],
+                    "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-20 08:00"]),  # sabado
+                    "PASAJEROS": [10],
+                    "FK_RUTA": [1],
+                }
+            )
         )
         builder = TimeSeriesBuilder(CFG_60)
         serie = builder.build(df, ruta=1)
@@ -179,13 +208,15 @@ class TestTipoDia:
 
     def test_domingo(self):
         """Domingo no festivo = DOMINGO."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1],
-                "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-21 08:00"]),  # domingo
-                "PASAJEROS": [10],
-                "FK_RUTA": [1],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1],
+                    "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-21 08:00"]),  # domingo
+                    "PASAJEROS": [10],
+                    "FK_RUTA": [1],
+                }
+            )
         )
         builder = TimeSeriesBuilder(CFG_60)
         serie = builder.build(df, ruta=1)
@@ -193,13 +224,15 @@ class TestTipoDia:
 
     def test_festivo_colombia_primero_enero(self):
         """1 de enero 2024 (lunes) es FESTIVO_PUENTE; es_festivo siempre True."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1],
-                "HORA_INICIAL_REAL": pd.to_datetime(["2024-01-01 08:00"]),
-                "PASAJEROS": [10],
-                "FK_RUTA": [1],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1],
+                    "HORA_INICIAL_REAL": pd.to_datetime(["2024-01-01 08:00"]),
+                    "PASAJEROS": [10],
+                    "FK_RUTA": [1],
+                }
+            )
         )
         builder = TimeSeriesBuilder(CFG_60)
         serie = builder.build(df, ruta=1)
@@ -209,13 +242,15 @@ class TestTipoDia:
 
     def test_dia_laboral_no_es_festivo(self):
         """Martes comun no debe marcarse como festivo."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1],
-                "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00"]),
-                "PASAJEROS": [10],
-                "FK_RUTA": [1],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1],
+                    "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00"]),
+                    "PASAJEROS": [10],
+                    "FK_RUTA": [1],
+                }
+            )
         )
         builder = TimeSeriesBuilder(CFG_60)
         serie = builder.build(df, ruta=1)
@@ -223,15 +258,17 @@ class TestTipoDia:
 
     def test_es_fin_semana_sabado_domingo(self):
         """es_fin_semana debe ser True solo para sabado y domingo."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1, 2, 3],
-                "HORA_INICIAL_REAL": pd.to_datetime(
-                    ["2024-04-16 08:00", "2024-04-20 08:00", "2024-04-21 08:00"]
-                ),
-                "PASAJEROS": [10, 10, 10],
-                "FK_RUTA": [1, 1, 1],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1, 2, 3],
+                    "HORA_INICIAL_REAL": pd.to_datetime(
+                        ["2024-04-16 08:00", "2024-04-20 08:00", "2024-04-21 08:00"]
+                    ),
+                    "PASAJEROS": [10, 10, 10],
+                    "FK_RUTA": [1, 1, 1],
+                }
+            )
         )
         builder = TimeSeriesBuilder(CFG_60)
         serie = builder.build(df, ruta=1)
@@ -254,13 +291,15 @@ class TestTipoDia:
 class TestGaps:
     def test_gap_imputado_con_cero(self):
         """Con imputacion_gaps=zero, franjas sin despachos tienen pasajeros_total=0."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1, 2],
-                "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 11:00"]),
-                "PASAJEROS": [10, 20],
-                "FK_RUTA": [1, 1],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1, 2],
+                    "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 11:00"]),
+                    "PASAJEROS": [10, 20],
+                    "FK_RUTA": [1, 1],
+                }
+            )
         )
         cfg = {**CFG_60, "imputacion_gaps": "zero"}
         builder = TimeSeriesBuilder(cfg)
@@ -273,13 +312,15 @@ class TestGaps:
 
     def test_gap_marcado_con_nan(self):
         """Con imputacion_gaps=mark, franjas sin despachos tienen NaN en objetivos."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1, 2],
-                "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 11:00"]),
-                "PASAJEROS": [10, 20],
-                "FK_RUTA": [1, 1],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1, 2],
+                    "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 11:00"]),
+                    "PASAJEROS": [10, 20],
+                    "FK_RUTA": [1, 1],
+                }
+            )
         )
         cfg = {**CFG_60, "imputacion_gaps": "mark"}
         builder = TimeSeriesBuilder(cfg)
@@ -301,13 +342,15 @@ class TestGaps:
 
     def test_gap_ffill_propaga_valor_anterior(self):
         """Con imputacion_gaps=ffill, la franja sin datos toma el valor anterior."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1, 2],
-                "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 10:00"]),
-                "PASAJEROS": [50, 30],
-                "FK_RUTA": [1, 1],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1, 2],
+                    "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 10:00"]),
+                    "PASAJEROS": [50, 30],
+                    "FK_RUTA": [1, 1],
+                }
+            )
         )
         cfg = {**CFG_60, "imputacion_gaps": "ffill"}
         builder = TimeSeriesBuilder(cfg)
@@ -326,13 +369,15 @@ class TestGaps:
 class TestRutasIndependientes:
     def test_rutas_no_mezclan_datos(self):
         """build(ruta=1) no debe incluir pasajeros de ruta=3."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1, 2],
-                "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 08:00"]),
-                "PASAJEROS": [10, 999],
-                "FK_RUTA": [1, 3],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1, 2],
+                    "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 08:00"]),
+                    "PASAJEROS": [10, 999],
+                    "FK_RUTA": [1, 3],
+                }
+            )
         )
         builder = TimeSeriesBuilder(CFG_60)
         serie = builder.build(df, ruta=1)
@@ -414,13 +459,15 @@ class TestValidator:
 
     def test_gaps_contabilizados_correctamente(self):
         """El reporte debe contar exactamente los gaps detectados."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1, 2],
-                "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 11:00"]),
-                "PASAJEROS": [10, 20],
-                "FK_RUTA": [1, 1],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1, 2],
+                    "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 11:00"]),
+                    "PASAJEROS": [10, 20],
+                    "FK_RUTA": [1, 1],
+                }
+            )
         )
         builder = TimeSeriesBuilder(CFG_60)
         serie = builder.build(df, ruta=1)
@@ -464,7 +511,7 @@ def _make_df_days_multi(n_days: int = 5) -> pd.DataFrame:
     """Genera datos para ambas rutas durante n_days dias completos."""
     df1 = _make_df_days(n_days, ruta=1)
     df3 = _make_df_days(n_days, ruta=3)
-    return pd.concat([df1, df3], ignore_index=True)
+    return _con_reales(pd.concat([df1, df3], ignore_index=True))
 
 
 class TestMultiGranularidad:
@@ -494,13 +541,15 @@ class TestMultiGranularidad:
 
     def test_gaps_crecen_al_reducir_granularidad(self):
         """Con datos dispersos, g15min tiene mas gaps que g60min."""
-        df = pd.DataFrame(
-            {
-                "PK_INTERVALO_DESPACHO": [1, 2],
-                "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 12:00"]),
-                "PASAJEROS": [10, 20],
-                "FK_RUTA": [1, 1],
-            }
+        df = _con_reales(
+            pd.DataFrame(
+                {
+                    "PK_INTERVALO_DESPACHO": [1, 2],
+                    "HORA_INICIAL_REAL": pd.to_datetime(["2024-04-16 08:00", "2024-04-16 12:00"]),
+                    "PASAJEROS": [10, 20],
+                    "FK_RUTA": [1, 1],
+                }
+            )
         )
         builder = TimeSeriesBuilder({"granularidades_min": [15, 60], "rutas": [1]})
         s15 = builder.build(df, ruta=1, granularidad_min=15)

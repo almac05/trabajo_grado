@@ -97,6 +97,7 @@ def missing_before_after(
         "HORA_INICIAL_REAL",
         "HORA_FINAL_REAL",
         "PASAJEROS",
+        "PASAJEROS_REALES",
         "DISTANCIA",
     ]
     rows = []

@@ -1,0 +1,74 @@
+{
+  "correccion": "sesgo_conteo_apc",
+  "timestamp_regeneracion": "20260823_203700",
+  "criterio_adoptado": "PASAJEROS_REALES = (PASAJEROS - ALARMAS).clip(lower=0); ALARMAS = eventos de puerta delantera/trasera (FK_ALARMA 5 y 6 en tbl_alarma_info_regis) contados erroneamente como abordajes por el dispositivo APC. Calculo ya presente en etl/transforms.py::run_block4, sin modificar. La correccion se propaga como columna objetivo via configs/features.yaml::columna_pasajeros y configs/modeling/targets.yaml::dataset_version/source_path.",
+  "fecha_corte_freeze": "2026-06-10 (sin cambios respecto al freeze anterior)",
+  "dataset_version_anterior": "freeze_20260610_192142",
+  "dataset_version_nuevo": "freeze_20260823_203700",
+  "verificacion_model_ready": {
+    "filas": 109559,
+    "filas_esperadas": 109559,
+    "pasajeros_crudo_diferente": 0,
+    "pasajeros_reales_diferente_de_crudo": 8938,
+    "pasajeros_reales_diferente_de_crudo_esperado": 8938,
+    "pasajeros_reales_en_cero": 3,
+    "pasajeros_reales_en_cero_esperado": 3
+  },
+  "efecto_global": {
+    "total_pasajeros_antes": 5100648,
+    "total_pasajeros_despues": 5067828,
+    "productividad_media_antes": 46.556,
+    "productividad_media_despues": 46.257,
+    "productividad_media_por_ruta": {
+      "ruta_1_antes": 44.442,
+      "ruta_1_despues": 44.171,
+      "ruta_3_antes": 48.567,
+      "ruta_3_despues": 48.240
+    }
+  },
+  "demanda_por_franja_30min": {
+    "ruta_1": {
+      "media_antes": 122.734, "mediana_antes": 123.0, "std_antes": 61.239,
+      "media_despues": 121.987, "mediana_despues": 123.0, "std_despues": 60.504
+    },
+    "ruta_3": {
+      "media_antes": 138.725, "mediana_antes": 134.0, "std_antes": 82.208,
+      "media_despues": 137.791, "mediana_despues": 133.0, "std_despues": 80.955
+    }
+  },
+  "distribucion_registros_afectados": {
+    "total_afectados": 8938,
+    "pct_del_total": 8.16,
+    "por_ruta_pct": {"ruta_1": 45.0, "ruta_3": 55.0},
+    "por_ruta_pct_base_total": {"ruta_1": 48.7, "ruta_3": 51.3},
+    "distribucion_mensual": "sin concentracion marcada: entre 6% y 12.2% de los despachos de cada mes en todo el periodo 2024-04 a 2026-06, sin meses atipicos",
+    "por_vehiculo": "63 de 67 placas presentan al menos un registro afectado; 3 placas (VCH318=759, VBY544=698, SRE698=649) concentran ~24% de los afectados, consistente con mayor exposicion/uso mas que con un fallo puntual de dispositivo",
+    "magnitud_alarmas_describe": {
+      "mean": 3.679, "std": 12.076, "min": 1, "p25": 1, "p50": 2, "p75": 4, "max": 874,
+      "nota": "el maximo de 874 es un valor atipico aislado; revisar si corresponde a un despacho con falla de dispositivo antes de usarlo como referencia tipica"
+    },
+    "en_periodo_de_prueba_2026_04_02_a_2026_06_10": {
+      "afectados": 511,
+      "total_registros_periodo": 7483,
+      "pct": 6.83
+    }
+  },
+  "artefactos_regenerados": [
+    "data/processed/model_ready/despachos_model_ready.parquet",
+    "data/processed/model_ready/despachos_model_ready.csv",
+    "data/processed/model_ready/despachos_model_ready_freeze_20260823_203700.parquet",
+    "data/processed/model_ready/despachos_model_ready_freeze_20260823_203700.csv",
+    "data/processed/modeling/time_series/ts_ruta1_g30min.parquet",
+    "data/processed/modeling/time_series/ts_ruta3_g30min.parquet",
+    "data/processed/modeling/modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet",
+    "data/processed/modeling/modeling_dataset_pasajeros_total_oferta_historica_rezagada_g30min.parquet",
+    "data/processed/modeling/modeling_dataset_pasajeros_por_despacho_productividad_por_despacho_g30min.parquet"
+  ],
+  "artefactos_desactualizados_pendientes_de_regeneracion": [
+    "data/processed/modeling/modeling_dataset_g30min.parquet (legacy single-target, no usado por los scripts de analisis actuales)",
+    "reports/tables/baseline/* (indicadores de linea base, ProductivityAnalyzer)",
+    "analisis/salidas/*_predicciones.csv de los seis metodos (naive, SARIMA, Prophet, XGBoost, LSTM/GRU/CNN-LSTM)",
+    "analisis/salidas/comparacion_metodos_clasicos.csv y metricas_completas_*.csv",
+    "reports/figures/modeling/* (figuras del capitulo de modelado)"
+  ]
+}

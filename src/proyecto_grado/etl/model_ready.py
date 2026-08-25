@@ -50,7 +50,7 @@ def run_block8() -> pd.DataFrame:
     for c in ["HORA_INICIAL_REAL", "HORA_FINAL_REAL", "HORA_FIN_ESTIMADA", "FECHA_INICIAL"]:
         if c in df.columns:
             df[c] = pd.to_datetime(df[c], errors="coerce")
-    for c in ["PASAJEROS", "DISTANCIA", "FK_RUTA"]:
+    for c in ["PASAJEROS", "PASAJEROS_REALES", "ALARMAS", "DISTANCIA", "FK_RUTA"]:
         if c in df.columns:
             df[c] = pd.to_numeric(df[c], errors="coerce")
 
@@ -86,7 +86,15 @@ def run_block8() -> pd.DataFrame:
         "HORA_INICIAL_REAL",
         "HORA_FIN_FINAL",
         "DURACION_MIN_FINAL",
+        # PASAJEROS es el conteo crudo del dispositivo APC: los eventos de
+        # apertura/cierre de puerta (FK_ALARMA 5/6 en tbl_alarma_info_regis)
+        # se registran como abordajes, inflando el conteo. ALARMAS captura esa
+        # magnitud y PASAJEROS_REALES = (PASAJEROS - ALARMAS).clip(lower=0) es
+        # la corrección (ver etl/transforms.py::run_block4). Se conservan
+        # ambas: PASAJEROS por trazabilidad, PASAJEROS_REALES como objetivo.
         "PASAJEROS",
+        "PASAJEROS_REALES",
+        "ALARMAS",
         "DISTANCIA",
         "RECORRIDO_COMPLETO",
         "FIN_TIPO",
