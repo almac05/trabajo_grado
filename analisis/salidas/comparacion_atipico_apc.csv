@@ -1,0 +1,75 @@
+seccion,registro,serie,orden,ruta,timestamp,tipo_dia,valor,unidad,detalle,fuente,estado
+fuentes,fuente_reconstruccion,,,,,,109559,despachos,"Conserva PASAJEROS; PASAJEROS_REALES y ALARMAS para el mismo universo; la unica diferencia entre series es la variable de conteo",data/processed/model_ready/despachos_model_ready_freeze_20260823_203700.parquet,seleccionada
+fuentes,serie_previa_directa,,,,,,43831,franjas,"Dataset version freeze_20260610_192142; 38931 valores observados; maximo 1082",data/processed/modeling/modeling_dataset_g30min.parquet,seleccionada_para_validacion
+fuentes,respaldo_visual,,,,,,0,archivos_tabulares,"Solo contiene figuras PNG",reports/figures_v1_sin_corregir/,descartada
+fuentes,respaldo_analisis,,,,,,0,existencia,"El directorio no existe",analisis/salidas_v1_sin_corregir/,descartada
+fuentes,respaldo_modelos,,,,,,0,series_completas,"Los parquet son predicciones desde 2024-10-15 y no contienen la serie completa",models/metadata/backups/,descartada
+fuentes,tablas_baseline_v1,,,,,,0,series_completas,"Tablas resumidas por franja horaria o indicador; sin serie completa por ruta y timestamp",reports/tables/baseline_v1_sin_corregir/,descartada
+fuentes,snapshot_previo,,,,,,109559,despachos,"Coincide con el snapshot vigente en PK_INTERVALO_DESPACHO; FK_RUTA; HORA_INICIAL_REAL; PASAJEROS y MODEL_READY_OK; carece de PASAJEROS_REALES y ALARMAS",data/processed/model_ready/despachos_model_ready_freeze_20260610_192142.parquet,apoyo
+fuentes,etapas_intermedias,,,,,,109720,filas,"Conservan ambos conteos pero anteceden a la seleccion model-ready",data/interim/,descartada
+fuentes,base_operativa,,,,,,0,consultas,"No fue necesario consultarla porque las fuentes locales permiten reconstruccion y validacion exactas",base_operativa_origen,no_consultada
+supuestos,granularidad,,,,,,30,minutos,"Floor de HORA_INICIAL_REAL y agregacion por ruta",src/proyecto_grado/features/time_series_builder.py,aplicado
+supuestos,rutas,,,,,,2,rutas,"Rutas incluidas: 1 y 3",configs/features.yaml,aplicado
+supuestos,universo,,,,,,109559,despachos,"Filtro MODEL_READY_OK=True y FK_RUTA en 1 y 3",src/proyecto_grado/modeling/dataset.py,aplicado
+supuestos,horario_operativo,,,,,,43831,franjas,"Se conserva exactamente el soporte ruta-timestamp vigente filtrado por dentro_horario_operativo=True",data/processed/modeling/modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet,aplicado
+supuestos,gaps,,,,,,4900,franjas,"Imputacion mark; estadisticos de demanda calculados sobre las 38931 franjas observadas",configs/features.yaml,aplicado
+validacion,reconstruccion_previa,,,,,,0,discrepancias,"Maxima diferencia absoluta: 0 en 38931 valores observados",data/processed/modeling/modeling_dataset_g30min.parquet,validada
+validacion,reconstruccion_corregida,,,,,,0,discrepancias,"Maxima diferencia absoluta: 0 en 38931 valores observados",data/processed/modeling/modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet,validada
+resumen,total_franjas,ambas,,,,,43831,franjas,"Incluye gaps",,observado
+resumen,franjas_observadas,ambas,,,,,38931,franjas,,,observado
+resumen,franjas_gap,ambas,,,,,4900,franjas,,,observado
+resumen,maximo,previa,,3,2024-05-31 12:30:00,LABORAL,1082,pasajeros,"despachos=5; productividad=216.4; alarmas=880",,observado
+resumen,maximo,corregida,,3,2026-04-22 06:00:00,LABORAL,519,pasajeros,"despachos=8; productividad=64.875; alarmas=6",,observado
+umbrales,superior_600,previa,,,,,1,franjas,,,observado
+umbrales,superior_600,corregida,,,,,0,franjas,,,observado
+umbrales,superior_800,previa,,,,,1,franjas,,,observado
+umbrales,superior_800,corregida,,,,,0,franjas,,,observado
+umbrales,superior_1000,previa,,,,,1,franjas,,,observado
+umbrales,superior_1000,corregida,,,,,0,franjas,,,observado
+percentiles,p50,ambas,,,,,50,percentil,"previa=128; corregida=127",,observado
+percentiles,p90,ambas,,,,,90,percentil,"previa=222; corregida=220",,observado
+percentiles,p95,ambas,,,,,95,percentil,"previa=258; corregida=256",,observado
+percentiles,p99,ambas,,,,,99,percentil,"previa=349.7; corregida=345",,observado
+percentiles,p99_9,ambas,,,,,99.9,percentil,"previa=431; corregida=421.07",,observado
+top_10,franja,previa,1,3,2024-05-31 12:30:00,LABORAL,1082,pasajeros,"despachos=5; productividad=216.4; alarmas=880",,observado
+top_10,franja,previa,2,3,2026-04-22 06:00:00,LABORAL,525,pasajeros,"despachos=8; productividad=65.625; alarmas=6",,observado
+top_10,franja,previa,3,3,2024-06-04 06:00:00,LABORAL,519,pasajeros,"despachos=8; productividad=64.875; alarmas=1",,observado
+top_10,franja,previa,4,3,2024-04-30 06:00:00,LABORAL,510,pasajeros,"despachos=7; productividad=72.857143; alarmas=0",,observado
+top_10,franja,previa,5,3,2024-08-27 05:30:00,LABORAL,508,pasajeros,"despachos=8; productividad=63.5; alarmas=2",,observado
+top_10,franja,previa,6,3,2024-11-12 05:30:00,LABORAL,491,pasajeros,"despachos=7; productividad=70.142857; alarmas=0",,observado
+top_10,franja,previa,7,3,2025-05-13 05:30:00,LABORAL,488,pasajeros,"despachos=6; productividad=81.333333; alarmas=140",,observado
+top_10,franja,previa,8,3,2024-05-16 06:00:00,LABORAL,472,pasajeros,"despachos=8; productividad=59; alarmas=5",,observado
+top_10,franja,previa,9,3,2025-03-19 05:30:00,LABORAL,471,pasajeros,"despachos=6; productividad=78.5; alarmas=26",,observado
+top_10,franja,previa,10,1,2024-08-28 15:00:00,LABORAL,469,pasajeros,"despachos=7; productividad=67; alarmas=5",,observado
+top_10,franja,corregida,1,3,2026-04-22 06:00:00,LABORAL,519,pasajeros,"despachos=8; productividad=64.875; alarmas=6",,observado
+top_10,franja,corregida,2,3,2024-06-04 06:00:00,LABORAL,518,pasajeros,"despachos=8; productividad=64.75; alarmas=1",,observado
+top_10,franja,corregida,3,3,2024-04-30 06:00:00,LABORAL,510,pasajeros,"despachos=7; productividad=72.857143; alarmas=0",,observado
+top_10,franja,corregida,4,3,2024-08-27 05:30:00,LABORAL,506,pasajeros,"despachos=8; productividad=63.25; alarmas=2",,observado
+top_10,franja,corregida,5,3,2024-11-12 05:30:00,LABORAL,491,pasajeros,"despachos=7; productividad=70.142857; alarmas=0",,observado
+top_10,franja,corregida,6,3,2024-05-14 06:00:00,LABORAL,467,pasajeros,"despachos=8; productividad=58.375; alarmas=0",,observado
+top_10,franja,corregida,7,3,2024-05-16 06:00:00,LABORAL,467,pasajeros,"despachos=8; productividad=58.375; alarmas=5",,observado
+top_10,franja,corregida,8,3,2025-03-14 06:00:00,LABORAL,467,pasajeros,"despachos=7; productividad=66.714286; alarmas=1",,observado
+top_10,franja,corregida,9,3,2025-06-24 05:30:00,LABORAL,467,pasajeros,"despachos=7; productividad=66.714286; alarmas=2",,observado
+top_10,franja,corregida,10,3,2025-03-04 06:00:00,LABORAL,466,pasajeros,"despachos=7; productividad=66.571429; alarmas=1",,observado
+mayores_1000,franja,comparacion,1,3,2024-05-31 12:30:00,LABORAL,1082,pasajeros_previo,"corregido=208; diferencia_abs=874; diferencia_rel_pct=80.77634; alarmas=880; despachos=5; productividad_previa=216.4; productividad_corregida=41.6",,explicada_por_correccion
+detalle_atipico,despacho,comparacion,1,,2024-05-31 12:31:13,,868,pasajeros_previo,"PK_INTERVALO_DESPACHO=252998; corregido=0; diferencia=868; alarmas=874",,observado
+detalle_atipico,despacho,comparacion,2,,2024-05-31 12:37:25,,65,pasajeros_previo,"PK_INTERVALO_DESPACHO=253001; corregido=65; diferencia=0; alarmas=0",,observado
+detalle_atipico,despacho,comparacion,3,,2024-05-31 12:43:14,,43,pasajeros_previo,"PK_INTERVALO_DESPACHO=253002; corregido=43; diferencia=0; alarmas=0",,observado
+detalle_atipico,despacho,comparacion,4,,2024-05-31 12:48:59,,56,pasajeros_previo,"PK_INTERVALO_DESPACHO=253004; corregido=56; diferencia=0; alarmas=0",,observado
+detalle_atipico,despacho,comparacion,5,,2024-05-31 12:54:28,,50,pasajeros_previo,"PK_INTERVALO_DESPACHO=253007; corregido=44; diferencia=6; alarmas=6",,observado
+consistencia,franjas_cambiadas,,,,,,7465,franjas,,,coherente
+consistencia,proporcion_franjas_observadas,,,,,,19.174951,porcentaje,"7465 de 38931 franjas observadas",,coherente
+consistencia,proporcion_franjas_dataset,,,,,,17.031325,porcentaje,"7465 de 43831 filas incluidas las 4900 franjas gap",,coherente
+consistencia,diferencia_todas_mediana,,,,,,0,pasajeros_por_franja,,,coherente
+consistencia,diferencia_todas_media,,,,,,0.842670,pasajeros_por_franja,,,coherente
+consistencia,diferencia_todas_maximo,,,,,,874,pasajeros_por_franja,,,coherente
+consistencia,diferencia_todas_suma,,,,,,32806,pasajeros,,,coherente
+consistencia,diferencia_afectadas_mediana,,,,,,2,pasajeros_por_franja,,,coherente
+consistencia,diferencia_afectadas_media,,,,,,4.394642,pasajeros_por_franja,,,coherente
+consistencia,despachos_afectados,,,,,,8938,despachos,"Universo: 109559 despachos validos",,coherente
+consistencia,proporcion_despachos_afectados,,,,,,8.158161,porcentaje,"Coincide con la caracterizacion declarada de 8.16%",,coherente
+consistencia,diferencia_despachos_mediana,,,,,,2,pasajeros_por_despacho,"Calculada entre los 8938 despachos afectados; coincide con la mediana declarada",,coherente
+consistencia,diferencia_despachos_media,,,,,,3.671962,pasajeros_por_despacho,,,coherente
+consistencia,diferencia_despachos_maximo,,,,,,868,pasajeros_por_despacho,,,coherente
+consistencia,alarmas_agregadas_observadas,,,,,,32872,alarmas,,,coherente
+consistencia,exceso_alarmas_por_clip,,,,,,66,alarmas,"PASAJEROS_REALES aplica clip inferior a cero despacho a despacho; por ello la reduccion total es 32806",,coherente

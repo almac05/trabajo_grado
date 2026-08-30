@@ -13,15 +13,15 @@ dia anterior todos sus registros estan disponibles, mientras que los de las
 franjas recientes no.
 
 Uso:
-    python analisis/08_sarima_multiples_dias.py
+    python scripts/run_sarima_comparative_evaluation.py
 """
 
 import time
 import warnings
-from pathlib import Path
-
 import pandas as pd
 from statsmodels.tsa.statespace.sarimax import SARIMAX
+
+from proyecto_grado.modeling.evaluation_config import cargar_configuracion_evaluacion
 
 # statsmodels avisa de no convergencia con ordenes estacionales largos; el
 # aviso es esperado y no invalida la prediccion.
@@ -32,21 +32,23 @@ warnings.filterwarnings("ignore", message=".*convergence.*")
 # 1. Configuracion
 # ---------------------------------------------------------------
 
-PARQUET = "data/processed/modeling/modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet"
-SALIDA = Path("analisis/salidas")
+CONFIG = cargar_configuracion_evaluacion()
+METODO = CONFIG.metodo("SARIMA")
+PARQUET = CONFIG.ruta_dataset
+SALIDA = CONFIG.directorio_salida
 
-RUTAS = (1, 3)
-TARGET = "pasajeros_total"
+RUTAS = CONFIG.rutas
+TARGET = CONFIG.objetivo
 
 # Conjunto de prueba: ultimas 10 semanas del dataset.
-INICIO_TEST = pd.Timestamp("2026-04-02")
-FIN_TEST = pd.Timestamp("2026-06-10")
+INICIO_TEST = pd.Timestamp(CONFIG.inicio)
+FIN_TEST = pd.Timestamp(CONFIG.fin)
 
-SEMANAS_ENTRENAMIENTO = 26
+SEMANAS_ENTRENAMIENTO = METODO.semanas_entrenamiento
 
 
-PASO_MUESTREO = 1   # todas las jornadas del test, no una de cada tres
-MIN_FRANJAS = 8     # domingos y festivos operan jornadas mas cortas
+PASO_MUESTREO = CONFIG.paso_muestreo  # todas las jornadas del test
+MIN_FRANJAS = CONFIG.min_franjas      # domingos y festivos son mas cortos
 
 # Ordenes no estacionales (p, d, q):
 #   p=2  la PACF cae abruptamente tras el rezago 2
@@ -174,8 +176,8 @@ r = pd.DataFrame(resumen)
 p = pd.concat(predicciones, ignore_index=True)
 
 SALIDA.mkdir(parents=True, exist_ok=True)
-r.to_csv(SALIDA / "sarima_multiples_dias.csv", index=False)
-p.to_csv(SALIDA / "sarima_predicciones.csv", index=False)
+r.to_csv(METODO.artefacto_resumen, index=False)
+p.to_csv(METODO.artefacto_predicciones, index=False)
 
 print("\n" + "=" * 60)
 print("RESUMEN POR RUTA")

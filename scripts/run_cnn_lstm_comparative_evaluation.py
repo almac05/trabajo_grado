@@ -13,32 +13,36 @@ identificada para las arquitecturas recurrentes-- reentrenamiento diario y las
 mismas jornadas de evaluacion.
 
 Uso:
-    python analisis/20_cnn_lstm_multiples_dias.py
+    python scripts/run_cnn_lstm_comparative_evaluation.py
 """
 
 import time
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import torch
 from torch import nn
 
+from proyecto_grado.modeling.evaluation_config import cargar_configuracion_evaluacion
+
 # ---------------------------------------------------------------
 # 1. Configuracion
 # ---------------------------------------------------------------
 
-PARQUET = "data/processed/modeling/modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet"
-SALIDA = Path("analisis/salidas")
+CONFIG = cargar_configuracion_evaluacion()
+METODO = CONFIG.metodo("CNN-LSTM")
+PARQUET = CONFIG.ruta_dataset
+SALIDA = CONFIG.directorio_salida
 
-RUTAS = (1, 3)
-TARGET = "pasajeros_total"
+RUTAS = CONFIG.rutas
+TARGET = CONFIG.objetivo
 
-INICIO_TEST = pd.Timestamp("2026-04-02")
-FIN_TEST = pd.Timestamp("2026-06-10")
-SEMANAS_ENTRENAMIENTO = 52
-PARADA_SEMANAS = 2
-MIN_FRANJAS = 8
+INICIO_TEST = pd.Timestamp(CONFIG.inicio)
+FIN_TEST = pd.Timestamp(CONFIG.fin)
+SEMANAS_ENTRENAMIENTO = METODO.semanas_entrenamiento
+PARADA_SEMANAS = METODO.semanas_parada_temprana
+MIN_FRANJAS = CONFIG.min_franjas
+if PARADA_SEMANAS is None:
+    raise ValueError("CNN-LSTM requiere semanas de parada temprana configuradas.")
 
 PASOS = 28
 CALENDARIO = ["dia_semana", "es_fin_semana", "es_festivo",
@@ -53,8 +57,6 @@ LR = 0.001
 SEMILLA = 42
 
 DISPOSITIVO = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-TIPOS_RAROS = ["FESTIVO", "FESTIVO_PUENTE"]
-
 print(f"Dispositivo: {DISPOSITIVO}")
 
 # ---------------------------------------------------------------
@@ -166,7 +168,7 @@ for ruta in RUTAS:
     dias = sorted(
         dia for dia, n in conteo.items()
         if INICIO_TEST.date() <= dia <= FIN_TEST.date() and n >= MIN_FRANJAS
-    )
+    )[::CONFIG.paso_muestreo]
 
     print(f"\n{'=' * 60}")
     print(f"Ruta {ruta}: {len(dias)} jornadas")
@@ -300,8 +302,8 @@ r = pd.DataFrame(resumen)
 p = pd.concat(predicciones, ignore_index=True)
 
 SALIDA.mkdir(parents=True, exist_ok=True)
-r.to_csv(SALIDA / "cnn_lstm_multiples_dias.csv", index=False)
-p.to_csv(SALIDA / "cnn_lstm_predicciones.csv", index=False)
+r.to_csv(METODO.artefacto_resumen, index=False)
+p.to_csv(METODO.artefacto_predicciones, index=False)
 
 print("\n" + "=" * 70)
 print("RESUMEN POR RUTA")

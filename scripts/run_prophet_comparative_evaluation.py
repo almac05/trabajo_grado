@@ -13,16 +13,16 @@ jornada completa-- de modo que los resultados de ambos metodos y del predictor
 de referencia son directamente comparables.
 
 Uso:
-    python analisis/10_prophet_multiples_dias.py
+    python scripts/run_prophet_comparative_evaluation.py
 """
 
 import logging
 import time
 import warnings
-from pathlib import Path
-
 import pandas as pd
 from prophet import Prophet
+
+from proyecto_grado.modeling.evaluation_config import cargar_configuracion_evaluacion
 
 # Prophet y su motor de inferencia emiten mensajes por cada ajuste; con varias
 # decenas de modelos la consola quedaria ilegible.
@@ -34,21 +34,23 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 # 1. Configuracion
 # ---------------------------------------------------------------
 
-PARQUET = "data/processed/modeling/modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet"
-SALIDA = Path("analisis/salidas")
+CONFIG = cargar_configuracion_evaluacion()
+METODO = CONFIG.metodo("Prophet")
+PARQUET = CONFIG.ruta_dataset
+SALIDA = CONFIG.directorio_salida
 
-RUTAS = (1, 3)
-TARGET = "pasajeros_total"
+RUTAS = CONFIG.rutas
+TARGET = CONFIG.objetivo
 
 # Mismos parametros que la evaluacion de SARIMA, para que la muestra de
 # jornadas resultante sea identica.
-INICIO_TEST = pd.Timestamp("2026-04-02")
-FIN_TEST = pd.Timestamp("2026-06-10")
-SEMANAS_ENTRENAMIENTO = 26
-PASO_MUESTREO = 1   # todas las jornadas del test, no una de cada tres
-MIN_FRANJAS = 8     # domingos y festivos operan jornadas mas cortas
+INICIO_TEST = pd.Timestamp(CONFIG.inicio)
+FIN_TEST = pd.Timestamp(CONFIG.fin)
+SEMANAS_ENTRENAMIENTO = METODO.semanas_entrenamiento
+PASO_MUESTREO = CONFIG.paso_muestreo  # todas las jornadas del test
+MIN_FRANJAS = CONFIG.min_franjas      # domingos y festivos son mas cortos
 
-TIPOS_FESTIVOS = ("FESTIVO", "FESTIVO_PUENTE")
+TIPOS_FESTIVOS = CONFIG.tipos_baja_frecuencia
 
 # ---------------------------------------------------------------
 # 2. Evaluacion
@@ -175,8 +177,8 @@ r = pd.DataFrame(resumen)
 p = pd.concat(predicciones, ignore_index=True)
 
 SALIDA.mkdir(parents=True, exist_ok=True)
-r.to_csv(SALIDA / "prophet_multiples_dias.csv", index=False)
-p.to_csv(SALIDA / "prophet_predicciones.csv", index=False)
+r.to_csv(METODO.artefacto_resumen, index=False)
+p.to_csv(METODO.artefacto_predicciones, index=False)
 
 print("\n" + "=" * 60)
 print("RESUMEN POR RUTA")

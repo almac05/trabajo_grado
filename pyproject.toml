@@ -73,7 +73,17 @@ packages = ["src/proyecto_grado"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-extend-exclude = ["notebooks", "data", "reports", "backups", "revision_modelado", "analisis"]
+# Los seis scripts de evaluacion comparativa se excluyen del linting: su valor
+# reside en reproducir exactamente los artefactos ya verificados, por lo que no
+# deben reformatearse. Estaban excluidos mientras vivian en analisis/ y
+# conservan ese tratamiento tras el traslado a scripts/.
+extend-exclude = ["notebooks", "data", "reports", "backups", "revision_modelado", "analisis",
+                  "scripts/run_sarima_comparative_evaluation.py",
+                  "scripts/run_prophet_comparative_evaluation.py",
+                  "scripts/run_xgboost_comparative_evaluation.py",
+                  "scripts/run_lstm_comparative_evaluation.py",
+                  "scripts/run_gru_comparative_evaluation.py",
+                  "scripts/run_cnn_lstm_comparative_evaluation.py"]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "RUF"]

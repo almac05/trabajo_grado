@@ -8,32 +8,35 @@ semanas, lo que no permitia contrastarlo con los metodos que reentrenan a
 diario.
 
 Uso:
-    python analisis/12_xgboost_multiples_dias.py
+    python scripts/run_xgboost_comparative_evaluation.py
 """
 
 import time
-from pathlib import Path
-
 import pandas as pd
 
+from proyecto_grado.modeling.evaluation_config import cargar_configuracion_evaluacion
 from proyecto_grado.modeling.experimentos import (
     PARAMS_XGB,
     seleccionar_features,
 )
 import xgboost as xgb
 
-PARQUET = "data/processed/modeling/modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet"
-SALIDA = Path("analisis/salidas")
+CONFIG = cargar_configuracion_evaluacion()
+METODO = CONFIG.metodo("XGBoost")
+PARQUET = CONFIG.ruta_dataset
+SALIDA = CONFIG.directorio_salida
 
-RUTAS = (1, 3)
-TARGET = "pasajeros_total"
+RUTAS = CONFIG.rutas
+TARGET = CONFIG.objetivo
 
-INICIO_TEST = pd.Timestamp("2026-04-02")
-FIN_TEST = pd.Timestamp("2026-06-10")
-SEMANAS_ENTRENAMIENTO = 26
-PARADA_SEMANAS = 2
-PASO_MUESTREO = 1
-MIN_FRANJAS = 8
+INICIO_TEST = pd.Timestamp(CONFIG.inicio)
+FIN_TEST = pd.Timestamp(CONFIG.fin)
+SEMANAS_ENTRENAMIENTO = METODO.semanas_entrenamiento
+PARADA_SEMANAS = METODO.semanas_parada_temprana
+PASO_MUESTREO = CONFIG.paso_muestreo
+MIN_FRANJAS = CONFIG.min_franjas
+if PARADA_SEMANAS is None:
+    raise ValueError("XGBoost requiere semanas de parada temprana configuradas.")
 
 df = pd.read_parquet(PARQUET)
 resumen, predicciones = [], []
@@ -121,8 +124,8 @@ r = pd.DataFrame(resumen)
 p = pd.concat(predicciones, ignore_index=True)
 
 SALIDA.mkdir(parents=True, exist_ok=True)
-r.to_csv(SALIDA / "xgboost_multiples_dias.csv", index=False)
-p.to_csv(SALIDA / "xgboost_predicciones.csv", index=False)
+r.to_csv(METODO.artefacto_resumen, index=False)
+p.to_csv(METODO.artefacto_predicciones, index=False)
 
 print("\n" + "=" * 60)
 print("RESUMEN POR RUTA")

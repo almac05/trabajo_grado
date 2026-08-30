@@ -1,0 +1,93 @@
+# Configuracion canonica del flujo comparativo sobre artefactos existentes.
+dataset_version: freeze_20260823_203700
+
+dataset:
+  escenario_utilizado: sin_oferta
+  rutas_por_escenario:
+    sin_oferta: data/processed/modeling/modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet
+
+evaluacion:
+  periodo:
+    inicio: 2026-04-02
+    fin: 2026-06-10
+    extremos_inclusivos: true
+  paso_muestreo: 1
+  min_franjas: 8
+  rutas: [1, 3]
+  objetivo: pasajeros_total
+  tipos_baja_frecuencia: [FESTIVO, FESTIVO_PUENTE]
+  umbral_mape: 10
+
+# La asimetria es deliberada y documenta el protocolo efectivo vigente:
+# los metodos clasicos usan 26 semanas y las redes neuronales usan 52.
+# No debe interpretarse como una invitacion a unificar las ventanas.
+metodos_obligatorios:
+  SARIMA:
+    identificador: sarima
+    columna_prediccion: pred_sarima
+    artefacto_predicciones: analisis/salidas/predicciones__sarima__freeze_20260823_203700.csv
+    artefacto_resumen: analisis/salidas/resumen__sarima__freeze_20260823_203700.csv
+    artefacto_original: analisis/salidas/sarima_predicciones.csv
+    semanas_entrenamiento: 26
+    semanas_parada_temprana: null
+  Prophet:
+    identificador: prophet
+    columna_prediccion: pred_prophet
+    artefacto_predicciones: analisis/salidas/predicciones__prophet__freeze_20260823_203700.csv
+    artefacto_resumen: analisis/salidas/resumen__prophet__freeze_20260823_203700.csv
+    artefacto_original: analisis/salidas/prophet_predicciones.csv
+    semanas_entrenamiento: 26
+    semanas_parada_temprana: null
+  XGBoost:
+    identificador: xgboost
+    columna_prediccion: pred_xgboost
+    artefacto_predicciones: analisis/salidas/predicciones__xgboost__freeze_20260823_203700.csv
+    artefacto_resumen: analisis/salidas/resumen__xgboost__freeze_20260823_203700.csv
+    artefacto_original: analisis/salidas/xgboost_predicciones.csv
+    semanas_entrenamiento: 26
+    semanas_parada_temprana: 2
+  LSTM:
+    identificador: lstm
+    columna_prediccion: pred_lstm
+    artefacto_predicciones: analisis/salidas/predicciones__lstm__freeze_20260823_203700.csv
+    artefacto_resumen: analisis/salidas/resumen__lstm__freeze_20260823_203700.csv
+    artefacto_original: analisis/salidas/lstm_predicciones_52s.csv
+    semanas_entrenamiento: 52
+    semanas_parada_temprana: 2
+  GRU:
+    identificador: gru
+    columna_prediccion: pred_gru
+    artefacto_predicciones: analisis/salidas/predicciones__gru__freeze_20260823_203700.csv
+    artefacto_resumen: analisis/salidas/resumen__gru__freeze_20260823_203700.csv
+    artefacto_original: analisis/salidas/gru_predicciones_52s.csv
+    semanas_entrenamiento: 52
+    semanas_parada_temprana: 2
+  CNN-LSTM:
+    identificador: cnn_lstm
+    columna_prediccion: pred_cnn_lstm
+    artefacto_predicciones: analisis/salidas/predicciones__cnn_lstm__freeze_20260823_203700.csv
+    artefacto_resumen: analisis/salidas/resumen__cnn_lstm__freeze_20260823_203700.csv
+    artefacto_original: analisis/salidas/cnn_lstm_predicciones.csv
+    semanas_entrenamiento: 52
+    semanas_parada_temprana: 2
+
+referencias:
+  Referencia (26s):
+    metodo_fuente: xgboost
+    columna_prediccion: pred_media
+    artefacto: analisis/salidas/predicciones__xgboost__freeze_20260823_203700.csv
+    artefacto_original: analisis/salidas/xgboost_predicciones.csv
+    ventana_semanas: 26
+  Referencia (52s):
+    metodo_fuente: gru
+    columna_prediccion: pred_media
+    artefacto: analisis/salidas/predicciones__gru__freeze_20260823_203700.csv
+    artefacto_original: analisis/salidas/gru_predicciones_52s.csv
+    ventana_semanas: 52
+
+salidas:
+  directorio: analisis/salidas
+  registro_fechas_originales: analisis/salidas/referencia_fechas_artefactos_pre_consolidacion.csv
+  jornadas_pre_consolidacion: analisis/salidas/referencia_jornadas_pre_consolidacion.csv
+  metricas_pre_consolidacion: analisis/salidas/referencia_metricas_pre_consolidacion.csv
+  manifiesto: analisis/salidas/manifiesto__comparacion_modelos__freeze_20260823_203700.csv

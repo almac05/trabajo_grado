@@ -1,0 +1,12 @@
+artefacto,fecha_modificacion_original_utc,fecha_modificacion_original_ns
+analisis/salidas/cnn_lstm_predicciones.csv,2026-08-26T14:59:02.030059+00:00,1787756342030059000
+analisis/salidas/gru_predicciones_52s.csv,2026-08-26T14:51:49.345581+00:00,1787755909345581300
+analisis/salidas/lstm_decoder_compartido_predicciones.csv,2026-08-23T16:09:01.969199+00:00,1787501341969199300
+analisis/salidas/lstm_grilla_horaria_predicciones.csv,2026-08-23T15:50:37.835926+00:00,1787500237835925500
+analisis/salidas/lstm_predicciones.csv,2026-08-20T16:04:53.104971+00:00,1787241893104971500
+analisis/salidas/lstm_predicciones_52s.csv,2026-08-26T14:42:54.826288+00:00,1787755374826287500
+analisis/salidas/lstm_predicciones_semanal_52s.csv,2026-08-20T17:29:14.085445+00:00,1787246954085445100
+analisis/salidas/prophet_predicciones.csv,2026-08-26T13:35:36.322994+00:00,1787751336322994300
+analisis/salidas/sarima_predicciones.csv,2026-08-26T15:22:02.703625+00:00,1787757722703625400
+analisis/salidas/test_final_predicciones.csv,2026-08-07T21:49:14.139074+00:00,1786139354139074400
+analisis/salidas/xgboost_predicciones.csv,2026-08-26T13:31:32.085726+00:00,1787751092085726400

@@ -1,8 +1,8 @@
-"""Evaluacion de GRU sobre el conjunto de prueba, con reentrenamiento diario.
+"""Evaluacion de LSTM sobre el conjunto de prueba, con reentrenamiento diario.
 
-Replica el protocolo empleado con SARIMA, Prophet y XGBoost: horizonte de una
-jornada completa, ventana de veintiseis semanas, reentrenamiento en cada
-jornada y las mismas ciento treinta y siete jornadas de evaluacion.
+Replica el protocolo empleado con los demas metodos: horizonte de una jornada
+completa, ventana efectiva de cincuenta y dos semanas, reentrenamiento en
+cada jornada y ciento treinta y cuatro jornadas de evaluacion.
 
 Diseno de entrada. Una red recurrente espera secuencias. La restriccion de
 consolidacion impide emplear las franjas inmediatamente anteriores, de modo
@@ -18,32 +18,36 @@ de las observadas, de modo que la red pueda diferenciarlas. Las posiciones
 rellenadas se excluyen del calculo de la perdida y de las metricas.
 
 Uso:
-    python analisis/19_gru_multiples_dias.py
+    python scripts/run_lstm_comparative_evaluation.py
 """
 
 import time
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import torch
 from torch import nn
 
+from proyecto_grado.modeling.evaluation_config import cargar_configuracion_evaluacion
+
 # ---------------------------------------------------------------
 # 1. Configuracion
 # ---------------------------------------------------------------
 
-PARQUET = "data/processed/modeling/modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet"
-SALIDA = Path("analisis/salidas")
+CONFIG = cargar_configuracion_evaluacion()
+METODO = CONFIG.metodo("LSTM")
+PARQUET = CONFIG.ruta_dataset
+SALIDA = CONFIG.directorio_salida
 
-RUTAS = (1, 3)
-TARGET = "pasajeros_total"
+RUTAS = CONFIG.rutas
+TARGET = CONFIG.objetivo
 
-INICIO_TEST = pd.Timestamp("2026-04-02")
-FIN_TEST = pd.Timestamp("2026-06-10")
-SEMANAS_ENTRENAMIENTO = 52
-PARADA_SEMANAS = 2
-MIN_FRANJAS = 8
+INICIO_TEST = pd.Timestamp(CONFIG.inicio)
+FIN_TEST = pd.Timestamp(CONFIG.fin)
+SEMANAS_ENTRENAMIENTO = METODO.semanas_entrenamiento
+PARADA_SEMANAS = METODO.semanas_parada_temprana
+MIN_FRANJAS = CONFIG.min_franjas
+if PARADA_SEMANAS is None:
+    raise ValueError("LSTM requiere semanas de parada temprana configuradas.")
 
 PASOS = 28                      # franjas de una jornada operativa completa
 CALENDARIO = ["dia_semana", "es_fin_semana", "es_festivo",
@@ -56,8 +60,6 @@ LR = 0.001
 SEMILLA = 42
 
 DISPOSITIVO = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-TIPOS_RAROS = ["FESTIVO", "FESTIVO_PUENTE"]
-
 print(f"Dispositivo: {DISPOSITIVO}")
 
 # ---------------------------------------------------------------
@@ -112,7 +114,7 @@ def construir_ejemplos(datos: pd.DataFrame) -> tuple:
 # ---------------------------------------------------------------
 
 
-class RedGRU(nn.Module):
+class RedLSTM(nn.Module):
     """Predice una jornada completa a partir de la anterior.
 
     La capa recurrente recibe dos canales por paso: la demanda observada y un
@@ -123,7 +125,7 @@ class RedGRU(nn.Module):
 
     def __init__(self, n_calendario: int, unidades: int = UNIDADES):
         super().__init__()
-        self.gru = nn.GRU(input_size=2, hidden_size=unidades, batch_first=True)
+        self.lstm = nn.LSTM(input_size=2, hidden_size=unidades, batch_first=True)
         self.salida = nn.Sequential(
             nn.Linear(unidades + n_calendario, unidades),
             nn.ReLU(),
@@ -132,7 +134,7 @@ class RedGRU(nn.Module):
 
     def forward(self, seq, msk, cal):
         entrada = torch.stack([seq, msk], dim=-1)
-        _, estado = self.gru(entrada)
+        _, (estado, _) = self.lstm(entrada)
         return self.salida(torch.cat([estado[-1], cal], dim=1))
 
 
@@ -163,7 +165,7 @@ for ruta in RUTAS:
     dias = sorted(
         dia for dia, n in conteo.items()
         if INICIO_TEST.date() <= dia <= FIN_TEST.date() and n >= MIN_FRANJAS
-    )
+    )[::CONFIG.paso_muestreo]
 
     print(f"\n{'=' * 60}")
     print(f"Ruta {ruta}: {len(dias)} jornadas")
@@ -200,7 +202,7 @@ for ruta in RUTAS:
             return torch.tensor(v, dtype=torch.float32, device=DISPOSITIVO)
 
         torch.manual_seed(SEMILLA)
-        modelo = RedGRU(n_calendario=len(CALENDARIO)).to(DISPOSITIVO)
+        modelo = RedLSTM(n_calendario=len(CALENDARIO)).to(DISPOSITIVO)
         optimizador = torch.optim.Adam(modelo.parameters(), lr=LR)
 
         ta = (t(xs_a, True), t(xm_a), t(xc_a), t(y_a, True), t(ym_a))
@@ -265,9 +267,9 @@ for ruta in RUTAS:
         resumen.append({
             "route": ruta, "dia_op": dia, "tipo_dia": tipo, "n": n,
             "demanda_media": real.mean(),
-            "mae_gru": np.abs(error).mean(),
-            "sesgo_gru": error.mean(),
-            "rango_pred_gru": pred.max() - pred.min(),
+            "mae_lstm": np.abs(error).mean(),
+            "sesgo_lstm": error.mean(),
+            "rango_pred_lstm": pred.max() - pred.min(),
             "rango_real": real.max() - real.min(),
             "mae_media": np.abs(err_media).mean(),
             "sesgo_media": err_media.mean(),
@@ -280,11 +282,11 @@ for ruta in RUTAS:
         predicciones.append(pd.DataFrame({
             "route": ruta, "dia_op": dia, "tipo_dia": tipo,
             "hora": test["hora"].to_numpy()[:n], "real": real,
-            "pred_gru": pred, "pred_media": pred_media,
+            "pred_lstm": pred, "pred_media": pred_media,
         }))
 
         print(f"  [{i:3d}/{len(dias)}] {dia} {tipo:14s} "
-              f"MAE GRU {np.abs(error).mean():6.2f} | "
+              f"MAE LSTM {np.abs(error).mean():6.2f} | "
               f"media {np.abs(err_media).mean():6.2f} | "
               f"{epoca + 1:4d} ep | {segundos:4.1f}s")
 
@@ -298,11 +300,8 @@ r = pd.DataFrame(resumen)
 p = pd.concat(predicciones, ignore_index=True)
 
 SALIDA.mkdir(parents=True, exist_ok=True)
-#r.to_csv(SALIDA / "lstm_multiples_dias.csv", index=False)
-#p.to_csv(SALIDA / "lstm_predicciones.csv", index=False)
-
-r.to_csv(SALIDA / f"gru_multiples_dias_{SEMANAS_ENTRENAMIENTO}s.csv", index=False)
-p.to_csv(SALIDA / f"gru_predicciones_{SEMANAS_ENTRENAMIENTO}s.csv", index=False)
+r.to_csv(METODO.artefacto_resumen, index=False)
+p.to_csv(METODO.artefacto_predicciones, index=False)
 
 print("\n" + "=" * 70)
 print("RESUMEN POR RUTA")
@@ -311,8 +310,8 @@ print(
     .agg(
         jornadas=("dia_op", "count"),
         demanda_media=("demanda_media", "mean"),
-        mae_gru=("mae_gru", "mean"),
-        sesgo_gru=("sesgo_gru", "mean"),
+        mae_lstm=("mae_lstm", "mean"),
+        sesgo_lstm=("sesgo_lstm", "mean"),
         mae_media=("mae_media", "mean"),
         sesgo_media=("sesgo_media", "mean"),
         epocas=("epocas", "mean"),
@@ -328,7 +327,7 @@ print(
     .agg(
         jornadas=("dia_op", "count"),
         demanda_media=("demanda_media", "mean"),
-        mae_gru=("mae_gru", "mean"),
+        mae_lstm=("mae_lstm", "mean"),
         mae_media=("mae_media", "mean"),
     )
     .round(2)
@@ -336,10 +335,10 @@ print(
 )
 
 print("\nAMPLITUD DE LA PREDICCION FRENTE A LA OBSERVADA")
-amp = r.groupby("route")[["rango_pred_gru", "rango_real"]].mean().round(1)
-amp["proporcion"] = (amp["rango_pred_gru"] / amp["rango_real"]).round(3)
+amp = r.groupby("route")[["rango_pred_lstm", "rango_real"]].mean().round(1)
+amp["proporcion"] = (amp["rango_pred_lstm"] / amp["rango_real"]).round(3)
 print(amp.to_string())
 
-print(f"\nGRU supera a la referencia en "
-      f"{(r['mae_gru'] < r['mae_media']).sum()} de {len(r)} jornadas")
+print(f"\nLSTM supera a la referencia en "
+      f"{(r['mae_lstm'] < r['mae_media']).sum()} de {len(r)} jornadas")
 print(f"\nDetalle guardado en {SALIDA}")
