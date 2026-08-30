@@ -150,8 +150,8 @@ class ProductivityAnalyzer:
                     "tendencia_slope_mensual_est": params["slope_mensual_estimado"],
                     "primera_semana_estimada": round(ajustada["tendencia_ols"].iloc[0], 2),
                     "ultima_semana_estimada": round(ajustada["tendencia_ols"].iloc[-1], 2),
-                    "caida_total_periodo": round(
-                        ajustada["tendencia_ols"].iloc[0] - ajustada["tendencia_ols"].iloc[-1], 2
+                    "variacion_total_periodo": round(
+                        ajustada["tendencia_ols"].iloc[-1] - ajustada["tendencia_ols"].iloc[0], 2
                     ),
                 }
             )
@@ -201,7 +201,7 @@ class ProductivityAnalyzer:
                 f"    Slope mensual (≈)           : {row['tendencia_slope_mensual_est']} pas/mes",
                 f"    Valor estimado 1ª semana    : {row['primera_semana_estimada']} pas/despacho",
                 f"    Valor estimado última       : {row['ultima_semana_estimada']} pas/despacho",
-                f"    Caída total del período     : {row['caida_total_periodo']} pas/despacho",
+                f"    Variación total del período : {row['variacion_total_periodo']} pas/despacho",
                 "",
             ]
 
@@ -209,10 +209,14 @@ class ProductivityAnalyzer:
             "=" * 65,
             "INTERPRETACIÓN",
             "=" * 65,
-            "La tendencia decreciente refleja factores exógenos al",
-            "sistema de despacho (competencia modal, cambios",
-            "demográficos del corredor, etc.). El modelo predictivo",
-            "no puede revertir esta tendencia estructural.",
+            "La productividad por despacho se mantiene estable a lo",
+            "largo del período: la pendiente estimada es de +0,006 y",
+            "+0,007 pasajeros por semana en las Rutas 1 y 3, valores",
+            "estadísticamente indistinguibles de cero frente a una",
+            "desviación de aproximadamente 2,5 pasajeros por despacho.",
+            "El descenso observado en el volumen total de pasajeros",
+            "no obedece, por tanto, a una caída de la productividad,",
+            "sino a la contracción de la flota en operación.",
             "",
             "La productividad ajustada por tendencia es la métrica",
             "correcta para evaluar el efecto operativo del modelo",

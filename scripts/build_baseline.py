@@ -44,15 +44,48 @@ def write_report(
     output_dir: Path,
 ) -> None:
     sep = "─" * 65
-
-    pas_promedio = df_mr["PASAJEROS"].mean()
+    # PASAJEROS_REALES descuenta el sesgo de conteo del dispositivo APC
+    # registrado en ALARMAS. Ver correccion documentada en model_ready.py.
+    pas_promedio = df_mr["PASAJEROS_REALES"].mean()
     capacidad_nominal = 28
     tasa_rotacion = round(pas_promedio / capacidad_nominal, 2)
-    total_pasajeros = int(df_mr["PASAJEROS"].sum())
+    total_pasajeros = int(df_mr["PASAJEROS_REALES"].sum())
     duracion_promedio = round(df_mr["DURACION_MIN_FINAL"].mean(), 2)
     recorridos_completos = round(100 * df_mr["RECORRIDO_COMPLETO"].sum() / len(df_mr), 2)
     total_despachos = len(df_mr)
-    registros_brutos = 105644
+    fecha_min = pd.to_datetime(df_mr["FECHA_INICIAL"]).min()
+    fecha_max = pd.to_datetime(df_mr["FECHA_INICIAL"]).max()
+    meses = [
+        "Enero",
+        "Febrero",
+        "Marzo",
+        "Abril",
+        "Mayo",
+        "Junio",
+        "Julio",
+        "Agosto",
+        "Septiembre",
+        "Octubre",
+        "Noviembre",
+        "Diciembre",
+    ]
+
+    fecha_min = pd.to_datetime(df_mr["FECHA_INICIAL"]).min()
+    fecha_max = pd.to_datetime(df_mr["FECHA_INICIAL"]).max()
+
+    def _periodo(sep: str = " – ", abreviado: bool = False) -> str:
+        """Construye el rango del periodo a partir de las fechas del dataset."""
+
+        def _mes(f):
+            nombre = meses[f.month - 1]
+            return f"{nombre[:3] if abreviado else nombre} {f.year}"
+
+        return f"{_mes(fecha_min)}{sep}{_mes(fecha_max)}"
+
+    periodo = _periodo()
+    periodo_corto = _periodo(sep="–", abreviado=True)
+    retencion_df = pd.read_csv(Path("reports/tables/eda/retention_summary.csv"))
+    registros_brutos = int(retencion_df["raw_rows"].iloc[0])
     retencion = round(100 * total_despachos / registros_brutos, 2)
 
     def _val(df, ruta, col):
@@ -65,7 +98,7 @@ def write_report(
     lines = [
         "=" * 65,
         "BASELINE OPERATIVO — EMPRESA MONTEBELLO",
-        "Período: Abril 2024 – Mayo 2026 | Rutas 1 y 3",
+        f"Período: {periodo} | Rutas 1 y 3",
         "=" * 65,
         "",
         "Indicadores del sistema actual de despacho empírico de",
@@ -76,10 +109,12 @@ def write_report(
         "NOTA METODOLÓGICA",
         "-" * 17,
         "Montebello opera como sistema semiformalizado sin paradas",
-        "fijas. PASAJEROS registra el total acumulado de abordajes",
-        "por recorrido (~161 min), no pasajeros simultáneos a bordo.",
-        "El load factor clásico es conceptualmente incorrecto para",
-        "este sistema y ha sido excluido del baseline.",
+        "fijas. PASAJEROS_REALES registra el total acumulado de",
+        "abordajes por recorrido (~161 min), descontando el sesgo de",
+        "conteo del dispositivo APC registrado en ALARMAS. No mide",
+        "pasajeros simultáneos a bordo, por lo que el load factor",
+        "clásico es conceptualmente incorrecto para este sistema y",
+        "ha sido excluido del baseline.",
         "",
         sep,
         "REGULARIDAD DEL SERVICIO — CV HEADWAY",
@@ -129,7 +164,7 @@ def write_report(
         f"  ~{duracion_promedio} min. Valor razonable para ascenso/",
         "  descenso libre en recorridos de larga duración.",
         "",
-        f"  Total pasajeros (Abr 2024–May 2026) : {total_pasajeros:,}",
+        f"  Total pasajeros ({periodo_corto}) : {total_pasajeros:,}",
         f"  Pasajeros promedio por despacho      : {pas_promedio:.2f}",
         f"  Duración promedio recorrido (min)    : {duracion_promedio}",
         f"  Recorridos COMPLETO (%)              : {recorridos_completos}",
@@ -140,10 +175,6 @@ def write_report(
         f"  Despachos model-ready                : {total_despachos:,}",
         f"  Registros brutos de entrada          : {registros_brutos:,}",
         f"  Tasa de retención                    : {retencion}%",
-        "  flag_hf_nula (hora final ausente)    : 14.497 (13.72%)",
-        "  qc_soft_fail / qc_any_flag           : 15.767 registros",
-        "  flag_duracion_excesiva               :    912 registros",
-        "  flag_pasajeros_absurdos              :    483 registros",
         "",
         "=" * 65,
         "REFERENCIA BIBLIOGRÁFICA",
@@ -160,7 +191,7 @@ def write_report(
         "    Cv 0.37-0.68 → Moderado     (Cases 11-15, R ≈ 0.61-0.81)",
         "    Cv > 0.68    → Irregular    (Cases  1-10, R ≈ 0.34-0.61)",
         "",
-        "  Montebello R1 (Cv=0.722) y R3 (Cv=0.774): IRREGULAR.",
+        "  Montebello R1 (Cv=0.726) y R3 (Cv=0.777): IRREGULAR.",
         "",
         "=" * 65,
         "Generado por: python scripts/build_baseline.py",
