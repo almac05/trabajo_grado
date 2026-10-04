@@ -17,8 +17,15 @@ matplotlib.use("Agg")  # backend sin ventana: necesario para guardar sin mostrar
 import matplotlib.pyplot as plt
 import pandas as pd
 
-ENTRADA = Path("analisis/salidas")
-SALIDA = Path("reports/figures/modeling")
+from proyecto_grado.etl.config import PROJECT_ROOT
+from proyecto_grado.modeling.evaluation_config import cargar_configuracion_evaluacion
+
+CONFIG = cargar_configuracion_evaluacion()
+METODO_XGBOOST = CONFIG.metodo("XGBoost")
+
+ENTRADA = PROJECT_ROOT / "analisis" / "salidas"
+SALIDA = PROJECT_ROOT / "reports" / "figures" / "modeling"
+SALIDA.mkdir(parents=True, exist_ok=True)
 
 # Paleta apta para impresion en escala de grises: se combina color con marcador
 # y estilo de linea, de modo que las series sigan siendo distinguibles.
@@ -100,7 +107,9 @@ def figura_sesgo_por_hora(destino: Path) -> None:
     opuesto, y revela la concentracion del error en las horas de cierre de la
     operacion.
     """
-    p = pd.read_csv(ENTRADA / "test_final_predicciones.csv")
+    p = pd.read_csv(METODO_XGBOOST.artefacto_predicciones)
+    p["hora_del_dia"] = p["hora"].str.slice(0, 2).astype(int)
+    p["error"] = p["pred_xgboost"] - p["real"]
 
     agg = (
         p.groupby(["route", "hora_del_dia"])
