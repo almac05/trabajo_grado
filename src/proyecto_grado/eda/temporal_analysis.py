@@ -554,7 +554,8 @@ class TemporalEDA:
             df_enc[col] = df_enc[col].astype("category").cat.codes
 
         numeric = df_enc.select_dtypes(include=np.number).columns.tolist()
-        features = [c for c in numeric if c != target_col]
+        derivadas_del_objetivo = {"PASAJEROS", "PASAJEROS_REALES", "ALARMAS"}
+        features = [c for c in numeric if c != target_col and c not in derivadas_del_objetivo]
         target = pd.to_numeric(df_enc[target_col], errors="coerce")
 
         correlations: dict[str, float] = {}
