@@ -1,0 +1,21 @@
+# Configuracion de la busqueda de hiperparametros de los seis metodos.
+#
+# Reutiliza de configs/modeling/evaluacion_comparativa.yaml el dataset, las
+# rutas, el objetivo, min_franjas, paso_muestreo y umbral_mape. Este archivo
+# solo declara lo especifico de la busqueda: el periodo de validacion (que
+# termina antes del inicio del periodo de evaluacion, 2026-04-02, y no
+# interviene en ninguna decision de ese periodo) y el presupuesto de
+# configuraciones a probar.
+
+validacion:
+  periodo:
+    inicio: 2025-12-25
+    fin: 2026-04-01
+    extremos_inclusivos: true
+
+busqueda:
+  n_iter: 10
+  semilla: 42
+
+salidas:
+  directorio: analisis/salidas/busqueda_hiperparametros
