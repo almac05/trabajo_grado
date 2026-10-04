@@ -62,7 +62,7 @@ def operational_kpis(
                 rows.append({"kpi": col, "value": count, "unit": "rows"})
                 rows.append({"kpi": f"{col}_pct", "value": _pct(count, len(qc)), "unit": "pct"})
 
-    final_df = model if model is not None else end
+    final_df = model
     if final_df is not None and not final_df.empty:
         pax_col = _resolve_pasajeros_col(final_df, columna_pasajeros)
         if pax_col is not None:
@@ -94,11 +94,11 @@ def operational_kpis(
                 ]
             )
 
-    if end is not None and not end.empty and "RECORRIDO_COMPLETO" in end.columns:
-        completos = int(pd.to_numeric(end["RECORRIDO_COMPLETO"], errors="coerce").fillna(0).sum())
+    if model is not None and not model.empty and "RECORRIDO_COMPLETO" in model.columns:
+        completos = int(pd.to_numeric(model["RECORRIDO_COMPLETO"], errors="coerce").fillna(0).sum())
         rows.append({"kpi": "recorridos_completos", "value": completos, "unit": "rows"})
         rows.append(
-            {"kpi": "recorridos_completos_pct", "value": _pct(completos, len(end)), "unit": "pct"}
+            {"kpi": "recorridos_completos_pct", "value": _pct(completos, len(model)), "unit": "pct"}
         )
 
     return pd.DataFrame(rows)
@@ -175,8 +175,6 @@ def duration_by_route(df: pd.DataFrame | None) -> pd.DataFrame:
 def build_kpi_tables(datasets: Mapping[str, pd.DataFrame | None]) -> dict[str, pd.DataFrame]:
     """Build all KPI tables from loaded ETL datasets."""
     final_df = datasets.get("model_ready")
-    if final_df is None:
-        final_df = datasets.get("end")
     return {
         "operational_kpis": operational_kpis(datasets),
         "demand_by_route": demand_by_route(final_df),

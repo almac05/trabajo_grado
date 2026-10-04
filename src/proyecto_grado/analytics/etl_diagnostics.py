@@ -148,12 +148,10 @@ def build_etl_diagnostics(
 ) -> dict[str, pd.DataFrame]:
     """Build the standard post-ETL diagnostic tables."""
     final_df = datasets.get("model_ready")
-    if final_df is None:
-        final_df = datasets.get("end")
     return {
         "dataset_overview": dataset_overview(datasets),
         "retention_summary": retention_summary(datasets),
         "missing_before_after": missing_before_after(datasets.get("raw"), final_df),
         "qc_flag_summary": qc_flag_summary(datasets.get("qc")),
-        "finalization_summary": finalization_summary(datasets.get("end")),
+        "finalization_summary": finalization_summary(final_df),
     }

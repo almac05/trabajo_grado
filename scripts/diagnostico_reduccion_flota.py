@@ -55,8 +55,10 @@ flota_mensual = (
     df.groupby("mes")
     .agg(
         vehiculos_activos=("PLACA", "nunique"),
-        despachos_total=("PASAJEROS", "count"),
-        pasajeros_total=("PASAJEROS", "sum"),
+        # PASAJEROS_REALES descuenta el sesgo de conteo del dispositivo APC
+        # registrado en ALARMAS. Ver correccion documentada en model_ready.py.
+        despachos_total=("PASAJEROS_REALES", "count"),
+        pasajeros_total=("PASAJEROS_REALES", "sum"),
     )
     .reset_index()
 )

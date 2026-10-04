@@ -119,3 +119,36 @@ def test_build_kpi_tables_genera_tablas_esperadas(analytics_datasets):
         "demand_by_hour_weekday",
         "duration_by_route",
     }
+
+
+def test_estadisticas_finales_utilizan_solo_modelado(analytics_datasets):
+    model = analytics_datasets["model_ready"]
+    model["FIN_TIPO"] = ["COMPLETO", "TRUNCADO_RETORNO"]
+    model["RECORRIDO_COMPLETO"] = [1, 0]
+    fin = build_etl_diagnostics(analytics_datasets)["finalization_summary"]
+    assert fin["count"].sum() == 2
+    assert fin.set_index("FIN_TIPO").loc["COMPLETO", "pct"] == 50
+    kpis = operational_kpis(analytics_datasets).set_index("kpi")["value"]
+    assert kpis["recorridos_completos"] == 1
+    assert kpis["recorridos_completos_pct"] == 50
+
+
+def test_sin_modelado_no_utiliza_end(analytics_datasets):
+    analytics_datasets["model_ready"] = None
+    assert build_etl_diagnostics(analytics_datasets)["finalization_summary"].empty
+    assert build_kpi_tables(analytics_datasets)["demand_by_route"].empty
+    assert "recorridos_completos" not in operational_kpis(analytics_datasets)["kpi"].values
+
+
+def test_reporte_requiere_archivo_modelado(tmp_path):
+    from proyecto_grado.analytics.etl_diagnostics import DatasetPaths
+    from proyecto_grado.analytics.report import build_post_etl_report
+
+    missing = str(tmp_path / "missing.parquet")
+    with pytest.raises(FileNotFoundError, match="conjunto de modelado"):
+        build_post_etl_report(
+            paths=DatasetPaths(raw=missing, qc=missing, end=missing, model_ready=missing),
+            tables_dir=tmp_path / "tables",
+            make_plots=False,
+        )
+    assert not (tmp_path / "tables").exists()

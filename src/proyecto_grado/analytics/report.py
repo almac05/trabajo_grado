@@ -45,6 +45,10 @@ def build_post_etl_report(
     """Generate post-ETL diagnostics, KPI tables and optional figures."""
     inicializar_entorno(verbose=False)
     datasets = load_etl_datasets(paths)
+    if datasets["model_ready"] is None:
+        raise FileNotFoundError(
+            f"El reporte requiere el conjunto de modelado: {(paths or DatasetPaths()).model_ready}"
+        )
     tables = {}
     tables.update(build_etl_diagnostics(datasets))
     tables.update(build_kpi_tables(datasets))
