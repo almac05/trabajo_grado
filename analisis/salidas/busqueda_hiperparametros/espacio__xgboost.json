@@ -1,0 +1,49 @@
+{
+  "metodo": "XGBoost",
+  "n_iter": 10,
+  "semilla": 42,
+  "espacio": {
+    "max_depth": [
+      "randint",
+      3,
+      9
+    ],
+    "min_child_weight": [
+      "randint",
+      1,
+      10
+    ],
+    "learning_rate": [
+      "loguniform",
+      0.01,
+      0.3
+    ],
+    "subsample": [
+      "uniform",
+      0.6,
+      1.0
+    ],
+    "colsample_bytree": [
+      "uniform",
+      0.6,
+      1.0
+    ],
+    "reg_lambda": [
+      "loguniform",
+      0.1,
+      10.0
+    ],
+    "reg_alpha": [
+      "loguniform",
+      0.001,
+      1.0
+    ]
+  },
+  "fijos": {
+    "objective": "reg:absoluteerror",
+    "eval_metric": "mae",
+    "n_estimators": 2000,
+    "early_stopping_rounds": 50,
+    "random_state": 42
+  }
+}

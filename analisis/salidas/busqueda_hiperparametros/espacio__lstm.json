@@ -1,0 +1,33 @@
+{
+  "metodo": "LSTM",
+  "n_iter": 10,
+  "semilla": 42,
+  "espacio": {
+    "unidades": [
+      "choice",
+      [
+        32,
+        64,
+        128
+      ]
+    ],
+    "lr": [
+      "loguniform",
+      0.0001,
+      0.01
+    ],
+    "paciencia": [
+      "choice",
+      [
+        15,
+        30,
+        50
+      ]
+    ]
+  },
+  "fijos": {
+    "pasos": 28,
+    "epocas": 3000,
+    "semilla_init": 42
+  }
+}

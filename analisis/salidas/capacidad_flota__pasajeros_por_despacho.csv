@@ -1,0 +1,4 @@
+route,jornadas,max_despachos_jornada,jornada_max_despachos,tipo_dia_jornada_max,mediana_despachos_jornada_laboral,vehiculos_activos_periodo,max_vehiculos_jornada,mediana_vehiculos_jornada_laboral,vehiculos_en_jornada_max_despachos
+1,69,76,2026-05-26,LABORAL,67.0,41,39,36.0,37
+3,69,81,2026-04-27,LABORAL,72.5,42,41,36.0,38
+ambas,69,154,2026-04-07,LABORAL,139.0,42,41,37.0,41

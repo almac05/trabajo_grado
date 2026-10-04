@@ -1,0 +1,5 @@
+base,route,q25,q50,q75
+prediccion referencia 26s (esperado),1,95.56198347107438,121.77235772357724,138.47154471544715
+prediccion referencia 26s (esperado),3,93.13461538461539,135.92622950819674,152.57908819943097
+demanda observada (descriptivo),1,69.0,103.0,138.0
+demanda observada (descriptivo),3,67.0,116.0,159.0

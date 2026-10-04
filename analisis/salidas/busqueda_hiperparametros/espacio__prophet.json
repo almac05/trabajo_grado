@@ -1,0 +1,35 @@
+{
+  "metodo": "Prophet",
+  "n_iter": 10,
+  "semilla": 42,
+  "espacio": {
+    "changepoint_prior_scale": [
+      "loguniform",
+      0.001,
+      0.5
+    ],
+    "seasonality_prior_scale": [
+      "loguniform",
+      0.01,
+      10.0
+    ],
+    "holidays_prior_scale": [
+      "loguniform",
+      0.01,
+      10.0
+    ],
+    "seasonality_mode": [
+      "choice",
+      [
+        "additive",
+        "multiplicative"
+      ]
+    ],
+    "changepoint_range": [
+      "uniform",
+      0.8,
+      0.95
+    ]
+  },
+  "fijos": {}
+}

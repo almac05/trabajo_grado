@@ -1,0 +1,330 @@
+{
+  "script": "analisis/32_diagnostico_segmentos_metodos.py",
+  "generado": "2026-09-30T20:20:53",
+  "sufijo": "diagnostico_segmentos",
+  "freeze_evaluacion": "freeze_20260922_203820",
+  "periodo_evaluacion": {
+    "inicio": "2026-04-02",
+    "fin": "2026-06-10",
+    "jornadas": 134,
+    "franjas": 3038
+  },
+  "periodo_validacion": {
+    "inicio": "2025-12-25",
+    "fin": "2026-04-01",
+    "jornadas": 192,
+    "franjas": 4637
+  },
+  "metodos_evaluacion": [
+    "SARIMA",
+    "Prophet",
+    "XGBoost",
+    "LSTM",
+    "GRU",
+    "CNN-LSTM",
+    "Referencia (26s)",
+    "Referencia (52s)",
+    "Combinada (26s/52s)"
+  ],
+  "metodos_validacion_disponibles": [
+    "XGBoost",
+    "Referencia (26s)",
+    "Referencia (52s)",
+    "Combinada (26s/52s)"
+  ],
+  "metodos_validacion_no_disponibles": [
+    "SARIMA",
+    "Prophet",
+    "LSTM",
+    "GRU",
+    "CNN-LSTM"
+  ],
+  "metodos_comunes": [
+    "XGBoost",
+    "Referencia (26s)",
+    "Referencia (52s)",
+    "Combinada (26s/52s)"
+  ],
+  "filas_por_metodo_evaluacion": {
+    "SARIMA": 3038,
+    "Prophet": 3038,
+    "XGBoost": 3038,
+    "LSTM": 3038,
+    "GRU": 3038,
+    "CNN-LSTM": 3038,
+    "Referencia (26s)": 3038,
+    "Referencia (52s)": 3038,
+    "Combinada (26s/52s)": 3038
+  },
+  "entradas": [
+    "analisis\\salidas\\jornadas_comunes__freeze_20260922_203820.csv",
+    "analisis\\salidas\\observaciones__referencia_combinada_regimen__freeze_20260922_203820.csv",
+    "analisis\\salidas\\observaciones__referencia_combinada_regimen__validacion.csv",
+    "analisis\\salidas\\observaciones__barrido_ventana__validacion_hparam.csv",
+    "analisis\\salidas\\metricas__comparacion_modelos__freeze_20260922_203820__global.csv",
+    "analisis\\salidas\\metricas__referencia_combinada_regimen__freeze_20260922_203820.csv",
+    "analisis\\salidas\\metricas__referencia_combinada_regimen__validacion.csv",
+    "analisis\\salidas\\predicciones__cnn_lstm__freeze_20260922_203820.csv",
+    "analisis\\salidas\\predicciones__gru__freeze_20260922_203820.csv",
+    "analisis\\salidas\\predicciones__lstm__freeze_20260922_203820.csv",
+    "analisis\\salidas\\predicciones__prophet__freeze_20260922_203820.csv",
+    "analisis\\salidas\\predicciones__sarima__freeze_20260922_203820.csv",
+    "analisis\\salidas\\predicciones__xgboost__freeze_20260922_203820.csv"
+  ],
+  "bloques": {
+    "madrugada (04:00-04:59)": [
+      4,
+      5
+    ],
+    "pico manana (05:00-06:59)": [
+      5,
+      7
+    ],
+    "manana (07:00-09:59)": [
+      7,
+      10
+    ],
+    "valle (10:00-13:59)": [
+      10,
+      14
+    ],
+    "pico tarde (14:00-15:59)": [
+      14,
+      16
+    ],
+    "cierre (16:00 en adelante)": [
+      16,
+      24
+    ]
+  },
+  "tipos_baja_frecuencia": [
+    "FESTIVO",
+    "FESTIVO_PUENTE"
+  ],
+  "celda_pequena": {
+    "n_menor_que": 100,
+    "jornadas_menor_que": 5
+  },
+  "umbrales": [
+    {
+      "base": "prediccion referencia 26s (esperado)",
+      "route": 1,
+      "q25": 95.56198347107438,
+      "q50": 121.77235772357724,
+      "q75": 138.47154471544715
+    },
+    {
+      "base": "prediccion referencia 26s (esperado)",
+      "route": 3,
+      "q25": 93.13461538461539,
+      "q50": 135.92622950819674,
+      "q75": 152.57908819943097
+    },
+    {
+      "base": "demanda observada (descriptivo)",
+      "route": 1,
+      "q25": 69.0,
+      "q50": 103.0,
+      "q75": 138.0
+    },
+    {
+      "base": "demanda observada (descriptivo)",
+      "route": 3,
+      "q25": 67.0,
+      "q50": 116.0,
+      "q75": 159.0
+    }
+  ],
+  "verificacion": [
+    {
+      "periodo": "evaluacion",
+      "metodo": "SARIMA",
+      "fuente": "metricas__comparacion_modelos__freeze_20260922_203820__global.csv",
+      "mae_recalculado": 48.07294655390406,
+      "mae_persistido": 48.0729,
+      "n_recalculado": 3038.0,
+      "n_persistido": 3038.0,
+      "coincide": true
+    },
+    {
+      "periodo": "evaluacion",
+      "metodo": "Prophet",
+      "fuente": "metricas__comparacion_modelos__freeze_20260922_203820__global.csv",
+      "mae_recalculado": 30.627238758469517,
+      "mae_persistido": 30.6272,
+      "n_recalculado": 3038.0,
+      "n_persistido": 3038.0,
+      "coincide": true
+    },
+    {
+      "periodo": "evaluacion",
+      "metodo": "XGBoost",
+      "fuente": "metricas__comparacion_modelos__freeze_20260922_203820__global.csv",
+      "mae_recalculado": 28.344185865371955,
+      "mae_persistido": 28.3442,
+      "n_recalculado": 3038.0,
+      "n_persistido": 3038.0,
+      "coincide": true
+    },
+    {
+      "periodo": "evaluacion",
+      "metodo": "LSTM",
+      "fuente": "metricas__comparacion_modelos__freeze_20260922_203820__global.csv",
+      "mae_recalculado": 29.106082949324346,
+      "mae_persistido": 29.1061,
+      "n_recalculado": 3038.0,
+      "n_persistido": 3038.0,
+      "coincide": true
+    },
+    {
+      "periodo": "evaluacion",
+      "metodo": "GRU",
+      "fuente": "metricas__comparacion_modelos__freeze_20260922_203820__global.csv",
+      "mae_recalculado": 29.590447155339717,
+      "mae_persistido": 29.5904,
+      "n_recalculado": 3038.0,
+      "n_persistido": 3038.0,
+      "coincide": true
+    },
+    {
+      "periodo": "evaluacion",
+      "metodo": "CNN-LSTM",
+      "fuente": "metricas__comparacion_modelos__freeze_20260922_203820__global.csv",
+      "mae_recalculado": 29.681453979698155,
+      "mae_persistido": 29.6815,
+      "n_recalculado": 3038.0,
+      "n_persistido": 3038.0,
+      "coincide": true
+    },
+    {
+      "periodo": "evaluacion",
+      "metodo": "Referencia (26s)",
+      "fuente": "metricas__comparacion_modelos__freeze_20260922_203820__global.csv",
+      "mae_recalculado": 28.357967451982876,
+      "mae_persistido": 28.358,
+      "n_recalculado": 3038.0,
+      "n_persistido": 3038.0,
+      "coincide": true
+    },
+    {
+      "periodo": "evaluacion",
+      "metodo": "Referencia (52s)",
+      "fuente": "metricas__comparacion_modelos__freeze_20260922_203820__global.csv",
+      "mae_recalculado": 29.336395885927338,
+      "mae_persistido": 29.3364,
+      "n_recalculado": 3038.0,
+      "n_persistido": 3038.0,
+      "coincide": true
+    },
+    {
+      "periodo": "evaluacion",
+      "metodo": "Combinada (26s/52s)",
+      "fuente": "metricas__referencia_combinada_regimen__freeze_20260922_203820.csv",
+      "mae_recalculado": 27.813264935762486,
+      "mae_persistido": 27.8133,
+      "n_recalculado": 3038.0,
+      "n_persistido": 3038.0,
+      "coincide": true
+    },
+    {
+      "periodo": "validacion",
+      "metodo": "XGBoost",
+      "fuente": "metricas__referencia_combinada_regimen__validacion.csv",
+      "mae_recalculado": 29.07285570670692,
+      "mae_persistido": 29.0729,
+      "n_recalculado": null,
+      "n_persistido": null,
+      "coincide": true
+    },
+    {
+      "periodo": "validacion",
+      "metodo": "Referencia (26s)",
+      "fuente": "metricas__referencia_combinada_regimen__validacion.csv",
+      "mae_recalculado": 29.02917538139729,
+      "mae_persistido": 29.0292,
+      "n_recalculado": null,
+      "n_persistido": null,
+      "coincide": true
+    },
+    {
+      "periodo": "validacion",
+      "metodo": "Referencia (52s)",
+      "fuente": "metricas__referencia_combinada_regimen__validacion.csv",
+      "mae_recalculado": 30.510606594548868,
+      "mae_persistido": 30.5106,
+      "n_recalculado": null,
+      "n_persistido": null,
+      "coincide": true
+    },
+    {
+      "periodo": "validacion",
+      "metodo": "Combinada (26s/52s)",
+      "fuente": "metricas__referencia_combinada_regimen__validacion.csv",
+      "mae_recalculado": 29.004400543670506,
+      "mae_persistido": 29.0044,
+      "n_recalculado": null,
+      "n_persistido": null,
+      "coincide": true
+    }
+  ],
+  "max_dif_xgboost_script31_vs_script25": 0.0,
+  "persistencia_por_corte": {
+    "bloque": {
+      "segmentos_en_ambos": 18,
+      "mantiene_mae": 4,
+      "mantiene_sesgo": 11,
+      "celdas_con_alguna_pequena": 1
+    },
+    "franja": {
+      "segmentos_en_ambos": 86,
+      "mantiene_mae": 21,
+      "mantiene_sesgo": 49,
+      "celdas_con_alguna_pequena": 62
+    },
+    "tipo_dia": {
+      "segmentos_en_ambos": 15,
+      "mantiene_mae": 5,
+      "mantiene_sesgo": 13,
+      "celdas_con_alguna_pequena": 7
+    },
+    "regimen": {
+      "segmentos_en_ambos": 6,
+      "mantiene_mae": 3,
+      "mantiene_sesgo": 5,
+      "celdas_con_alguna_pequena": 3
+    },
+    "nivel_esperado": {
+      "segmentos_en_ambos": 12,
+      "mantiene_mae": 4,
+      "mantiene_sesgo": 7,
+      "celdas_con_alguna_pequena": 0
+    },
+    "nivel_observado": {
+      "segmentos_en_ambos": 12,
+      "mantiene_mae": 7,
+      "mantiene_sesgo": 8,
+      "celdas_con_alguna_pequena": 0
+    },
+    "bloque_x_regimen": {
+      "segmentos_en_ambos": 30,
+      "mantiene_mae": 9,
+      "mantiene_sesgo": 13,
+      "celdas_con_alguna_pequena": 13
+    }
+  },
+  "segmentos_un_solo_periodo": {
+    "solo_validacion": [],
+    "solo_evaluacion": [
+      "bloque_x_regimen / 1 / pico manana (05:00-06:59) x raro",
+      "bloque_x_regimen / ambas / pico manana (05:00-06:59) x raro"
+    ]
+  },
+  "salidas": [
+    "analisis\\salidas\\metricas__diagnostico_segmentos.csv",
+    "analisis\\salidas\\ganadores__diagnostico_segmentos.csv",
+    "analisis\\salidas\\persistencia__diagnostico_segmentos.csv",
+    "analisis\\salidas\\umbrales__diagnostico_segmentos.csv",
+    "analisis\\salidas\\resumen__diagnostico_segmentos.md",
+    "analisis\\salidas\\manifiesto__diagnostico_segmentos.json"
+  ]
+}

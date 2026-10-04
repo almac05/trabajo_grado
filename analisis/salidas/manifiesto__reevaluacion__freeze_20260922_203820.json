@@ -1,0 +1,34 @@
+{
+  "freeze": "freeze_20260922_203820",
+  "n_jornadas_comunes": 134,
+  "n_jornadas_comunes_freeze_anterior": 134,
+  "artefactos": {
+    "SARIMA": {
+      "resumen": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\resumen__sarima__freeze_20260922_203820.csv",
+      "predicciones": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\predicciones__sarima__freeze_20260922_203820.csv",
+      "multiples_dias": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\sarima_multiples_dias.csv"
+    },
+    "Prophet": {
+      "resumen": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\resumen__prophet__freeze_20260922_203820.csv",
+      "predicciones": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\predicciones__prophet__freeze_20260922_203820.csv",
+      "multiples_dias": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\prophet_multiples_dias.csv"
+    },
+    "XGBoost": {
+      "resumen": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\resumen__xgboost__freeze_20260922_203820.csv",
+      "predicciones": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\predicciones__xgboost__freeze_20260922_203820.csv",
+      "multiples_dias": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\xgboost_multiples_dias.csv"
+    },
+    "LSTM": {
+      "resumen": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\resumen__lstm__freeze_20260922_203820.csv",
+      "predicciones": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\predicciones__lstm__freeze_20260922_203820.csv"
+    },
+    "GRU": {
+      "resumen": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\resumen__gru__freeze_20260922_203820.csv",
+      "predicciones": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\predicciones__gru__freeze_20260922_203820.csv"
+    },
+    "CNN-LSTM": {
+      "resumen": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\resumen__cnn_lstm__freeze_20260922_203820.csv",
+      "predicciones": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\predicciones__cnn_lstm__freeze_20260922_203820.csv"
+    }
+  }
+}

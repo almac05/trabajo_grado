@@ -1,0 +1,37 @@
+{
+  "metodo": "SARIMA",
+  "criterio_seleccion": "mae_global (unico criterio)",
+  "n_iter": 10,
+  "semilla": 42,
+  "periodo_validacion": {
+    "inicio": "2025-12-25",
+    "fin": "2026-04-01"
+  },
+  "trial_seleccionado": {
+    "trial": 2.0,
+    "p": 0.0,
+    "q": 0.0,
+    "P": 1.0,
+    "Q": 1.0,
+    "mae_global": 46.77477341069911,
+    "sesgo_global": -2.01475830721174,
+    "rmse_global": 60.08558119900671,
+    "wape_global": 41.41091264838071,
+    "n_jornadas": 192.0,
+    "segundos": 1011.4270919999108,
+    "mae_ruta_1": 39.50376041453121,
+    "sesgo_ruta_1": 0.5967721881255291,
+    "mae_ruta_3": 54.011371112995306,
+    "sesgo_ruta_3": -4.613927857863679,
+    "mae_tipo_DOMINGO": 80.39802188608168,
+    "sesgo_tipo_DOMINGO": 80.26575538896819,
+    "mae_tipo_FESTIVO": 99.12405346700837,
+    "sesgo_tipo_FESTIVO": 99.12405346700837,
+    "mae_tipo_FESTIVO_PUENTE": 70.04784243371729,
+    "sesgo_tipo_FESTIVO_PUENTE": 70.04784243371729,
+    "mae_tipo_LABORAL": 43.68708285338921,
+    "sesgo_tipo_LABORAL": -19.041086393218755,
+    "mae_tipo_SABADO": 41.371972144358764,
+    "sesgo_tipo_SABADO": 31.984177616438846
+  }
+}

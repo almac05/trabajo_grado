@@ -1,0 +1,5 @@
+variante,version,route,n_intervalos,rotacion_mediana,rotacion_p75,rotacion_p95,rotacion_p99,rotacion_max,max_placa,max_inicio_siguiente
+misma jornada operativa,todos los intervalos,1,40170,23.1,33.3,92.8,254.6,690.8,VEH037,2025-07-05 17:52:07
+misma jornada operativa,todos los intervalos,3,39207,23.9,35.0,89.2,247.0,607.0,VEH055,2024-08-13 16:07:54
+misma jornada operativa,sin negativos,1,40116,23.1,33.4,92.9,254.7,690.8,VEH037,2025-07-05 17:52:07
+misma jornada operativa,sin negativos,3,39143,24.0,35.0,89.5,247.2,607.0,VEH055,2024-08-13 16:07:54

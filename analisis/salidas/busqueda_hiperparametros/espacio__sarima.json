@@ -1,0 +1,32 @@
+{
+  "metodo": "SARIMA",
+  "n_iter": 10,
+  "semilla": 42,
+  "espacio": {
+    "p": [
+      "randint",
+      0,
+      2
+    ],
+    "q": [
+      "randint",
+      0,
+      2
+    ],
+    "P": [
+      "randint",
+      0,
+      1
+    ],
+    "Q": [
+      "randint",
+      0,
+      1
+    ]
+  },
+  "fijos": {
+    "d": 0,
+    "D": 0,
+    "s": 27
+  }
+}

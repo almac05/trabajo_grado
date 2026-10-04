@@ -1,0 +1,24 @@
+{
+  "freeze_reevaluacion_referencia": "freeze_20260922_203820",
+  "periodo_validacion": {
+    "inicio": "2025-12-25",
+    "fin": "2026-04-01"
+  },
+  "params_xgboost_usados": {
+    "max_depth": 4,
+    "min_child_weight": 7,
+    "learning_rate": 0.016085381438354866,
+    "subsample": 0.6799632809900433,
+    "colsample_bytree": 0.6029449079004022,
+    "reg_lambda": 3.748424389563135,
+    "reg_alpha": 0.09875351660720856
+  },
+  "n_jornadas_validacion": 192,
+  "n_jornadas_evaluacion": 134,
+  "artefactos": {
+    "observaciones_validacion": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\observaciones__referencia_combinada_regimen__validacion.csv",
+    "metricas_validacion": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\metricas__referencia_combinada_regimen__validacion.csv",
+    "observaciones_evaluacion": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\observaciones__referencia_combinada_regimen__freeze_20260922_203820.csv",
+    "metricas_evaluacion": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\metricas__referencia_combinada_regimen__freeze_20260922_203820.csv"
+  }
+}

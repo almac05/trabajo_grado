@@ -1,0 +1,40 @@
+{
+  "metodo": "XGBoost",
+  "criterio_seleccion": "mae_global (unico criterio)",
+  "n_iter": 10,
+  "semilla": 42,
+  "periodo_validacion": {
+    "inicio": "2025-12-25",
+    "fin": "2026-04-01"
+  },
+  "trial_seleccionado": {
+    "trial": 8.0,
+    "max_depth": 4.0,
+    "min_child_weight": 7.0,
+    "learning_rate": 0.016085381438354866,
+    "subsample": 0.6799632809900433,
+    "colsample_bytree": 0.6029449079004022,
+    "reg_lambda": 3.748424389563135,
+    "reg_alpha": 0.09875351660720856,
+    "mae_global": 29.07285564028551,
+    "sesgo_global": 7.1631636036504105,
+    "rmse_global": 37.838369689352014,
+    "wape_global": 25.738948530821997,
+    "n_jornadas": 192.0,
+    "segundos": 140.02610109979287,
+    "mae_ruta_1": 26.82880166429387,
+    "sesgo_ruta_1": 7.569912017809072,
+    "mae_ruta_3": 31.306288018284075,
+    "sesgo_ruta_3": 6.758340418646545,
+    "mae_tipo_DOMINGO": 11.127546710862639,
+    "sesgo_tipo_DOMINGO": 0.2555370120053792,
+    "mae_tipo_FESTIVO": 23.86784011439273,
+    "sesgo_tipo_FESTIVO": 23.86784011439273,
+    "mae_tipo_FESTIVO_PUENTE": 13.545876534779866,
+    "sesgo_tipo_FESTIVO_PUENTE": 7.90255397160848,
+    "mae_tipo_LABORAL": 31.70021007620628,
+    "sesgo_tipo_LABORAL": 7.518881589735936,
+    "mae_tipo_SABADO": 26.66034935668154,
+    "sesgo_tipo_SABADO": 8.45002839201122
+  }
+}

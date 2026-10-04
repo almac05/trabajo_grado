@@ -1,0 +1,542 @@
+periodo,corte,route,segmento,conjunto,n_metodos,n,n_jornadas,celda_pequena,ganador_mae,mae_ganador,segundo_mae,margen_mae_segundo,ganador_sesgo,sesgo_ganador
+validacion,bloque,1,cierre (16:00 en adelante),comunes,4,271,90,False,Combinada (26s/52s),28.353961358917243,Referencia (26s),0.2993849387911993,XGBoost,10.831713191881919
+validacion,bloque,1,madrugada (04:00-04:59),comunes,4,79,79,True,XGBoost,22.620572962025314,Combinada (26s/52s),1.341797979930817,XGBoost,16.46589017721519
+validacion,bloque,1,manana (07:00-09:59),comunes,4,561,97,False,XGBoost,26.375032714795008,Referencia (26s),0.30710036323637624,XGBoost,5.8416440980392155
+validacion,bloque,1,pico manana (05:00-06:59),comunes,4,319,81,False,XGBoost,24.151623492163008,Combinada (26s/52s),1.0138079780576952,XGBoost,7.265413717868339
+validacion,bloque,1,pico tarde (14:00-15:59),comunes,4,349,97,False,XGBoost,34.153969011461314,Combinada (26s/52s),0.7058418818530399,XGBoost,5.529425893982808
+validacion,bloque,1,valle (10:00-13:59),comunes,4,734,97,False,Combinada (26s/52s),23.916124249730373,Referencia (26s),0.07758637299385995,XGBoost,7.8316184386920975
+validacion,bloque,3,cierre (16:00 en adelante),comunes,4,226,86,False,Referencia (26s),23.614434678528475,Combinada (26s/52s),0.009955752212388091,Referencia (26s),10.436178117210252
+validacion,bloque,3,madrugada (04:00-04:59),comunes,4,156,80,False,Combinada (26s/52s) = Referencia (26s),20.399955888597916,XGBoost,1.8052420665302904,Combinada (26s/52s) = Referencia (26s),6.188561921988084
+validacion,bloque,3,manana (07:00-09:59),comunes,4,553,95,False,Referencia (26s),29.461787596673496,Combinada (26s/52s),0.0033855736387380375,XGBoost,5.72644295840868
+validacion,bloque,3,pico manana (05:00-06:59),comunes,4,322,82,False,XGBoost,46.82837288819876,Combinada (26s/52s),2.275809884634839,XGBoost,5.310758602484472
+validacion,bloque,3,pico tarde (14:00-15:59),comunes,4,350,95,False,XGBoost,31.853150091428574,Referencia (26s),1.014470429610654,XGBoost,7.803930377142858
+validacion,bloque,3,valle (10:00-13:59),comunes,4,717,95,False,Referencia (26s),27.941754836902494,Combinada (26s/52s),0.0322280888180444,XGBoost,5.637644457461646
+validacion,bloque,ambas,cierre (16:00 en adelante),comunes,4,497,176,False,Combinada (26s/52s),26.203291278901425,Referencia (26s),0.15871895052799445,Combinada (26s/52s),11.05407627142348
+validacion,bloque,ambas,madrugada (04:00-04:59),comunes,4,235,159,False,Combinada (26s/52s) = Referencia (26s),21.597533715045998,XGBoost,0.7473009445284688,XGBoost,10.017845961702127
+validacion,bloque,ambas,manana (07:00-09:59),comunes,4,1114,192,False,Referencia (26s),28.061979531181372,Combinada (26s/52s),0.0037392066341794816,XGBoost,5.784457176840215
+validacion,bloque,ambas,pico manana (05:00-06:59),comunes,4,641,163,False,XGBoost,35.543063906396256,Combinada (26s/52s),1.6477621339357569,XGBoost,6.28351208424337
+validacion,bloque,ambas,pico tarde (14:00-15:59),comunes,4,699,192,False,XGBoost,33.00191375822604,Combinada (26s/52s),0.873104853400946,XGBoost,6.668305105865522
+validacion,bloque,ambas,valle (10:00-13:59),comunes,4,1451,192,False,Combinada (26s/52s),25.92128253414453,Referencia (26s),0.02332243838384329,XGBoost,6.747483811164714
+validacion,franja,1,04:30,comunes,4,79,79,True,XGBoost,22.620572962025314,Combinada (26s/52s),1.341797979930817,XGBoost,16.46589017721519
+validacion,franja,1,05:00,comunes,4,78,78,True,Combinada (26s/52s) = Referencia (26s),22.097416464980885,XGBoost,1.669662073480655,Combinada (26s/52s) = Referencia (26s),4.257139268520346
+validacion,franja,1,05:30,comunes,4,80,80,True,XGBoost,20.6343188125,Combinada (26s/52s),1.454754698273696,XGBoost,6.917196837500001
+validacion,franja,1,06:00,comunes,4,80,80,True,XGBoost,24.402034175,Combinada (26s/52s),4.274721589106729,XGBoost,11.232996025
+validacion,franja,1,06:30,comunes,4,81,81,True,Referencia (52s),27.09501977131319,Combinada (26s/52s),0.5952001390752173,Combinada (26s/52s) = Referencia (26s),0.07246409203000344
+validacion,franja,1,07:00,comunes,4,93,93,True,Referencia (52s),23.298630106990082,Combinada (26s/52s),0.13830299928500267,Combinada (26s/52s),2.8784808770642045
+validacion,franja,1,07:30,comunes,4,94,94,True,XGBoost,24.74160310638298,Referencia (26s),0.933489208762488,XGBoost,5.40719370212766
+validacion,franja,1,08:00,comunes,4,94,94,True,Combinada (26s/52s),29.49334778682325,Referencia (26s),0.000987841945288892,Combinada (26s/52s),5.736390961863085
+validacion,franja,1,08:30,comunes,4,97,97,True,XGBoost,29.33583092783505,Combinada (26s/52s),1.3626340678186537,XGBoost,6.212898412371135
+validacion,franja,1,09:00,comunes,4,90,90,True,Referencia (52s),26.511380934607644,Referencia (26s),0.427648601294937,XGBoost,5.468431088888889
+validacion,franja,1,09:30,comunes,4,93,93,True,XGBoost,22.414435075268816,Referencia (26s),1.2053283598448914,Combinada (26s/52s),7.890732727115951
+validacion,franja,1,10:00,comunes,4,94,94,True,Combinada (26s/52s),27.45874986743312,Referencia (26s),0.008215130023643269,Combinada (26s/52s),7.65505862890146
+validacion,franja,1,10:30,comunes,4,96,96,True,Combinada (26s/52s),17.069541907793937,Referencia (26s),0.13686342592592737,Referencia (26s),2.77215012814872
+validacion,franja,1,11:00,comunes,4,91,91,True,Combinada (26s/52s),20.263659464621963,Referencia (26s),0.007631257631256716,Combinada (26s/52s),5.1396093891176635
+validacion,franja,1,11:30,comunes,4,92,92,True,Combinada (26s/52s),21.212293601557484,Referencia (52s),0.6134790138102844,Combinada (26s/52s),7.824459306130867
+validacion,franja,1,12:00,comunes,4,90,90,True,XGBoost,24.17436413333333,Referencia (26s),0.5947216175096308,XGBoost,6.0396884222222225
+validacion,franja,1,12:30,comunes,4,92,92,True,XGBoost,24.652994,Referencia (26s),0.22982951179223932,XGBoost,3.1001975652173903
+validacion,franja,1,13:00,comunes,4,89,89,True,Referencia (52s),27.256742141250296,Referencia (26s),0.09534712705241688,XGBoost,7.799733089887642
+validacion,franja,1,13:30,comunes,4,90,90,True,Referencia (26s),28.238504788086356,Combinada (26s/52s),0.08503968253967997,XGBoost,8.993226955555555
+validacion,franja,1,14:00,comunes,4,89,89,True,XGBoost,28.668425314606743,Referencia (52s),2.706584175837051,XGBoost,7.041664617977529
+validacion,franja,1,14:30,comunes,4,90,90,True,XGBoost,31.63561111111111,Combinada (26s/52s),1.0879822465869893,XGBoost,5.624185622222222
+validacion,franja,1,15:00,comunes,4,87,87,True,Combinada (26s/52s) = Referencia (26s),34.836565138025506,Referencia (52s),0.9514045443229975,XGBoost,6.651942448275862
+validacion,franja,1,15:30,comunes,4,83,83,True,XGBoost,39.34795581927711,Referencia (26s),0.9716168418276396,XGBoost,2.6285034578313247
+validacion,franja,1,16:00,comunes,4,84,84,True,Combinada (26s/52s),35.401465958734605,Referencia (26s),0.11507936507936734,XGBoost,8.559590904761905
+validacion,franja,1,16:30,comunes,4,80,80,True,Combinada (26s/52s),33.030111517425695,XGBoost,0.214009095074303,XGBoost,23.9645144375
+validacion,franja,1,17:00,comunes,4,68,68,True,Combinada (26s/52s) = Referencia (26s),25.541718481175145,XGBoost,0.2852933864719134,Combinada (26s/52s) = Referencia (26s),1.8255049537993204
+validacion,franja,1,17:30,comunes,4,28,28,True,XGBoost,7.980351678571428,Combinada (26s/52s),1.14785291666142,XGBoost,0.4706386785714284
+validacion,franja,1,18:00,comunes,4,11,11,True,Combinada (26s/52s) = Referencia (26s),6.851352813852813,Referencia (52s),0.4725400210029269,Referencia (52s),-0.44104054283536503
+validacion,franja,3,04:00,comunes,4,77,77,True,Referencia (52s),11.538781052808467,Combinada (26s/52s),0.040788486120806766,XGBoost,0.8054298311688315
+validacion,franja,3,04:30,comunes,4,79,79,True,Combinada (26s/52s) = Referencia (26s),28.997041318021786,XGBoost,1.0373243022313794,XGBoost,12.548992151898736
+validacion,franja,3,05:00,comunes,4,80,80,True,XGBoost,43.174074000000005,Combinada (26s/52s),2.150047666760287,XGBoost,-4.778825750000002
+validacion,franja,3,05:30,comunes,4,80,80,True,XGBoost,51.629048499999996,Combinada (26s/52s),6.295880508583053,XGBoost,16.954217250000003
+validacion,franja,3,06:00,comunes,4,80,80,True,Combinada (26s/52s) = Referencia (26s),50.673963657808756,Referencia (52s),0.20950857692372438,XGBoost,-3.5590967499999993
+validacion,franja,3,06:30,comunes,4,82,82,True,XGBoost,40.80772743902438,Combinada (26s/52s),1.8472201975640274,XGBoost,12.448301097560975
+validacion,franja,3,07:00,comunes,4,93,93,True,Referencia (52s),28.789337744249377,Referencia (26s),0.34688805122028654,XGBoost,8.483955043010754
+validacion,franja,3,07:30,comunes,4,94,94,True,XGBoost,28.62971268085106,Referencia (26s),0.3586944488581807,XGBoost,8.29042980851064
+validacion,franja,3,08:00,comunes,4,92,92,True,XGBoost,31.910961108695652,Referencia (26s),0.19285123380365832,XGBoost,3.5975641956521733
+validacion,franja,3,08:30,comunes,4,92,92,True,Combinada (26s/52s),26.963869787583665,Referencia (26s),0.10009057971014812,XGBoost,5.329312304347826
+validacion,franja,3,09:00,comunes,4,92,92,True,Referencia (26s),31.166653498399466,Combinada (26s/52s),0.012650966183578305,Referencia (26s),0.7782695461345869
+validacion,franja,3,09:30,comunes,4,90,90,True,Combinada (26s/52s),28.2517883280474,Referencia (26s),0.04845679012345272,Combinada (26s/52s),8.556188575361936
+validacion,franja,3,10:00,comunes,4,92,92,True,Referencia (26s),26.424935845487713,Combinada (26s/52s),0.07080314009661492,XGBoost,3.5409319565217383
+validacion,franja,3,10:30,comunes,4,92,92,True,Combinada (26s/52s),28.37142359280919,Referencia (26s),0.01361714975845274,Referencia (26s),4.411345005326048
+validacion,franja,3,11:00,comunes,4,88,88,True,Combinada (26s/52s),24.268729828962194,Referencia (26s),0.0990259740259738,Referencia (26s),9.65685263204481
+validacion,franja,3,11:30,comunes,4,87,87,True,Combinada (26s/52s),27.12075595436524,Referencia (26s),0.05076628352490431,Combinada (26s/52s),5.5643421264048225
+validacion,franja,3,12:00,comunes,4,92,92,True,Referencia (26s),30.85381358234185,Combinada (26s/52s),0.0013586956521756122,XGBoost,-1.711504869565216
+validacion,franja,3,12:30,comunes,4,87,87,True,Referencia (26s),32.20336961047163,Combinada (26s/52s),0.012479474548442226,XGBoost,3.463531586206896
+validacion,franja,3,13:00,comunes,4,92,92,True,Referencia (26s),25.87320333985931,Combinada (26s/52s),0.285507246376806,Referencia (26s),0.45070381606595256
+validacion,franja,3,13:30,comunes,4,87,87,True,XGBoost,26.87052547126437,Referencia (26s),1.4381723867247551,XGBoost,11.228275057471265
+validacion,franja,3,14:00,comunes,4,91,91,True,Combinada (26s/52s),29.405875491236237,Referencia (26s),0.0006105006105023847,XGBoost,9.527468461538463
+validacion,franja,3,14:30,comunes,4,88,88,True,XGBoost,26.772203431818184,Combinada (26s/52s),0.28293339292122255,XGBoost,5.50640465909091
+validacion,franja,3,15:00,comunes,4,86,86,True,XGBoost,37.98420411627907,Referencia (26s),1.296569506063129,XGBoost,3.876529906976744
+validacion,franja,3,15:30,comunes,4,85,85,True,XGBoost,32.56817948235294,Combinada (26s/52s),3.5299975961629,XGBoost,12.31095082352941
+validacion,franja,3,16:00,comunes,4,81,81,True,Referencia (26s),31.108516895606773,Combinada (26s/52s),0.027777777777778567,Referencia (26s),12.747997118890632
+validacion,franja,3,16:30,comunes,4,76,76,True,Combinada (26s/52s) = Referencia (26s),22.423532225510733,Referencia (52s),1.9610980558122826,Combinada (26s/52s) = Referencia (26s),12.424954657561313
+validacion,franja,3,17:00,comunes,4,53,53,True,XGBoost,17.717941603773586,Combinada (26s/52s),0.47304583512911336,XGBoost,5.176024471698114
+validacion,franja,3,17:30,comunes,4,15,15,True,Referencia (52s),8.94759279162869,Combinada (26s/52s),0.8920684574353999,Referencia (52s),1.285266534614649
+validacion,franja,3,18:00,comunes,4,1,1,True,Referencia (52s),0.6666666666666679,Combinada (26s/52s),0.5,Referencia (52s),0.6666666666666679
+validacion,franja,ambas,04:00,comunes,4,77,77,True,Referencia (52s),11.538781052808467,Combinada (26s/52s),0.040788486120806766,XGBoost,0.8054298311688315
+validacion,franja,ambas,04:30,comunes,4,158,158,False,XGBoost,26.32746929113924,Combinada (26s/52s),0.15223683884971706,XGBoost,14.507441164556964
+validacion,franja,ambas,05:00,comunes,4,158,158,False,XGBoost,33.59340535443038,Combinada (26s/52s),0.2643681747426143,XGBoost,2.326879012658227
+validacion,franja,ambas,05:30,comunes,4,160,160,False,XGBoost,36.13168365625,Combinada (26s/52s),3.8753176034283783,XGBoost,11.935707043750002
+validacion,franja,ambas,06:00,comunes,4,160,160,False,XGBoost,38.127595962499996,Combinada (26s/52s),1.5477637484577471,XGBoost,3.8369496374999996
+validacion,franja,ambas,06:30,comunes,4,163,163,False,XGBoost,34.318166742331286,Combinada (26s/52s),0.900321103936875,XGBoost,6.972142901840492
+validacion,franja,ambas,07:00,comunes,4,186,186,False,Referencia (52s),26.043983925619727,Referencia (26s),0.2623087869013929,Combinada (26s/52s),5.9407956703687566
+validacion,franja,ambas,07:30,comunes,4,188,188,False,XGBoost,26.68565789361702,Referencia (26s),0.6460918288103343,XGBoost,6.848811755319151
+validacion,franja,ambas,08:00,comunes,4,186,186,False,XGBoost,30.782616715053763,Referencia (26s),0.0024278258826875287,XGBoost,4.9898808548387095
+validacion,franja,ambas,08:30,comunes,4,189,189,False,XGBoost,28.585814370370368,Combinada (26s/52s),0.2947524287624752,XGBoost,5.782793005291005
+validacion,franja,ambas,09:00,comunes,4,182,182,False,Referencia (52s),28.989496005043073,Referencia (26s),0.08657421519859199,XGBoost,1.93892328021978
+validacion,franja,ambas,09:30,comunes,4,183,183,False,XGBoost,25.726956601092898,Combinada (26s/52s),0.1814772428102991,Combinada (26s/52s),8.218006095105782
+validacion,franja,ambas,10:00,comunes,4,186,186,False,Referencia (26s),26.951552728740886,Combinada (26s/52s),0.030869175627241674,Referencia (26s),6.227183649115956
+validacion,franja,ambas,10:30,comunes,4,188,188,False,Combinada (26s/52s),22.60024996641842,Referencia (26s),0.07655141843972046,Referencia (26s),3.574309323363157
+validacion,franja,ambas,11:00,comunes,4,179,179,False,Combinada (26s/52s),22.2326326046328,Referencia (26s),0.05256273831692937,Referencia (26s),7.3810163713636605
+validacion,franja,ambas,11:30,comunes,4,179,179,False,Combinada (26s/52s),24.084004354039468,Referencia (52s),0.4779542465972284,Combinada (26s/52s),6.725966598666253
+validacion,franja,ambas,12:00,comunes,4,182,182,False,Referencia (26s),27.844882237095145,Combinada (26s/52s),0.00902668759811931,XGBoost,2.121502802197803
+validacion,franja,ambas,12:30,comunes,4,179,179,False,Referencia (26s),28.4408542971839,Combinada (26s/52s),0.1997339718010096,XGBoost,3.276790078212289
+validacion,franja,ambas,13:00,comunes,4,181,181,False,Referencia (26s),26.600390343348053,Combinada (26s/52s),0.15084188371481133,XGBoost,2.481068486187846
+validacion,franja,ambas,13:30,comunes,4,177,177,False,Referencia (26s),28.27300646651314,Combinada (26s/52s),0.06301452784503425,XGBoost,10.091809920903955
+validacion,franja,ambas,14:00,comunes,4,180,180,False,XGBoost,29.495564849999997,Referencia (26s),1.0900006701038158,XGBoost,8.29837656111111
+validacion,franja,ambas,14:30,comunes,4,178,178,False,XGBoost,29.231229786516856,Combinada (26s/52s),0.6899805661230118,XGBoost,5.565956831460674
+validacion,franja,ambas,15:00,comunes,4,173,173,False,Referencia (26s),37.04582484699218,Combinada (26s/52s),0.05367464905037167,XGBoost,5.27225760115607
+validacion,franja,ambas,15:30,comunes,4,168,168,False,XGBoost,35.91771183928571,Referencia (26s),2.26603567586632,XGBoost,7.5273607559523805
+validacion,franja,ambas,16:00,comunes,4,165,165,False,Combinada (26s/52s),33.30765460047185,Referencia (26s),0.044949494949491964,Combinada (26s/52s),12.243222405848412
+validacion,franja,ambas,16:30,comunes,4,156,156,False,Combinada (26s/52s),27.862803657261995,Referencia (26s),0.45811956247273855,Combinada (26s/52s),18.754680901877812
+validacion,franja,ambas,17:00,comunes,4,121,121,False,XGBoost,22.275105057851242,Combinada (26s/52s),0.046871727121921225,Combinada (26s/52s) = Referencia (26s),3.9904563076204176
+validacion,franja,ambas,17:30,comunes,4,43,43,True,Combinada (26s/52s) = Referencia (26s),9.37638714889491,XGBoost,0.31575380459346114,Combinada (26s/52s) = Referencia (26s),1.0009195191347509
+validacion,franja,ambas,18:00,comunes,4,12,12,True,Combinada (26s/52s) = Referencia (26s),6.377628968253968,Referencia (52s),0.39149501925268204,Referencia (52s),-0.34873160871019565
+validacion,tipo_dia,1,DOMINGO,comunes,4,188,14,False,XGBoost,10.884298914893616,Referencia (52s),0.08373410950706273,XGBoost,0.6214942553191487
+validacion,tipo_dia,1,FESTIVO,comunes,4,10,1,True,Combinada (26s/52s) = Referencia (52s),11.221666666666668,XGBoost,1.7654863333333335,Combinada (26s/52s) = Referencia (52s),10.041666666666668
+validacion,tipo_dia,1,FESTIVO_PUENTE,comunes,4,29,2,True,Referencia (26s),9.825862068965517,Combinada (26s/52s),0.507211275314722,Referencia (26s),2.0270114942528736
+validacion,tipo_dia,1,LABORAL,comunes,4,1738,66,False,XGBoost,29.308144806098966,Combinada (26s/52s),0.053366812055763546,XGBoost,7.904850236478711
+validacion,tipo_dia,1,SABADO,comunes,4,348,14,False,XGBoost,24.513437258620687,Combinada (26s/52s),0.4752391762429653,Combinada (26s/52s) = Referencia (26s),9.107970256359499
+validacion,tipo_dia,3,DOMINGO,comunes,4,174,12,False,Referencia (52s),11.20199025374633,XGBoost,0.18837588418470474,XGBoost,-0.1398651609195402
+validacion,tipo_dia,3,FESTIVO,comunes,4,9,1,True,Combinada (26s/52s) = Referencia (52s),13.114814814814814,Referencia (26s),0.9407407407407415,Combinada (26s/52s) = Referencia (52s),10.937037037037037
+validacion,tipo_dia,3,FESTIVO_PUENTE,comunes,4,31,2,True,Referencia (26s),9.927956989247312,Combinada (26s/52s),1.4384920634920633,Referencia (26s),0.9956989247311823
+validacion,tipo_dia,3,LABORAL,comunes,4,1764,66,False,XGBoost,34.05701829931973,Combinada (26s/52s),0.27220583094697304,XGBoost,7.138601914965986
+validacion,tipo_dia,3,SABADO,comunes,4,346,14,False,Combinada (26s/52s) = Referencia (26s),26.527455285498636,Referencia (52s),1.2659001733560515,XGBoost,7.469285413294798
+validacion,tipo_dia,ambas,DOMINGO,comunes,4,362,26,False,Referencia (52s),11.080487604251903,XGBoost,0.04705909188069235,XGBoost,0.2555369668508286
+validacion,tipo_dia,ambas,FESTIVO,comunes,4,19,2,True,Combinada (26s/52s) = Referencia (52s),12.118421052631579,Referencia (26s),9.167542289026056,Combinada (26s/52s) = Referencia (52s),10.465789473684211
+validacion,tipo_dia,ambas,FESTIVO_PUENTE,comunes,4,60,4,True,Referencia (26s),9.87861111111111,Combinada (26s/52s),0.988373015873016,Referencia (26s),1.4941666666666662
+validacion,tipo_dia,ambas,LABORAL,comunes,4,3502,132,False,XGBoost,31.700210152198746,Combinada (26s/52s),0.16359868793357535,XGBoost,7.51888163592233
+validacion,tipo_dia,ambas,SABADO,comunes,4,694,28,False,Combinada (26s/52s) = Referencia (26s),25.755848599589452,Referencia (52s),0.8331351676227818,XGBoost,8.45002845389049
+validacion,regimen,1,ordinario,comunes,4,2274,94,False,XGBoost,27.051222530782763,Combinada (26s/52s),0.16264149289506236,XGBoost,7.5353639511873345
+validacion,regimen,1,raro,comunes,4,39,3,True,Combinada (26s/52s) = Referencia (52s),10.560917785917786,XGBoost,3.299041496133496,Combinada (26s/52s) = Referencia (52s),5.44480056980057
+validacion,regimen,3,ordinario,comunes,4,2284,92,False,Combinada (26s/52s) = Referencia (26s),31.404032173177633,XGBoost,0.13279371167350362,XGBoost,6.634207527583188
+validacion,regimen,3,raro,comunes,4,40,3,True,Referencia (26s),10.856666666666666,Combinada (26s/52s),0.903164682539682,Referencia (26s),3.4091666666666662
+validacion,regimen,ambas,ordinario,comunes,4,4558,186,False,XGBoost,29.298944790697675,Combinada (26s/52s),0.014599806358290834,XGBoost,7.083797195699868
+validacion,regimen,ambas,raro,comunes,4,79,6,True,Combinada (26s/52s) = Referencia (52s),11.16796262808921,Referencia (26s),1.454188892900179,Combinada (26s/52s) = Referencia (52s),5.556077958609604
+validacion,nivel_esperado,1,N1 (bajo),comunes,4,579,97,False,Referencia (26s),18.63719767466247,Combinada (26s/52s),0.013256983852837578,Referencia (26s),4.684023774090587
+validacion,nivel_esperado,1,N2 (medio-bajo),comunes,4,578,81,False,Combinada (26s/52s),23.824365071653812,XGBoost,0.044908976789095334,Combinada (26s/52s),7.191891247447374
+validacion,nivel_esperado,1,N3 (medio-alto),comunes,4,578,66,False,Combinada (26s/52s) = Referencia (26s),29.835394542126906,XGBoost,0.10795830043364774,XGBoost,9.418693769896194
+validacion,nivel_esperado,1,N4 (alto),comunes,4,578,66,False,XGBoost,34.31574076470588,Combinada (26s/52s),1.1206749436826158,XGBoost,6.681261775086504
+validacion,nivel_esperado,3,N1 (bajo),comunes,4,581,95,False,Referencia (26s),17.24875858901463,Combinada (26s/52s),0.0621800125672749,Referencia (26s),5.139631669837784
+validacion,nivel_esperado,3,N2 (medio-bajo),comunes,4,581,80,False,Combinada (26s/52s) = Referencia (26s),29.28930728368448,Referencia (52s),1.4507594135608066,Combinada (26s/52s) = Referencia (26s),8.44471054175465
+validacion,nivel_esperado,3,N3 (medio-alto),comunes,4,581,76,False,XGBoost,33.149889213425126,Combinada (26s/52s),0.7623088328107528,XGBoost,3.5028341394148024
+validacion,nivel_esperado,3,N4 (alto),comunes,4,581,80,False,XGBoost,42.07743858519793,Combinada (26s/52s),1.6738054996612064,XGBoost,6.720319253012049
+validacion,nivel_esperado,ambas,N1 (bajo),comunes,4,1160,192,False,Referencia (26s),17.941781201592303,Combinada (26s/52s),0.03776067323481058,Referencia (26s),4.912220487391554
+validacion,nivel_esperado,ambas,N2 (medio-bajo),comunes,4,1159,161,False,Combinada (26s/52s),26.56390901055788,Referencia (26s),0.13691398057937576,Combinada (26s/52s),7.819922317328761
+validacion,nivel_esperado,ambas,N3 (medio-alto),comunes,4,1159,142,False,XGBoost,31.550770988783434,Combinada (26s/52s),0.3283015825818829,XGBoost,6.45310753580673
+validacion,nivel_esperado,ambas,N4 (alto),comunes,4,1159,146,False,XGBoost,38.20663501294219,Combinada (26s/52s),1.397956093832363,XGBoost,6.700841062985332
+validacion,nivel_observado,1,N1 (bajo),comunes,4,583,95,False,Combinada (26s/52s),31.969287055646213,XGBoost,0.08281920335893744,XGBoost,29.042778317324185
+validacion,nivel_observado,1,N2 (medio-bajo),comunes,4,574,83,False,XGBoost,28.36311319337979,Combinada (26s/52s),1.4405008621217092,XGBoost,24.954100503484323
+validacion,nivel_observado,1,N3 (medio-alto),comunes,4,596,80,False,XGBoost,16.539180159395972,Combinada (26s/52s),2.4277084631501644,XGBoost,4.3109910520134225
+validacion,nivel_observado,1,N4 (alto),comunes,4,560,76,False,Referencia (52s),24.21004034053544,Combinada (26s/52s),3.01597420081648,Referencia (52s),-19.58683016232763
+validacion,nivel_observado,3,N1 (bajo),comunes,4,584,94,False,Referencia (26s),28.578586627025686,Combinada (26s/52s),0.061860594694501,Referencia (26s),25.63535411922515
+validacion,nivel_observado,3,N2 (medio-bajo),comunes,4,590,83,False,XGBoost,33.849493272881354,Combinada (26s/52s),1.8060153206963463,XGBoost,26.115121130508474
+validacion,nivel_observado,3,N3 (medio-alto),comunes,4,571,80,False,XGBoost,19.265931033274956,Combinada (26s/52s),0.6904866647717185,XGBoost,1.5384431348511383
+validacion,nivel_observado,3,N4 (alto),comunes,4,579,80,False,Referencia (52s),37.667681841415536,Combinada (26s/52s),2.1238846252958368,Referencia (52s),-11.371651026185152
+validacion,nivel_observado,ambas,N1 (bajo),comunes,4,1167,189,False,Combinada (26s/52s),30.3034409005367,Referencia (26s),0.09844123610892552,Combinada (26s/52s),27.470334403803925
+validacion,nivel_observado,ambas,N2 (medio-bajo),comunes,4,1164,166,False,XGBoost,31.144010312714776,Combinada (26s/52s),1.6257702182720806,XGBoost,25.542590340206186
+validacion,nivel_observado,ambas,N3 (medio-alto),comunes,4,1167,160,False,XGBoost,17.873348753213367,Combinada (26s/52s),1.5777053381509454,XGBoost,2.9544144790059983
+validacion,nivel_observado,ambas,N4 (alto),comunes,4,1139,156,False,Referencia (52s),31.051106564424444,Combinada (26s/52s),2.562488806412226,Referencia (52s),-15.410720662918942
+validacion,bloque_x_regimen,1,cierre (16:00 en adelante) x ordinario,comunes,4,269,88,False,Combinada (26s/52s) = Referencia (26s),28.50219403320907,XGBoost,0.2806310522927902,XGBoost,10.805820847583643
+validacion,bloque_x_regimen,1,cierre (16:00 en adelante) x raro,comunes,4,2,2,True,Combinada (26s/52s) = Referencia (52s),8.416666666666664,XGBoost,5.897566833333336,Combinada (26s/52s) = Referencia (52s),2.9166666666666643
+validacion,bloque_x_regimen,1,madrugada (04:00-04:59) x ordinario,comunes,4,79,79,True,XGBoost,22.620572962025314,Combinada (26s/52s),1.341797979930817,XGBoost,16.46589017721519
+validacion,bloque_x_regimen,1,manana (07:00-09:59) x ordinario,comunes,4,547,94,False,XGBoost,26.570904115173676,Combinada (26s/52s),0.5000769758237738,XGBoost,5.6977112084095065
+validacion,bloque_x_regimen,1,manana (07:00-09:59) x raro,comunes,4,14,3,True,Referencia (26s),11.489285714285714,Combinada (26s/52s),0.16380385487528315,Combinada (26s/52s) = Referencia (52s),3.8102324263038554
+validacion,bloque_x_regimen,1,pico manana (05:00-06:59) x ordinario,comunes,4,319,81,False,XGBoost,24.151623492163008,Combinada (26s/52s),1.0138079780576952,XGBoost,7.265413717868339
+validacion,bloque_x_regimen,1,pico tarde (14:00-15:59) x ordinario,comunes,4,344,94,False,XGBoost,34.44346747383721,Combinada (26s/52s),0.7601460418190626,XGBoost,5.4960874505813955
+validacion,bloque_x_regimen,1,pico tarde (14:00-15:59) x raro,comunes,4,5,3,True,Combinada (26s/52s) = Referencia (52s),11.206190476190477,XGBoost,3.030284323809525,Referencia (26s),-1.65
+validacion,bloque_x_regimen,1,valle (10:00-13:59) x ordinario,comunes,4,716,94,False,Combinada (26s/52s) = Referencia (26s),24.27174154376235,XGBoost,0.725003661544914,XGBoost,7.825247769553072
+validacion,bloque_x_regimen,1,valle (10:00-13:59) x raro,comunes,4,18,3,True,Combinada (26s/52s) = Referencia (52s),9.770458553791887,XGBoost,0.1528063906525592,Combinada (26s/52s) = Referencia (52s),7.837125220458552
+validacion,bloque_x_regimen,3,cierre (16:00 en adelante) x ordinario,comunes,4,225,85,False,Combinada (26s/52s) = Referencia (26s),23.674943277099715,XGBoost,2.0103640473447264,Combinada (26s/52s) = Referencia (26s),10.438116686620075
+validacion,bloque_x_regimen,3,cierre (16:00 en adelante) x raro,comunes,4,1,1,True,XGBoost,8.282690000000002,Referencia (26s),1.7173099999999977,XGBoost,8.282690000000002
+validacion,bloque_x_regimen,3,madrugada (04:00-04:59) x ordinario,comunes,4,156,80,False,Combinada (26s/52s) = Referencia (26s),20.399955888597916,XGBoost,1.8052420665302904,Combinada (26s/52s) = Referencia (26s),6.188561921988084
+validacion,bloque_x_regimen,3,manana (07:00-09:59) x ordinario,comunes,4,539,92,False,Combinada (26s/52s) = Referencia (26s),29.838778987558026,XGBoost,0.19900485474253315,XGBoost,5.461737831168831
+validacion,bloque_x_regimen,3,manana (07:00-09:59) x raro,comunes,4,14,3,True,Referencia (26s),14.947619047619046,Combinada (26s/52s),0.1337301587301596,Referencia (26s),6.547619047619047
+validacion,bloque_x_regimen,3,pico manana (05:00-06:59) x ordinario,comunes,4,322,82,False,XGBoost,46.82837288819876,Combinada (26s/52s),2.275809884634839,XGBoost,5.310758602484472
+validacion,bloque_x_regimen,3,pico tarde (14:00-15:59) x ordinario,comunes,4,344,92,False,XGBoost,32.16379970639535,Combinada (26s/52s),1.0973452035767295,XGBoost,7.712270694767442
+validacion,bloque_x_regimen,3,pico tarde (14:00-15:59) x raro,comunes,4,6,3,True,Referencia (26s),10.305555555555555,Combinada (26s/52s),1.4828042328042343,Referencia (26s),0.3388888888888886
+validacion,bloque_x_regimen,3,valle (10:00-13:59) x ordinario,comunes,4,698,92,False,Combinada (26s/52s) = Referencia (26s),28.48291053208083,Referencia (52s),0.734628267622643,XGBoost,5.44100458739255
+validacion,bloque_x_regimen,3,valle (10:00-13:59) x raro,comunes,4,19,3,True,Referencia (26s),8.06140350877193,Combinada (26s/52s),1.216186299081036,Referencia (26s),1.7192982456140349
+validacion,bloque_x_regimen,ambas,cierre (16:00 en adelante) x ordinario,comunes,4,494,173,False,Combinada (26s/52s) = Referencia (26s),26.30354743376655,XGBoost,1.0684649063144214,Combinada (26s/52s) = Referencia (26s),11.084600351344406
+validacion,bloque_x_regimen,ambas,cierre (16:00 en adelante) x raro,comunes,4,3,3,True,Combinada (26s/52s) = Referencia (52s),9.694444444444443,XGBoost,2.609274555555558,Combinada (26s/52s) = Referencia (52s),6.027777777777776
+validacion,bloque_x_regimen,ambas,madrugada (04:00-04:59) x ordinario,comunes,4,235,159,False,Combinada (26s/52s) = Referencia (26s),21.597533715045998,XGBoost,0.7473009445284688,XGBoost,10.017845961702127
+validacion,bloque_x_regimen,ambas,manana (07:00-09:59) x ordinario,comunes,4,1086,186,False,XGBoost,28.291574624309394,Combinada (26s/52s),0.15311094757769794,XGBoost,5.580593666666667
+validacion,bloque_x_regimen,ambas,manana (07:00-09:59) x raro,comunes,4,28,6,True,Referencia (26s),13.218452380952382,Combinada (26s/52s),0.1487670068027196,Referencia (26s),5.494642857142857
+validacion,bloque_x_regimen,ambas,pico manana (05:00-06:59) x ordinario,comunes,4,641,163,False,XGBoost,35.543063906396256,Combinada (26s/52s),1.6477621339357569,XGBoost,6.28351208424337
+validacion,bloque_x_regimen,ambas,pico tarde (14:00-15:59) x ordinario,comunes,4,688,186,False,XGBoost,33.30363359011628,Combinada (26s/52s),0.9287456226978961,XGBoost,6.604179072674419
+validacion,bloque_x_regimen,ambas,pico tarde (14:00-15:59) x raro,comunes,4,11,6,True,Combinada (26s/52s) = Referencia (52s),11.523737373737374,Referencia (26s),0.5747474747474719,Referencia (26s),-0.5651515151515153
+validacion,bloque_x_regimen,ambas,valle (10:00-13:59) x ordinario,comunes,4,1414,186,False,Combinada (26s/52s) = Referencia (26s),26.350522274912485,Referencia (52s),0.7303211422773792,XGBoost,6.648301700848656
+validacion,bloque_x_regimen,ambas,valle (10:00-13:59) x raro,comunes,4,37,6,True,Combinada (26s/52s) = Referencia (52s),9.517363792363792,Referencia (26s),0.9146177863501048,Referencia (26s),5.715765362497681
+evaluacion,bloque,1,cierre (16:00 en adelante),comunes,4,153,57,False,XGBoost,25.830853790849673,Combinada (26s/52s),0.5066840378375197,XGBoost,9.385385882352942
+evaluacion,bloque,1,madrugada (04:00-04:59),comunes,4,52,52,True,Combinada (26s/52s) = Referencia (26s),21.635395210849758,XGBoost,0.9503503853040911,Combinada (26s/52s) = Referencia (26s),6.572257893621531
+evaluacion,bloque,1,manana (07:00-09:59),comunes,4,367,66,False,XGBoost,26.463070555858312,Combinada (26s/52s),0.02672215063521932,XGBoost,1.3816548501362396
+evaluacion,bloque,1,pico manana (05:00-06:59),comunes,4,211,55,False,Combinada (26s/52s),24.615706552953174,Referencia (26s),0.04028436018957393,XGBoost,0.5203096113744079
+evaluacion,bloque,1,pico tarde (14:00-15:59),comunes,4,223,65,False,Combinada (26s/52s),33.15954524728042,Referencia (26s),0.6460322322747842,XGBoost,0.37269614349775787
+evaluacion,bloque,1,valle (10:00-13:59),comunes,4,477,66,False,Combinada (26s/52s),24.960126986740672,XGBoost,0.31496064009370883,XGBoost,3.2925308134171907
+evaluacion,bloque,3,cierre (16:00 en adelante),comunes,4,129,51,False,XGBoost,18.483804100775195,Combinada (26s/52s),0.9322490714791556,XGBoost,7.670680550387597
+evaluacion,bloque,3,madrugada (04:00-04:59),comunes,4,100,53,False,XGBoost,21.62357337,Combinada (26s/52s),0.9874066186316703,XGBoost,0.4940448099999993
+evaluacion,bloque,3,manana (07:00-09:59),comunes,4,385,68,False,Combinada (26s/52s),27.97674430246011,XGBoost,0.30988274429313734,XGBoost,4.415727976623376
+evaluacion,bloque,3,pico manana (05:00-06:59),comunes,4,213,54,False,Combinada (26s/52s) = Referencia (26s),45.230265995919005,Referencia (52s),2.2572551288747533,Combinada (26s/52s) = Referencia (26s),2.7611008887257276
+evaluacion,bloque,3,pico tarde (14:00-15:59),comunes,4,234,68,False,XGBoost,28.182341012820512,Combinada (26s/52s),0.16985189508787357,XGBoost,4.363536611111111
+evaluacion,bloque,3,valle (10:00-13:59),comunes,4,494,68,False,Combinada (26s/52s),26.964600516610528,Referencia (52s),0.7067135227146402,XGBoost,1.5970812631578946
+evaluacion,bloque,ambas,cierre (16:00 en adelante),comunes,4,282,108,False,XGBoost,22.46996935815603,Combinada (26s/52s),0.7013574042906114,XGBoost,8.60099940070922
+evaluacion,bloque,ambas,madrugada (04:00-04:59),comunes,4,152,105,False,XGBoost,21.95273755263158,Combinada (26s/52s),0.32448974886417403,Combinada (26s/52s) = Referencia (26s),2.8570329369711613
+evaluacion,bloque,ambas,manana (07:00-09:59),comunes,4,752,134,False,Combinada (26s/52s),27.25106446772642,XGBoost,0.14560881285868987,XGBoost,2.935003458776596
+evaluacion,bloque,ambas,pico manana (05:00-06:59),comunes,4,424,109,False,Combinada (26s/52s),34.97160551840535,Referencia (26s),0.020047169811320487,Combinada (26s/52s),2.0615790985785805
+evaluacion,bloque,ambas,pico tarde (14:00-15:59),comunes,4,457,133,False,Combinada (26s/52s),30.698012539593204,XGBoost,0.6801449286781285,XGBoost,2.4161461859956237
+evaluacion,bloque,ambas,valle (10:00-13:59),comunes,4,971,134,False,Combinada (26s/52s),25.979910636334605,XGBoost,0.5777671844686907,XGBoost,2.429964306900103
+evaluacion,franja,1,04:30,comunes,4,52,52,True,Combinada (26s/52s) = Referencia (26s),21.635395210849758,XGBoost,0.9503503853040911,Combinada (26s/52s) = Referencia (26s),6.572257893621531
+evaluacion,franja,1,05:00,comunes,4,52,52,True,XGBoost,23.47850526923077,Combinada (26s/52s),0.7180248428140459,Combinada (26s/52s) = Referencia (26s),0.05686732385261628
+evaluacion,franja,1,05:30,comunes,4,52,52,True,Combinada (26s/52s) = Referencia (26s),23.653196060932075,XGBoost,0.48637413137561936,Combinada (26s/52s) = Referencia (26s),-2.6441467186659504
+evaluacion,franja,1,06:00,comunes,4,52,52,True,Combinada (26s/52s) = Referencia (26s),23.893986971653057,XGBoost,1.4027713745007908,XGBoost,4.659062038461538
+evaluacion,franja,1,06:30,comunes,4,55,55,True,Combinada (26s/52s),26.60438180277023,Referencia (26s),0.1545454545454561,XGBoost,-0.05684003636363622
+evaluacion,franja,1,07:00,comunes,4,59,59,True,Combinada (26s/52s),28.85107369133414,XGBoost,0.2403103256150132,XGBoost,5.853371101694915
+evaluacion,franja,1,07:30,comunes,4,62,62,True,XGBoost,25.211932129032256,Combinada (26s/52s),0.7414769496700764,Combinada (26s/52s),1.47105226152147
+evaluacion,franja,1,08:00,comunes,4,63,63,True,XGBoost,22.5487976984127,Referencia (26s),0.6472054580946605,XGBoost,6.03066680952381
+evaluacion,franja,1,08:30,comunes,4,63,63,True,Referencia (26s),27.27355207365753,Combinada (26s/52s),0.18430335097001915,Referencia (26s),0.20416773602328528
+evaluacion,franja,1,09:00,comunes,4,60,60,True,Referencia (26s),26.447584302951952,Combinada (26s/52s),0.48861111111110844,Referencia (26s),2.0125415679092153
+evaluacion,franja,1,09:30,comunes,4,60,60,True,XGBoost,26.120147883333335,Combinada (26s/52s),0.45092540265973824,XGBoost,7.363008516666667
+evaluacion,franja,1,10:00,comunes,4,60,60,True,XGBoost,24.433564183333335,Combinada (26s/52s),0.46462350184051715,Combinada (26s/52s),5.013234911772461
+evaluacion,franja,1,10:30,comunes,4,59,59,True,XGBoost,22.008350999999998,Referencia (26s),0.06414079262684425,XGBoost,2.197043508474576
+evaluacion,franja,1,11:00,comunes,4,62,62,True,Combinada (26s/52s),25.09615618021429,Referencia (52s),0.265830595900983,Combinada (26s/52s),5.243832697245647
+evaluacion,franja,1,11:30,comunes,4,60,60,True,XGBoost,20.296589533333336,Combinada (26s/52s),0.4814212563819993,XGBoost,2.5433296333333337
+evaluacion,franja,1,12:00,comunes,4,62,62,True,Combinada (26s/52s),22.816103500987925,Referencia (52s),0.17531703072107874,Combinada (26s/52s),0.021427756208678813
+evaluacion,franja,1,12:30,comunes,4,58,58,True,Combinada (26s/52s),26.347075360520822,XGBoost,0.017457036030901207,XGBoost,7.7321299827586225
+evaluacion,franja,1,13:00,comunes,4,58,58,True,Combinada (26s/52s),25.842138534481286,XGBoost,0.12766893103595223,XGBoost,2.6920361896551714
+evaluacion,franja,1,13:30,comunes,4,58,58,True,Combinada (26s/52s),32.02897371733863,Referencia (26s),0.0764367816091891,XGBoost,-0.583942344827588
+evaluacion,franja,1,14:00,comunes,4,55,55,True,Referencia (26s),35.05990087026079,XGBoost,0.26690249337557503,XGBoost,0.2892518727272729
+evaluacion,franja,1,14:30,comunes,4,57,57,True,Combinada (26s/52s),35.423310694996594,Referencia (26s),0.48350041771094254,XGBoost,6.255929789473684
+evaluacion,franja,1,15:00,comunes,4,58,58,True,Combinada (26s/52s),32.48052120545988,Referencia (26s),1.2322327355266083,XGBoost,-2.6364697068965515
+evaluacion,franja,1,15:30,comunes,4,53,53,True,Combinada (26s/52s),29.209781812849887,Referencia (26s),1.1359024904505048,XGBoost,-2.574912603773586
+evaluacion,franja,1,16:00,comunes,4,54,54,True,XGBoost,27.753717444444444,Combinada (26s/52s),1.4020952277044856,XGBoost,5.996117851851852
+evaluacion,franja,1,16:30,comunes,4,47,47,True,XGBoost,31.596620574468083,Combinada (26s/52s),0.3572134839347818,XGBoost,15.052655680851064
+evaluacion,franja,1,17:00,comunes,4,39,39,True,Combinada (26s/52s) = Referencia (26s),20.683314131632176,Referencia (52s),0.5956190005004913,XGBoost,8.236091333333333
+evaluacion,franja,1,17:30,comunes,4,11,11,True,XGBoost,9.722566454545456,Referencia (52s),2.4602251613937582,XGBoost,6.5049682727272735
+evaluacion,franja,1,18:00,comunes,4,2,2,True,Referencia (52s),1.9388888888888882,Combinada (26s/52s),0.8846405228758183,Referencia (52s),-1.5611111111111118
+evaluacion,franja,3,04:00,comunes,4,47,47,True,XGBoost,10.878781234042554,Referencia (52s),0.5113781130906272,XGBoost,0.05422302127659544
+evaluacion,franja,3,04:30,comunes,4,53,53,True,XGBoost,31.151973943396225,Combinada (26s/52s),0.9076121697137545,Combinada (26s/52s) = Referencia (26s),-0.7025847349099293
+evaluacion,franja,3,05:00,comunes,4,53,53,True,Referencia (52s),41.24569456484728,Combinada (26s/52s),1.2900133521642445,Referencia (52s),2.2869824726553145
+evaluacion,franja,3,05:30,comunes,4,53,53,True,Combinada (26s/52s) = Referencia (26s),38.61202425361945,XGBoost,3.5171234067579036,XGBoost,-5.887089547169812
+evaluacion,franja,3,06:00,comunes,4,53,53,True,Combinada (26s/52s) = Referencia (26s),55.99846895528714,Referencia (52s),0.5312513046075864,XGBoost,-6.144262264150939
+evaluacion,franja,3,06:30,comunes,4,54,54,True,Combinada (26s/52s) = Referencia (26s),43.801814767723855,XGBoost,2.1057156026465194,XGBoost,-1.3949092592592591
+evaluacion,franja,3,07:00,comunes,4,65,65,True,Combinada (26s/52s),29.947249129842064,Referencia (26s),0.10435897435897346,Referencia (26s),12.752844504900084
+evaluacion,franja,3,07:30,comunes,4,64,64,True,XGBoost,27.358007968749998,Combinada (26s/52s),0.12529579689771708,XGBoost,1.506976031249999
+evaluacion,franja,3,08:00,comunes,4,67,67,True,Referencia (26s),26.749251443929776,Combinada (26s/52s),0.1598317934138862,Referencia (26s),1.8108389528924789
+evaluacion,franja,3,08:30,comunes,4,63,63,True,XGBoost,32.935333507936505,Combinada (26s/52s),0.010380471953354231,XGBoost,1.217900682539682
+evaluacion,franja,3,09:00,comunes,4,63,63,True,Combinada (26s/52s),25.378512259604697,Referencia (26s),0.299370118417734,XGBoost,1.0431269365079372
+evaluacion,franja,3,09:30,comunes,4,63,63,True,XGBoost,25.1242346031746,Combinada (26s/52s),0.08543352405987292,Combinada (26s/52s),9.749303576759305
+evaluacion,franja,3,10:00,comunes,4,60,60,True,Combinada (26s/52s),26.768464857567945,Referencia (52s),0.122712204085353,XGBoost,-0.44675851666666694
+evaluacion,franja,3,10:30,comunes,4,63,63,True,Combinada (26s/52s),27.226975229604125,Referencia (26s),0.08122323003275866,Referencia (26s),2.5049657829471674
+evaluacion,franja,3,11:00,comunes,4,64,64,True,Combinada (26s/52s),20.7949897286639,Referencia (26s),1.5820143819968493,Combinada (26s/52s),5.367884595745349
+evaluacion,franja,3,11:30,comunes,4,66,66,True,XGBoost,28.99736924242424,Combinada (26s/52s),0.5765828910742528,XGBoost,-1.1422281515151511
+evaluacion,franja,3,12:00,comunes,4,62,62,True,Combinada (26s/52s),26.046354653304025,Referencia (52s),0.6103064828852283,XGBoost,-2.007547290322581
+evaluacion,franja,3,12:30,comunes,4,61,61,True,XGBoost,21.863605655737707,Combinada (26s/52s),1.4341846285284312,XGBoost,1.0769327377049174
+evaluacion,franja,3,13:00,comunes,4,59,59,True,XGBoost,30.724719355932205,Combinada (26s/52s),1.218658510428785,XGBoost,0.7750438983050858
+evaluacion,franja,3,13:30,comunes,4,59,59,True,Referencia (52s),30.038763223411813,Combinada (26s/52s),0.3959257745660061,Combinada (26s/52s),-0.08191089966581203
+evaluacion,franja,3,14:00,comunes,4,62,62,True,Combinada (26s/52s),26.226617141992794,Referencia (26s),1.5234720911959272,XGBoost,10.175013806451613
+evaluacion,franja,3,14:30,comunes,4,59,59,True,XGBoost,26.392832864406778,Combinada (26s/52s),0.5833012754946623,XGBoost,-1.7671891016949155
+evaluacion,franja,3,15:00,comunes,4,60,60,True,Combinada (26s/52s),31.540845004249153,XGBoost,0.05708154575084734,XGBoost,3.8230442500000006
+evaluacion,franja,3,15:30,comunes,4,53,53,True,XGBoost,26.599479150943395,Combinada (26s/52s),2.161280530903305,XGBoost,5.001853075471698
+evaluacion,franja,3,16:00,comunes,4,48,48,True,Combinada (26s/52s),20.14160471773585,Referencia (52s),0.44693144824391595,Combinada (26s/52s),2.161793726429385
+evaluacion,franja,3,16:30,comunes,4,45,45,True,XGBoost,19.196545555555556,Combinada (26s/52s),2.5442556921722286,XGBoost,14.287701733333334
+evaluacion,franja,3,17:00,comunes,4,31,31,True,XGBoost,13.840400870967743,Combinada (26s/52s),2.2659878995384606,XGBoost,2.423225322580645
+evaluacion,franja,3,17:30,comunes,4,4,4,True,Referencia (52s),12.78331537356322,Combinada (26s/52s),0.4432824771155133,Referencia (52s),12.78331537356322
+evaluacion,franja,3,18:00,comunes,4,1,1,True,Referencia (52s),1.5652173913043512,Combinada (26s/52s),5.768115942028983,Referencia (52s),-1.5652173913043512
+evaluacion,franja,ambas,04:00,comunes,4,47,47,True,XGBoost,10.878781234042554,Referencia (52s),0.5113781130906272,XGBoost,0.05422302127659544
+evaluacion,franja,ambas,04:30,comunes,4,105,105,False,Combinada (26s/52s) = Referencia (26s),26.897129666276346,XGBoost,0.012521667056986985,Combinada (26s/52s) = Referencia (26s),2.9001944716008894
+evaluacion,franja,ambas,05:00,comunes,4,105,105,False,Referencia (52s),33.01670424169744,Combinada (26s/52s),0.4367441909496179,Combinada (26s/52s) = Referencia (26s),-2.494570058495958
+evaluacion,franja,ambas,05:30,comunes,4,105,105,False,Combinada (26s/52s) = Referencia (26s),31.203842672479038,XGBoost,2.0161809084733413,Combinada (26s/52s) = Referencia (26s),-4.933345089254183
+evaluacion,franja,ambas,06:00,comunes,4,105,105,False,Combinada (26s/52s) = Referencia (26s),40.09910644910645,XGBoost,1.331496541369738,XGBoost,-0.7940445142857115
+evaluacion,franja,ambas,06:30,comunes,4,109,109,False,Combinada (26s/52s),35.124210978068355,Referencia (26s),0.07798165137614887,XGBoost,-0.7197367155963302
+evaluacion,franja,ambas,07:00,comunes,4,124,124,False,Combinada (26s/52s),29.425681784100387,Referencia (26s),0.27125939780008324,XGBoost,10.212627403225806
+evaluacion,franja,ambas,07:30,comunes,4,126,126,False,XGBoost,26.302002396825397,Combinada (26s/52s),0.4284960466745922,XGBoost,-0.9823877777777784
+evaluacion,franja,ambas,08:00,comunes,4,130,130,False,XGBoost,24.961510084615384,Referencia (26s),0.06578257387122122,XGBoost,1.4251829615384617
+evaluacion,franja,ambas,08:30,comunes,4,126,126,False,Referencia (26s),30.181581250507634,Combinada (26s/52s),0.02020345175107252,XGBoost,-1.0062104444444446
+evaluacion,franja,ambas,09:00,comunes,4,123,123,False,Referencia (26s),26.053346731646588,Combinada (26s/52s),0.08501096915730955,XGBoost,-1.3865000243902441
+evaluacion,franja,ambas,09:30,comunes,4,123,123,False,XGBoost,25.61004595934959,Combinada (26s/52s),0.26372224532810407,Combinada (26s/52s),9.314441099718083
+evaluacion,franja,ambas,10:00,comunes,4,120,120,False,XGBoost,25.811849283333334,Combinada (26s/52s),0.021476988037562705,XGBoost,2.73170675
+evaluacion,franja,ambas,10:30,comunes,4,122,122,False,Referencia (26s),24.77617638296809,Combinada (26s/52s),0.022947567004948155,Referencia (26s),2.375923617634352
+evaluacion,franja,ambas,11:00,comunes,4,126,126,False,Combinada (26s/52s),22.911436712760125,Referencia (52s),1.234719043391486,Combinada (26s/52s),5.30684318537248
+evaluacion,franja,ambas,11:30,comunes,4,126,126,False,XGBoost,24.85414080952381,Combinada (26s/52s),0.5312678269350855,XGBoost,0.6127993650793656
+evaluacion,franja,ambas,12:00,comunes,4,124,124,False,Combinada (26s/52s),24.431229077145975,Referencia (52s),0.3928117568031517,XGBoost,-1.4891366693548387
+evaluacion,franja,ambas,12:30,comunes,4,119,119,False,XGBoost,24.057334655462185,Combinada (26s/52s),0.7266618004238801,XGBoost,4.320642319327731
+evaluacion,franja,ambas,13:00,comunes,4,117,117,False,XGBoost,28.367583547008547,Combinada (26s/52s),0.5512483257710521,XGBoost,1.7253477692307695
+evaluacion,franja,ambas,13:30,comunes,4,117,117,False,Combinada (26s/52s),31.22501817509685,Referencia (52s),0.46994504764471756,Combinada (26s/52s),0.4045222339351793
+evaluacion,franja,ambas,14:00,comunes,4,117,117,False,Combinada (26s/52s),30.508645105423618,Referencia (26s),0.6776803674143643,XGBoost,5.527860760683761
+evaluacion,franja,ambas,14:30,comunes,4,116,116,False,Combinada (26s/52s),31.12690192990509,Referencia (26s),0.2735016420361269,XGBoost,2.175205525862069
+evaluacion,franja,ambas,15:00,comunes,4,118,118,False,Combinada (26s/52s),32.00271974721714,Referencia (26s),1.2378276034201647,XGBoost,0.6480289152542378
+evaluacion,franja,ambas,15:30,comunes,4,106,106,False,XGBoost,28.820284518867926,Combinada (26s/52s),0.16498622848036604,XGBoost,1.213470235849056
+evaluacion,franja,ambas,16:00,comunes,4,102,102,False,XGBoost,24.51373462745098,Combinada (26s/52s),0.40009783085649886,XGBoost,4.955176764705882
+evaluacion,franja,ambas,16:30,comunes,4,92,92,True,XGBoost,25.531366489130438,Combinada (26s/52s),1.4269623901378772,XGBoost,14.678493423913045
+evaluacion,franja,ambas,17:00,comunes,4,70,70,True,XGBoost,18.264946728571427,Combinada (26s/52s),0.39144331456210324,XGBoost,5.661822099999999
+evaluacion,franja,ambas,17:30,comunes,4,15,15,True,XGBoost,11.721601733333333,Referencia (52s),0.6213295513056174,XGBoost,9.362029733333335
+evaluacion,franja,ambas,18:00,comunes,4,3,3,True,Referencia (52s),1.8143317230273759,Combinada (26s/52s),2.5124656625935398,Combinada (26s/52s) = Referencia (26s),-0.5620915032679736
+evaluacion,tipo_dia,1,DOMINGO,comunes,4,97,9,True,XGBoost,10.731675907216495,Referencia (52s),0.789492472957166,XGBoost,1.8694441134020616
+evaluacion,tipo_dia,1,FESTIVO,comunes,4,40,3,True,XGBoost,12.6487425,Combinada (26s/52s),0.9941741666666672,Combinada (26s/52s) = Referencia (52s),0.5929166666666653
+evaluacion,tipo_dia,1,FESTIVO_PUENTE,comunes,4,21,2,True,Combinada (26s/52s) = Referencia (52s),12.36832955404384,Referencia (26s),1.2983371126228267,Referencia (26s),0.9523809523809513
+evaluacion,tipo_dia,1,LABORAL,comunes,4,1084,42,False,Combinada (26s/52s) = Referencia (26s),29.057742090746505,XGBoost,0.5940625817627208,XGBoost,2.501924991697417
+evaluacion,tipo_dia,1,SABADO,comunes,4,241,10,False,XGBoost,24.43208916182573,Combinada (26s/52s),0.10605144435254488,XGBoost,3.950561219917012
+evaluacion,tipo_dia,3,DOMINGO,comunes,4,110,10,False,XGBoost,9.71281920909091,Combinada (26s/52s),0.3558440879982694,XGBoost,1.3102398090909093
+evaluacion,tipo_dia,3,FESTIVO,comunes,4,48,3,True,Combinada (26s/52s) = Referencia (52s),13.52452876984127,XGBoost,0.0012533551587292635,Combinada (26s/52s) = Referencia (52s),1.493229166666666
+evaluacion,tipo_dia,3,FESTIVO_PUENTE,comunes,4,22,2,True,Combinada (26s/52s) = Referencia (52s),8.596464646464646,XGBoost,0.980368808080808,Combinada (26s/52s) = Referencia (52s),2.591847041847042
+evaluacion,tipo_dia,3,LABORAL,comunes,4,1131,43,False,Combinada (26s/52s) = Referencia (26s),32.627158021156475,XGBoost,0.786451061955816,XGBoost,1.5351301052166226
+evaluacion,tipo_dia,3,SABADO,comunes,4,244,10,False,Combinada (26s/52s) = Referencia (26s),25.732047457113293,XGBoost,0.7813309609194938,XGBoost,2.9948500409836067
+evaluacion,tipo_dia,ambas,DOMINGO,comunes,4,207,19,False,XGBoost,10.190254473429952,Combinada (26s/52s),0.7311371712485819,XGBoost,1.5722824057971017
+evaluacion,tipo_dia,ambas,FESTIVO,comunes,4,88,6,True,XGBoost,13.12712775,Combinada (26s/52s),0.45121370021644935,Combinada (26s/52s) = Referencia (52s),1.0839962121212112
+evaluacion,tipo_dia,ambas,FESTIVO_PUENTE,comunes,4,43,4,True,Combinada (26s/52s) = Referencia (52s),10.438538205980066,XGBoost,2.452642747508307,Referencia (26s),2.267863515890657
+evaluacion,tipo_dia,ambas,LABORAL,comunes,4,2215,85,False,Combinada (26s/52s) = Referencia (26s),30.88031970577751,XGBoost,0.6922979637484517,XGBoost,2.008270356659142
+evaluacion,tipo_dia,ambas,SABADO,comunes,4,485,20,False,Combinada (26s/52s) = Referencia (26s),25.138786527061047,XGBoost,0.3403842399492589,XGBoost,3.469749822680412
+evaluacion,regimen,1,ordinario,comunes,4,1422,61,False,Combinada (26s/52s) = Referencia (26s),27.120576244885246,XGBoost,0.35597953289253326,XGBoost,2.704295375527426
+evaluacion,regimen,1,raro,comunes,4,61,5,True,Combinada (26s/52s) = Referencia (52s),13.204124381993235,XGBoost,0.7234189786625027,Combinada (26s/52s) = Referencia (52s),1.6176034348165482
+evaluacion,regimen,3,ordinario,comunes,4,1485,63,False,Combinada (26s/52s) = Referencia (26s),29.823224420298608,XGBoost,0.7009953238091349,XGBoost,1.7583178033670035
+evaluacion,regimen,3,raro,comunes,4,70,5,True,Combinada (26s/52s) = Referencia (52s),11.975708616780045,XGBoost,0.3089753546485259,Combinada (26s/52s) = Referencia (52s),1.8385090702947842
+evaluacion,regimen,ambas,ordinario,comunes,4,2907,124,False,Combinada (26s/52s) = Referencia (26s),28.50118599393541,XGBoost,0.5322259895527175,XGBoost,2.2210560584795322
+evaluacion,regimen,ambas,raro,comunes,4,131,10,False,Combinada (26s/52s) = Referencia (52s),12.54771901126863,XGBoost,0.5019605536168683,Combinada (26s/52s) = Referencia (52s),1.7356446140797277
+evaluacion,nivel_esperado,1,N1 (bajo),comunes,4,484,66,False,Referencia (26s),20.16800710460609,Combinada (26s/52s),0.0012429489702228125,Referencia (26s),4.18215198980518
+evaluacion,nivel_esperado,1,N2 (medio-bajo),comunes,4,334,54,False,XGBoost,25.728926323353292,Combinada (26s/52s),0.4867512729304728,XGBoost,5.697508203592815
+evaluacion,nivel_esperado,1,N3 (medio-alto),comunes,4,471,42,False,Combinada (26s/52s) = Referencia (26s),29.030362360205547,XGBoost,0.9496724826819261,XGBoost,0.589984163481953
+evaluacion,nivel_esperado,1,N4 (alto),comunes,4,194,42,False,Combinada (26s/52s) = Referencia (26s),37.00854119990662,XGBoost,0.7347167124645182,XGBoost,-1.8668052835051545
+evaluacion,nivel_esperado,3,N1 (bajo),comunes,4,429,68,False,XGBoost,15.914213787878788,Combinada (26s/52s),0.3089861682045534,XGBoost,4.199176734265734
+evaluacion,nivel_esperado,3,N2 (medio-bajo),comunes,4,574,55,False,Combinada (26s/52s),30.362292728265803,XGBoost,0.5213199180756618,XGBoost,3.6028176114982577
+evaluacion,nivel_esperado,3,N3 (medio-alto),comunes,4,264,53,False,XGBoost,31.93228592424242,Combinada (26s/52s),0.2919421196829859,XGBoost,1.1383685984848486
+evaluacion,nivel_esperado,3,N4 (alto),comunes,4,288,53,False,Combinada (26s/52s) = Referencia (26s),42.46834325186598,Referencia (52s),2.2853291920257703,XGBoost,-4.252445138888888
+evaluacion,nivel_esperado,ambas,N1 (bajo),comunes,4,913,134,False,XGBoost,18.30469916538883,Combinada (26s/52s),0.010382770088376958,XGBoost,4.549277986856517
+evaluacion,nivel_esperado,ambas,N2 (medio-bajo),comunes,4,908,109,False,Combinada (26s/52s),28.83699597266888,XGBoost,0.15050959010645215,XGBoost,4.3733315517621145
+evaluacion,nivel_esperado,ambas,N3 (medio-alto),comunes,4,735,95,False,Combinada (26s/52s) = Referencia (26s),30.177546769051865,XGBoost,0.5037047887712625,XGBoost,0.7869548993197278
+evaluacion,nivel_esperado,ambas,N4 (alto),comunes,4,482,95,False,Combinada (26s/52s) = Referencia (26s),40.27082956290308,XGBoost,2.3143807586736784,XGBoost,-3.2922498443983397
+evaluacion,nivel_observado,1,N1 (bajo),comunes,4,407,64,False,XGBoost,29.944804906633905,Combinada (26s/52s),0.8769130807682224,XGBoost,26.86828777149877
+evaluacion,nivel_observado,1,N2 (medio-bajo),comunes,4,365,54,False,XGBoost,23.69548524931507,Combinada (26s/52s),1.7472346121894198,XGBoost,17.95291557808219
+evaluacion,nivel_observado,1,N3 (medio-alto),comunes,4,388,51,False,XGBoost,15.28913075257732,Combinada (26s/52s),0.8381787444108948,XGBoost,-0.8221720979381443
+evaluacion,nivel_observado,1,N4 (alto),comunes,4,323,49,False,Referencia (52s),30.04897878739872,Combinada (26s/52s),4.881308990852606,Referencia (52s),-26.814873177458303
+evaluacion,nivel_observado,3,N1 (bajo),comunes,4,437,68,False,XGBoost,24.675224215102975,Combinada (26s/52s),1.938106718461988,XGBoost,21.49533990389016
+evaluacion,nivel_observado,3,N2 (medio-bajo),comunes,4,399,56,False,XGBoost,27.084765749373435,Combinada (26s/52s),1.2319373817074109,XGBoost,19.36724872180451
+evaluacion,nivel_observado,3,N3 (medio-alto),comunes,4,350,52,False,Combinada (26s/52s) = Referencia (26s),19.11153118625182,XGBoost,1.0937998737481784,Combinada (26s/52s) = Referencia (26s),-0.5975500950556766
+evaluacion,nivel_observado,3,N4 (alto),comunes,4,369,52,False,Referencia (52s),38.34461665708244,Combinada (26s/52s),3.683464060697368,Referencia (52s),-15.11777661872189
+evaluacion,nivel_observado,ambas,N1 (bajo),comunes,4,844,132,False,XGBoost,27.216360875592418,Combinada (26s/52s),1.426369976114401,XGBoost,24.086323058056873
+evaluacion,nivel_observado,ambas,N2 (medio-bajo),comunes,4,764,110,False,XGBoost,25.46554142670157,Combinada (26s/52s),1.478119959097377,XGBoost,18.691552913612565
+evaluacion,nivel_observado,ambas,N3 (medio-alto),comunes,4,738,103,False,Combinada (26s/52s) = Referencia (26s),17.542590785934372,XGBoost,0.07807127775126332,Combinada (26s/52s) = Referencia (26s),0.8956236054313635
+evaluacion,nivel_observado,ambas,N4 (alto),comunes,4,692,101,False,Referencia (52s),34.47251979016359,Combinada (26s/52s),4.242573760755377,Referencia (52s),-20.57754856738065
+evaluacion,bloque_x_regimen,1,cierre (16:00 en adelante) x ordinario,comunes,4,151,55,False,XGBoost,26.167353973509933,Combinada (26s/52s),0.4285176895528089,XGBoost,9.511720397350993
+evaluacion,bloque_x_regimen,1,cierre (16:00 en adelante) x raro,comunes,4,2,2,True,XGBoost,0.4250899999999991,Combinada (26s/52s),6.408243333333337,XGBoost,-0.15287000000000184
+evaluacion,bloque_x_regimen,1,madrugada (04:00-04:59) x ordinario,comunes,4,52,52,True,Combinada (26s/52s) = Referencia (26s),21.635395210849758,XGBoost,0.9503503853040911,Combinada (26s/52s) = Referencia (26s),6.572257893621531
+evaluacion,bloque_x_regimen,1,manana (07:00-09:59) x ordinario,comunes,4,345,61,False,Combinada (26s/52s) = Referencia (26s),27.09345742658555,XGBoost,0.0402158603709708,XGBoost,0.9837612347826086
+evaluacion,bloque_x_regimen,1,manana (07:00-09:59) x raro,comunes,4,22,5,True,XGBoost,15.946800454545455,Combinada (26s/52s),1.076431868686866,Combinada (26s/52s) = Referencia (52s),0.598484848484847
+evaluacion,bloque_x_regimen,1,pico manana (05:00-06:59) x ordinario,comunes,4,210,54,False,Combinada (26s/52s) = Referencia (26s),24.725781346062476,XGBoost,0.32187910155657207,XGBoost,0.4211658095238099
+evaluacion,bloque_x_regimen,1,pico manana (05:00-06:59) x raro,comunes,4,1,1,True,Combinada (26s/52s) = Referencia (52s),1.5,Referencia (26s),8.5,Combinada (26s/52s) = Referencia (52s),1.5
+evaluacion,bloque_x_regimen,1,pico tarde (14:00-15:59) x ordinario,comunes,4,214,60,False,Combinada (26s/52s) = Referencia (26s),34.046128258347615,XGBoost,1.5090315734280892,XGBoost,-0.1016145700934579
+evaluacion,bloque_x_regimen,1,pico tarde (14:00-15:59) x raro,comunes,4,9,5,True,Combinada (26s/52s) = Referencia (52s),12.07857142857143,XGBoost,3.0709799047619057,Combinada (26s/52s) = Referencia (52s),-0.5880952380952399
+evaluacion,bloque_x_regimen,1,valle (10:00-13:59) x ordinario,comunes,4,450,61,False,Combinada (26s/52s) = Referencia (26s),25.77536423557474,XGBoost,0.2601977933141484,XGBoost,3.4197164733333336
+evaluacion,bloque_x_regimen,1,valle (10:00-13:59) x raro,comunes,4,27,5,True,Combinada (26s/52s) = Referencia (52s),11.37283950617284,XGBoost,1.2276747530864203,XGBoost,1.1727698148148147
+evaluacion,bloque_x_regimen,3,cierre (16:00 en adelante) x ordinario,comunes,4,128,50,False,XGBoost,18.489117359375,Combinada (26s/52s),0.9848737282875888,XGBoost,7.869699203125
+evaluacion,bloque_x_regimen,3,cierre (16:00 en adelante) x raro,comunes,4,1,1,True,Combinada (26s/52s) = Referencia (52s),12.0,XGBoost,5.803706999999999,Combinada (26s/52s) = Referencia (52s),-12.0
+evaluacion,bloque_x_regimen,3,madrugada (04:00-04:59) x ordinario,comunes,4,100,53,False,XGBoost,21.62357337,Combinada (26s/52s),0.9874066186316703,XGBoost,0.4940448099999993
+evaluacion,bloque_x_regimen,3,manana (07:00-09:59) x ordinario,comunes,4,360,63,False,Combinada (26s/52s) = Referencia (26s),28.91083258625088,XGBoost,0.3165256693046743,XGBoost,4.2661612388888885
+evaluacion,bloque_x_regimen,3,manana (07:00-09:59) x raro,comunes,4,25,5,True,Combinada (26s/52s) = Referencia (52s),14.525873015873017,XGBoost,0.21422462412698096,Combinada (26s/52s) = Referencia (52s),0.5613333333333338
+evaluacion,bloque_x_regimen,3,pico manana (05:00-06:59) x ordinario,comunes,4,213,54,False,Combinada (26s/52s) = Referencia (26s),45.230265995919005,Referencia (52s),2.2572551288747533,Combinada (26s/52s) = Referencia (26s),2.7611008887257276
+evaluacion,bloque_x_regimen,3,pico tarde (14:00-15:59) x ordinario,comunes,4,221,63,False,XGBoost,29.266809864253393,Combinada (26s/52s),0.2053964022398489,XGBoost,4.081708054298642
+evaluacion,bloque_x_regimen,3,pico tarde (14:00-15:59) x raro,comunes,4,13,5,True,Combinada (26s/52s) = Referencia (52s),9.31196581196581,XGBoost,0.4344047264957265,Combinada (26s/52s) = Referencia (52s),8.081196581196581
+evaluacion,bloque_x_regimen,3,valle (10:00-13:59) x ordinario,comunes,4,463,63,False,Combinada (26s/52s) = Referencia (26s),28.031134844456542,Referencia (52s),0.7540312747754427,XGBoost,1.5555387667386609
+evaluacion,bloque_x_regimen,3,valle (10:00-13:59) x raro,comunes,4,31,5,True,Combinada (26s/52s) = Referencia (52s),11.035394265232975,XGBoost,0.15553841218638098,Combinada (26s/52s) = Referencia (52s),0.6969918074756778
+evaluacion,bloque_x_regimen,ambas,cierre (16:00 en adelante) x ordinario,comunes,4,279,105,False,XGBoost,22.6447221218638,Combinada (26s/52s),0.6837634707644646,XGBoost,8.758391677419354
+evaluacion,bloque_x_regimen,ambas,cierre (16:00 en adelante) x raro,comunes,4,3,3,True,XGBoost,6.2179623333333325,Combinada (26s/52s),2.3375932222222247,Combinada (26s/52s) = Referencia (52s),-4.555555555555557
+evaluacion,bloque_x_regimen,ambas,madrugada (04:00-04:59) x ordinario,comunes,4,152,105,False,XGBoost,21.95273755263158,Combinada (26s/52s),0.32448974886417403,Combinada (26s/52s) = Referencia (26s),2.8570329369711613
+evaluacion,bloque_x_regimen,ambas,manana (07:00-09:59) x ordinario,comunes,4,705,124,False,Combinada (26s/52s) = Referencia (26s),28.021478784712528,XGBoost,0.18131023089030762,XGBoost,2.6598803858156024
+evaluacion,bloque_x_regimen,ambas,manana (07:00-09:59) x raro,comunes,4,47,10,True,XGBoost,15.304937255319148,Combinada (26s/52s),0.3899124576156705,Combinada (26s/52s) = Referencia (52s),0.5787234042553187
+evaluacion,bloque_x_regimen,ambas,pico manana (05:00-06:59) x ordinario,comunes,4,423,108,False,Combinada (26s/52s) = Referencia (26s),35.05073460946541,Referencia (52s),1.6376205037187503,Combinada (26s/52s) = Referencia (26s),2.0629067087407047
+evaluacion,bloque_x_regimen,ambas,pico manana (05:00-06:59) x raro,comunes,4,1,1,True,Combinada (26s/52s) = Referencia (52s),1.5,Referencia (26s),8.5,Combinada (26s/52s) = Referencia (52s),1.5
+evaluacion,bloque_x_regimen,ambas,pico tarde (14:00-15:59) x ordinario,comunes,4,435,123,False,Combinada (26s/52s) = Referencia (26s),31.7223655912216,XGBoost,0.6380233375140314,XGBoost,2.023705659770115
+evaluacion,bloque_x_regimen,ambas,pico tarde (14:00-15:59) x raro,comunes,4,22,10,True,Combinada (26s/52s) = Referencia (52s),10.443759018759017,XGBoost,1.5130036630591661,Combinada (26s/52s) = Referencia (52s),4.534668109668107
+evaluacion,bloque_x_regimen,ambas,valle (10:00-13:59) x ordinario,comunes,4,913,124,False,Combinada (26s/52s) = Referencia (26s),26.91930924314569,XGBoost,0.5728839288148784,XGBoost,2.4743558181818184
+evaluacion,bloque_x_regimen,ambas,valle (10:00-13:59) x raro,comunes,4,58,10,True,Combinada (26s/52s) = Referencia (52s),11.192480842911877,XGBoost,0.6546363639846753,XGBoost,1.7311806896551725
+evaluacion,bloque,1,cierre (16:00 en adelante),todos,9,153,57,False,XGBoost,25.830853790849673,Combinada (26s/52s),0.5066840378375197,Prophet,9.053156900814738
+evaluacion,bloque,1,madrugada (04:00-04:59),todos,9,52,52,True,Combinada (26s/52s) = Referencia (26s),21.635395210849758,GRU,0.7786912955398968,Prophet,3.0485275153870677
+evaluacion,bloque,1,manana (07:00-09:59),todos,9,367,66,False,LSTM,26.25088962363753,XGBoost,0.21218093222078238,GRU,1.0664552501352023
+evaluacion,bloque,1,pico manana (05:00-06:59),todos,9,211,55,False,GRU,24.43969110116698,LSTM,0.1048007208601156,LSTM,-0.09007180716780297
+evaluacion,bloque,1,pico tarde (14:00-15:59),todos,9,223,65,False,CNN-LSTM,32.452171998235094,LSTM,0.06244032252065779,XGBoost,0.37269614349775787
+evaluacion,bloque,1,valle (10:00-13:59),todos,9,477,66,False,Combinada (26s/52s),24.960126986740672,XGBoost,0.31496064009370883,Prophet,0.256113041362868
+evaluacion,bloque,3,cierre (16:00 en adelante),todos,9,129,51,False,XGBoost,18.483804100775195,Combinada (26s/52s),0.9322490714791556,Prophet,5.695169026326482
+evaluacion,bloque,3,madrugada (04:00-04:59),todos,9,100,53,False,XGBoost,21.62357337,Combinada (26s/52s),0.9874066186316703,XGBoost,0.4940448099999993
+evaluacion,bloque,3,manana (07:00-09:59),todos,9,385,68,False,Combinada (26s/52s),27.97674430246011,XGBoost,0.30988274429313734,Prophet,2.117123288132431
+evaluacion,bloque,3,pico manana (05:00-06:59),todos,9,213,54,False,Combinada (26s/52s) = Referencia (26s),45.230265995919005,Referencia (52s),2.2572551288747533,Combinada (26s/52s) = Referencia (26s),2.7611008887257276
+evaluacion,bloque,3,pico tarde (14:00-15:59),todos,9,234,68,False,XGBoost,28.182341012820512,Combinada (26s/52s),0.16985189508787357,XGBoost,4.363536611111111
+evaluacion,bloque,3,valle (10:00-13:59),todos,9,494,68,False,Combinada (26s/52s),26.964600516610528,LSTM,0.5845961688638148,Prophet,0.36321879449650707
+evaluacion,bloque,ambas,cierre (16:00 en adelante),todos,9,282,108,False,XGBoost,22.46996935815603,Combinada (26s/52s),0.7013574042906114,Prophet,7.517056064612663
+evaluacion,bloque,ambas,madrugada (04:00-04:59),todos,9,152,105,False,XGBoost,21.95273755263158,Combinada (26s/52s),0.32448974886417403,LSTM,0.7252418833258808
+evaluacion,bloque,ambas,manana (07:00-09:59),todos,9,752,134,False,Combinada (26s/52s),27.25106446772642,XGBoost,0.14560881285868987,Prophet,0.3740113201074436
+evaluacion,bloque,ambas,pico manana (05:00-06:59),todos,9,424,109,False,Combinada (26s/52s),34.97160551840535,Referencia (26s),0.020047169811320487,Combinada (26s/52s),2.0615790985785805
+evaluacion,bloque,ambas,pico tarde (14:00-15:59),todos,9,457,133,False,Combinada (26s/52s),30.698012539593204,XGBoost,0.6801449286781285,XGBoost,2.4161461859956237
+evaluacion,bloque,ambas,valle (10:00-13:59),todos,9,971,134,False,Combinada (26s/52s),25.979910636334605,XGBoost,0.5777671844686907,Prophet,0.3106035069118049
+evaluacion,franja,1,04:30,todos,9,52,52,True,Combinada (26s/52s) = Referencia (26s),21.635395210849758,GRU,0.7786912955398968,Prophet,3.0485275153870677
+evaluacion,franja,1,05:00,todos,9,52,52,True,LSTM,22.969237366231628,CNN-LSTM,0.4602690945270673,Combinada (26s/52s) = Referencia (26s),0.05686732385261628
+evaluacion,franja,1,05:30,todos,9,52,52,True,Combinada (26s/52s) = Referencia (26s),23.653196060932075,XGBoost,0.48637413137561936,Combinada (26s/52s) = Referencia (26s),-2.6441467186659504
+evaluacion,franja,1,06:00,todos,9,52,52,True,Combinada (26s/52s) = Referencia (26s),23.893986971653057,GRU,0.7994543779106351,Prophet,1.0625857005611563
+evaluacion,franja,1,06:30,todos,9,55,55,True,GRU,24.357785612349137,LSTM,1.5297247678298511,XGBoost,-0.05684003636363622
+evaluacion,franja,1,07:00,todos,9,59,59,True,Combinada (26s/52s),28.85107369133414,XGBoost,0.2403103256150132,SARIMA,-0.0844538856055945
+evaluacion,franja,1,07:30,todos,9,62,62,True,GRU,23.116063197492434,CNN-LSTM,0.16931569491507759,GRU,-0.9124586507233765
+evaluacion,franja,1,08:00,todos,9,63,63,True,XGBoost,22.5487976984127,Referencia (26s),0.6472054580946605,SARIMA,0.9616118281274906
+evaluacion,franja,1,08:30,todos,9,63,63,True,Referencia (26s),27.27355207365753,Combinada (26s/52s),0.18430335097001915,Referencia (26s),0.20416773602328528
+evaluacion,franja,1,09:00,todos,9,60,60,True,LSTM,26.175547451201666,Referencia (26s),0.27203685175028625,CNN-LSTM,-0.05445071284673186
+evaluacion,franja,1,09:30,todos,9,60,60,True,LSTM,24.977833097512015,XGBoost,1.1423147858213198,Prophet,-0.046060065926318214
+evaluacion,franja,1,10:00,todos,9,60,60,True,XGBoost,24.433564183333335,Combinada (26s/52s),0.46462350184051715,Combinada (26s/52s),5.013234911772461
+evaluacion,franja,1,10:30,todos,9,59,59,True,XGBoost,22.008350999999998,Referencia (26s),0.06414079262684425,GRU,-0.9023680324436587
+evaluacion,franja,1,11:00,todos,9,62,62,True,Combinada (26s/52s),25.09615618021429,Referencia (52s),0.265830595900983,CNN-LSTM,-0.7816924315147475
+evaluacion,franja,1,11:30,todos,9,60,60,True,XGBoost,20.296589533333336,CNN-LSTM,0.13303886143164334,Prophet,-0.2774659314378087
+evaluacion,franja,1,12:00,todos,9,62,62,True,GRU,22.73573536414334,LSTM,0.06149090613910957,Combinada (26s/52s),0.021427756208678813
+evaluacion,franja,1,12:30,todos,9,58,58,True,Prophet,23.52023928026983,GRU,1.784424458542908,Prophet,-3.9296431128824194
+evaluacion,franja,1,13:00,todos,9,58,58,True,Prophet,24.263967741581688,Combinada (26s/52s),1.5781707928995985,Prophet,-2.1461574234319194
+evaluacion,franja,1,13:30,todos,9,58,58,True,Combinada (26s/52s),32.02897371733863,Referencia (26s),0.0764367816091891,XGBoost,-0.583942344827588
+evaluacion,franja,1,14:00,todos,9,55,55,True,GRU,31.65882193371602,CNN-LSTM,0.013186825823883197,XGBoost,0.2892518727272729
+evaluacion,franja,1,14:30,todos,9,57,57,True,Combinada (26s/52s),35.423310694996594,Referencia (26s),0.48350041771094254,XGBoost,6.255929789473684
+evaluacion,franja,1,15:00,todos,9,58,58,True,LSTM,30.95411674645981,GRU,0.3451013698619114,Prophet,-0.7131105567692483
+evaluacion,franja,1,15:30,todos,9,53,53,True,GRU,28.84263610343738,LSTM,0.025757334085767525,Prophet,-2.3258393880947525
+evaluacion,franja,1,16:00,todos,9,54,54,True,XGBoost,27.753717444444444,Combinada (26s/52s),1.4020952277044856,SARIMA,-3.4335044188867805
+evaluacion,franja,1,16:30,todos,9,47,47,True,Prophet,30.82873549033442,XGBoost,0.7678850841336633,Prophet,11.912781039221485
+evaluacion,franja,1,17:00,todos,9,39,39,True,Combinada (26s/52s) = Referencia (26s),20.683314131632176,Referencia (52s),0.5956190005004913,XGBoost,8.236091333333333
+evaluacion,franja,1,17:30,todos,9,11,11,True,XGBoost,9.722566454545456,LSTM,0.7890361324495956,Prophet,2.7830360863002457
+evaluacion,franja,1,18:00,todos,9,2,2,True,Prophet,0.5206836528379153,Referencia (52s),1.418205236050973,CNN-LSTM,0.27552810990668064
+evaluacion,franja,3,04:00,todos,9,47,47,True,GRU,9.895897171785826,LSTM,0.3018694716640802,XGBoost,0.05422302127659544
+evaluacion,franja,3,04:30,todos,9,53,53,True,XGBoost,31.151973943396225,Combinada (26s/52s),0.9076121697137545,Combinada (26s/52s) = Referencia (26s),-0.7025847349099293
+evaluacion,franja,3,05:00,todos,9,53,53,True,Referencia (52s),41.24569456484728,Combinada (26s/52s),1.2900133521642445,Referencia (52s),2.2869824726553145
+evaluacion,franja,3,05:30,todos,9,53,53,True,Combinada (26s/52s) = Referencia (26s),38.61202425361945,CNN-LSTM,0.16931687415971197,CNN-LSTM,0.5534989437455337
+evaluacion,franja,3,06:00,todos,9,53,53,True,LSTM,55.034047508148284,CNN-LSTM,0.6380326575050503,GRU,-3.441137880047646
+evaluacion,franja,3,06:30,todos,9,54,54,True,Combinada (26s/52s) = Referencia (26s),43.801814767723855,XGBoost,2.1057156026465194,XGBoost,-1.3949092592592591
+evaluacion,franja,3,07:00,todos,9,65,65,True,Combinada (26s/52s),29.947249129842064,Referencia (26s),0.10435897435897346,SARIMA,3.228792299955875
+evaluacion,franja,3,07:30,todos,9,64,64,True,XGBoost,27.358007968749998,Combinada (26s/52s),0.12529579689771708,XGBoost,1.506976031249999
+evaluacion,franja,3,08:00,todos,9,67,67,True,Referencia (26s),26.749251443929776,Combinada (26s/52s),0.1598317934138862,CNN-LSTM,-0.3355850271448064
+evaluacion,franja,3,08:30,todos,9,63,63,True,XGBoost,32.935333507936505,Combinada (26s/52s),0.010380471953354231,XGBoost,1.217900682539682
+evaluacion,franja,3,09:00,todos,9,63,63,True,Combinada (26s/52s),25.378512259604697,Referencia (26s),0.299370118417734,XGBoost,1.0431269365079372
+evaluacion,franja,3,09:30,todos,9,63,63,True,XGBoost,25.1242346031746,Combinada (26s/52s),0.08543352405987292,Prophet,8.020282800837192
+evaluacion,franja,3,10:00,todos,9,60,60,True,Combinada (26s/52s),26.768464857567945,Referencia (52s),0.122712204085353,LSTM,-0.2727150001592846
+evaluacion,franja,3,10:30,todos,9,63,63,True,Combinada (26s/52s),27.226975229604125,Referencia (26s),0.08122323003275866,LSTM,1.0602719908495692
+evaluacion,franja,3,11:00,todos,9,64,64,True,Combinada (26s/52s),20.7949897286639,LSTM,0.5874623752659858,LSTM,4.802234856836204
+evaluacion,franja,3,11:30,todos,9,66,66,True,Prophet,27.93753355857974,LSTM,0.11841397416595711,LSTM,0.034202409465357915
+evaluacion,franja,3,12:00,todos,9,62,62,True,Combinada (26s/52s),26.046354653304025,GRU,0.5654770340067401,XGBoost,-2.007547290322581
+evaluacion,franja,3,12:30,todos,9,61,61,True,XGBoost,21.863605655737707,Prophet,1.4026796752260395,XGBoost,1.0769327377049174
+evaluacion,franja,3,13:00,todos,9,59,59,True,XGBoost,30.724719355932205,LSTM,0.9902415858267659,XGBoost,0.7750438983050858
+evaluacion,franja,3,13:30,todos,9,59,59,True,Referencia (52s),30.038763223411813,Combinada (26s/52s),0.3959257745660061,Combinada (26s/52s),-0.08191089966581203
+evaluacion,franja,3,14:00,todos,9,62,62,True,Combinada (26s/52s),26.226617141992794,GRU,0.9354853292684382,XGBoost,10.175013806451613
+evaluacion,franja,3,14:30,todos,9,59,59,True,XGBoost,26.392832864406778,Combinada (26s/52s),0.5833012754946623,XGBoost,-1.7671891016949155
+evaluacion,franja,3,15:00,todos,9,60,60,True,Combinada (26s/52s),31.540845004249153,XGBoost,0.05708154575084734,XGBoost,3.8230442500000006
+evaluacion,franja,3,15:30,todos,9,53,53,True,XGBoost,26.599479150943395,Prophet,1.067295148723904,Prophet,2.0236935143353474
+evaluacion,franja,3,16:00,todos,9,48,48,True,Combinada (26s/52s),20.14160471773585,Referencia (52s),0.44693144824391595,Combinada (26s/52s),2.161793726429385
+evaluacion,franja,3,16:30,todos,9,45,45,True,XGBoost,19.196545555555556,Combinada (26s/52s),2.5442556921722286,Prophet,11.159698686745749
+evaluacion,franja,3,17:00,todos,9,31,31,True,XGBoost,13.840400870967743,Combinada (26s/52s),2.2659878995384606,XGBoost,2.423225322580645
+evaluacion,franja,3,17:30,todos,9,4,4,True,Referencia (52s),12.78331537356322,Combinada (26s/52s),0.4432824771155133,LSTM,9.506167400306811
+evaluacion,franja,3,18:00,todos,9,1,1,True,Referencia (52s),1.5652173913043512,Combinada (26s/52s),5.768115942028983,Referencia (52s),-1.5652173913043512
+evaluacion,franja,ambas,04:00,todos,9,47,47,True,GRU,9.895897171785826,LSTM,0.3018694716640802,XGBoost,0.05422302127659544
+evaluacion,franja,ambas,04:30,todos,9,105,105,False,Combinada (26s/52s) = Referencia (26s),26.897129666276346,XGBoost,0.012521667056986985,CNN-LSTM,-1.2770166402088643
+evaluacion,franja,ambas,05:00,todos,9,105,105,False,Referencia (52s),33.01670424169744,Combinada (26s/52s),0.4367441909496179,Combinada (26s/52s) = Referencia (26s),-2.494570058495958
+evaluacion,franja,ambas,05:30,todos,9,105,105,False,Combinada (26s/52s) = Referencia (26s),31.203842672479038,CNN-LSTM,1.1693292469389753,LSTM,0.43805307539999055
+evaluacion,franja,ambas,06:00,todos,9,105,105,False,LSTM,40.06255832561659,Combinada (26s/52s),0.03654812348985814,LSTM,-0.2281903343345866
+evaluacion,franja,ambas,06:30,todos,9,109,109,False,Combinada (26s/52s),35.124210978068355,Referencia (26s),0.07798165137614887,GRU,0.7098443949265043
+evaluacion,franja,ambas,07:00,todos,9,124,124,False,Combinada (26s/52s),29.425681784100387,Referencia (26s),0.27125939780008324,SARIMA,1.6523283890838856
+evaluacion,franja,ambas,07:30,todos,9,126,126,False,XGBoost,26.302002396825397,Combinada (26s/52s),0.4284960466745922,XGBoost,-0.9823877777777784
+evaluacion,franja,ambas,08:00,todos,9,130,130,False,XGBoost,24.961510084615384,Referencia (26s),0.06578257387122122,XGBoost,1.4251829615384617
+evaluacion,franja,ambas,08:30,todos,9,126,126,False,Referencia (26s),30.181581250507634,Combinada (26s/52s),0.02020345175107252,LSTM,-0.15802002871467785
+evaluacion,franja,ambas,09:00,todos,9,123,123,False,Referencia (26s),26.053346731646588,Combinada (26s/52s),0.08501096915730955,XGBoost,-1.3865000243902441
+evaluacion,franja,ambas,09:30,todos,9,123,123,False,XGBoost,25.61004595934959,Combinada (26s/52s),0.26372224532810407,Prophet,4.085481402415968
+evaluacion,franja,ambas,10:00,todos,9,120,120,False,XGBoost,25.811849283333334,Combinada (26s/52s),0.021476988037562705,XGBoost,2.73170675
+evaluacion,franja,ambas,10:30,todos,9,122,122,False,Referencia (26s),24.77617638296809,Combinada (26s/52s),0.022947567004948155,LSTM,0.05261110549468617
+evaluacion,franja,ambas,11:00,todos,9,126,126,False,Combinada (26s/52s),22.911436712760125,LSTM,0.4419940996569629,LSTM,0.9075636124290065
+evaluacion,franja,ambas,11:30,todos,9,126,126,False,LSTM,24.657337782191433,XGBoost,0.19680302733237554,Prophet,0.2542787712048806
+evaluacion,franja,ambas,12:00,todos,9,124,124,False,Combinada (26s/52s),24.431229077145975,GRU,0.24255444858107822,XGBoost,-1.4891366693548387
+evaluacion,franja,ambas,12:30,todos,9,119,119,False,Prophet,23.390061205415453,XGBoost,0.6672734500467321,SARIMA,0.16795281384712518
+evaluacion,franja,ambas,13:00,todos,9,117,117,False,Prophet,28.189562677065357,XGBoost,0.17802086994318955,XGBoost,1.7253477692307695
+evaluacion,franja,ambas,13:30,todos,9,117,117,False,Combinada (26s/52s),31.22501817509685,Referencia (52s),0.46994504764471756,Combinada (26s/52s),0.4045222339351793
+evaluacion,franja,ambas,14:00,todos,9,117,117,False,GRU,29.275944953611774,CNN-LSTM,0.7660985743343289,SARIMA,3.47858195991472
+evaluacion,franja,ambas,14:30,todos,9,116,116,False,Combinada (26s/52s),31.12690192990509,Referencia (26s),0.2735016420361269,XGBoost,2.175205525862069
+evaluacion,franja,ambas,15:00,todos,9,118,118,False,Combinada (26s/52s),32.00271974721714,LSTM,0.455958340708861,XGBoost,0.6480289152542378
+evaluacion,franja,ambas,15:30,todos,9,106,106,False,XGBoost,28.820284518867926,Combinada (26s/52s),0.16498622848036604,Prophet,-0.1510729368797025
+evaluacion,franja,ambas,16:00,todos,9,102,102,False,XGBoost,24.51373462745098,Combinada (26s/52s),0.40009783085649886,Prophet,0.9233018995808923
+evaluacion,franja,ambas,16:30,todos,9,92,92,True,XGBoost,25.531366489130438,Combinada (26s/52s),1.4269623901378772,Prophet,11.54442554072792
+evaluacion,franja,ambas,17:00,todos,9,70,70,True,XGBoost,18.264946728571427,Combinada (26s/52s),0.39144331456210324,XGBoost,5.661822099999999
+evaluacion,franja,ambas,17:30,todos,9,15,15,True,LSTM,11.514110804126188,XGBoost,0.20749092920714496,LSTM,9.006579377340472
+evaluacion,franja,ambas,18:00,todos,9,3,3,True,Referencia (52s),1.8143317230273759,Combinada (26s/52s),2.5124656625935398,Combinada (26s/52s) = Referencia (26s),-0.5620915032679736
+evaluacion,tipo_dia,1,DOMINGO,todos,9,97,9,True,LSTM,9.676952217540384,CNN-LSTM,0.14080641244902026,LSTM,-0.09107303528817985
+evaluacion,tipo_dia,1,FESTIVO,todos,9,40,3,True,XGBoost,12.6487425,LSTM,0.12327066084733751,LSTM,-0.017563753697305274
+evaluacion,tipo_dia,1,FESTIVO_PUENTE,todos,9,21,2,True,LSTM,10.0266351411951,GRU,1.9136111192113212,Prophet,-0.6468225841089146
+evaluacion,tipo_dia,1,LABORAL,todos,9,1084,42,False,Combinada (26s/52s) = Referencia (26s),29.057742090746505,XGBoost,0.5940625817627208,Prophet,-0.4701945721057213
+evaluacion,tipo_dia,1,SABADO,todos,9,241,10,False,GRU,23.283044118453695,CNN-LSTM,0.08719448435925514,CNN-LSTM,-1.045665633481878
+evaluacion,tipo_dia,3,DOMINGO,todos,9,110,10,False,CNN-LSTM,8.764520416450177,LSTM,0.21586116244249354,XGBoost,1.3102398090909093
+evaluacion,tipo_dia,3,FESTIVO,todos,9,48,3,True,Combinada (26s/52s) = Referencia (52s),13.52452876984127,XGBoost,0.0012533551587292635,Prophet,0.8128180748952308
+evaluacion,tipo_dia,3,FESTIVO_PUENTE,todos,9,22,2,True,LSTM,7.468396636954886,CNN-LSTM,0.8453744240040981,CNN-LSTM,-0.31329005425739387
+evaluacion,tipo_dia,3,LABORAL,todos,9,1131,43,False,Combinada (26s/52s) = Referencia (26s),32.627158021156475,XGBoost,0.786451061955816,Prophet,-0.5883745496194923
+evaluacion,tipo_dia,3,SABADO,todos,9,244,10,False,Combinada (26s/52s) = Referencia (26s),25.732047457113293,LSTM,0.054406511016626524,XGBoost,2.9948500409836067
+evaluacion,tipo_dia,ambas,DOMINGO,todos,9,207,19,False,CNN-LSTM,9.258066825693197,LSTM,0.04872708145468252,CNN-LSTM,-1.0063882949274594
+evaluacion,tipo_dia,ambas,FESTIVO,todos,9,88,6,True,XGBoost,13.12712775,Combinada (26s/52s),0.45121370021644935,Prophet,-0.7504605406160539
+evaluacion,tipo_dia,ambas,FESTIVO_PUENTE,todos,9,43,4,True,LSTM,8.717768929723364,Combinada (26s/52s),1.7207692762567017,Prophet,-1.347424729067192
+evaluacion,tipo_dia,ambas,LABORAL,todos,9,2215,85,False,Combinada (26s/52s) = Referencia (26s),30.88031970577751,XGBoost,0.6922979637484517,Prophet,-0.5305383890664775
+evaluacion,tipo_dia,ambas,SABADO,todos,9,485,20,False,CNN-LSTM,24.707513554241803,LSTM,0.010777598490697926,LSTM,-2.371376346312711
+evaluacion,regimen,1,ordinario,todos,9,1422,61,False,Combinada (26s/52s) = Referencia (26s),27.120576244885246,XGBoost,0.35597953289253326,Prophet,0.6707664230347906
+evaluacion,regimen,1,raro,todos,9,61,5,True,LSTM,11.826883022934272,Combinada (26s/52s),1.3772413590589636,LSTM,-1.5206499959499389
+evaluacion,regimen,3,ordinario,todos,9,1485,63,False,Combinada (26s/52s) = Referencia (26s),29.823224420298608,XGBoost,0.7009953238091349,Prophet,0.8532622208634164
+evaluacion,regimen,3,raro,todos,9,70,5,True,Combinada (26s/52s) = Referencia (52s),11.975708616780045,XGBoost,0.3089753546485259,Prophet,-0.0762960212661567
+evaluacion,regimen,ambas,ordinario,todos,9,2907,124,False,Combinada (26s/52s) = Referencia (26s),28.50118599393541,XGBoost,0.5322259895527175,Prophet,0.7639918305943053
+evaluacion,regimen,ambas,raro,todos,9,131,10,False,Combinada (26s/52s) = Referencia (52s),12.54771901126863,XGBoost,0.5019605536168683,Prophet,-0.9464106177412368
+evaluacion,nivel_esperado,1,N1 (bajo),todos,9,484,66,False,LSTM,19.97359840414093,Referencia (26s),0.19440870046516068,LSTM,-0.14476132297320934
+evaluacion,nivel_esperado,1,N2 (medio-bajo),todos,9,334,54,False,XGBoost,25.728926323353292,LSTM,0.29356600914167785,SARIMA,1.8985387038422084
+evaluacion,nivel_esperado,1,N3 (medio-alto),todos,9,471,42,False,Combinada (26s/52s) = Referencia (26s),29.030362360205547,Prophet,0.6945673697004828,XGBoost,0.589984163481953
+evaluacion,nivel_esperado,1,N4 (alto),todos,9,194,42,False,Prophet,36.34844348441151,Combinada (26s/52s),0.6600977154951053,XGBoost,-1.8668052835051545
+evaluacion,nivel_esperado,3,N1 (bajo),todos,9,429,68,False,XGBoost,15.914213787878788,Combinada (26s/52s),0.3089861682045534,LSTM,3.4376903502155174
+evaluacion,nivel_esperado,3,N2 (medio-bajo),todos,9,574,55,False,Combinada (26s/52s),30.362292728265803,XGBoost,0.5213199180756618,XGBoost,3.6028176114982577
+evaluacion,nivel_esperado,3,N3 (medio-alto),todos,9,264,53,False,XGBoost,31.93228592424242,Combinada (26s/52s),0.2919421196829859,XGBoost,1.1383685984848486
+evaluacion,nivel_esperado,3,N4 (alto),todos,9,288,53,False,Combinada (26s/52s) = Referencia (26s),42.46834325186598,Referencia (52s),2.2853291920257703,GRU,-0.3290018331548536
+evaluacion,nivel_esperado,ambas,N1 (bajo),todos,9,913,134,False,XGBoost,18.30469916538883,Combinada (26s/52s),0.010382770088376958,LSTM,1.5385593427419757
+evaluacion,nivel_esperado,ambas,N2 (medio-bajo),todos,9,908,109,False,Combinada (26s/52s),28.83699597266888,XGBoost,0.15050959010645215,XGBoost,4.3733315517621145
+evaluacion,nivel_esperado,ambas,N3 (medio-alto),todos,9,735,95,False,Combinada (26s/52s) = Referencia (26s),30.177546769051865,XGBoost,0.5037047887712625,XGBoost,0.7869548993197278
+evaluacion,nivel_esperado,ambas,N4 (alto),todos,9,482,95,False,Combinada (26s/52s) = Referencia (26s),40.27082956290308,CNN-LSTM,1.8132662717286436,CNN-LSTM,1.6956103398665947
+evaluacion,nivel_observado,1,N1 (bajo),todos,9,407,64,False,LSTM,28.129727482284608,GRU,0.17520299129128603,LSTM,23.849217831763326
+evaluacion,nivel_observado,1,N2 (medio-bajo),todos,9,365,54,False,SARIMA,14.445919831112608,Prophet,8.195553903276682,SARIMA,13.653318132668499
+evaluacion,nivel_observado,1,N3 (medio-alto),todos,9,388,51,False,Prophet,14.880182976499164,XGBoost,0.4089477760781559,CNN-LSTM,-0.06995989683633361
+evaluacion,nivel_observado,1,N4 (alto),todos,9,323,49,False,Referencia (52s),30.04897878739872,Combinada (26s/52s),4.881308990852606,Referencia (52s),-26.814873177458303
+evaluacion,nivel_observado,3,N1 (bajo),todos,9,437,68,False,XGBoost,24.675224215102975,LSTM,1.199720691708844,LSTM,21.25973898622654
+evaluacion,nivel_observado,3,N2 (medio-bajo),todos,9,399,56,False,SARIMA,24.16514724759066,XGBoost,2.919618501782775,SARIMA,14.472991529874198
+evaluacion,nivel_observado,3,N3 (medio-alto),todos,9,350,52,False,Combinada (26s/52s) = Referencia (26s),19.11153118625182,XGBoost,1.0937998737481784,Combinada (26s/52s) = Referencia (26s),-0.5975500950556766
+evaluacion,nivel_observado,3,N4 (alto),todos,9,369,52,False,Referencia (52s),38.34461665708244,Combinada (26s/52s),3.683464060697368,Referencia (52s),-15.11777661872189
+evaluacion,nivel_observado,ambas,N1 (bajo),todos,9,844,132,False,LSTM,26.96226304451019,XGBoost,0.25409783108222683,LSTM,22.508456865531603
+evaluacion,nivel_observado,ambas,N2 (medio-bajo),todos,9,764,110,False,SARIMA,19.521799070870124,XGBoost,5.943742355831446,SARIMA,14.081393637230114
+evaluacion,nivel_observado,ambas,N3 (medio-alto),todos,9,738,103,False,Combinada (26s/52s) = Referencia (26s),17.542590785934372,XGBoost,0.07807127775126332,LSTM,0.10440952556185469
+evaluacion,nivel_observado,ambas,N4 (alto),todos,9,692,101,False,Referencia (52s),34.47251979016359,Combinada (26s/52s),4.242573760755377,Referencia (52s),-20.57754856738065
+evaluacion,bloque_x_regimen,1,cierre (16:00 en adelante) x ordinario,todos,9,151,55,False,XGBoost,26.167353973509933,Combinada (26s/52s),0.4285176895528089,Prophet,9.196808460104812
+evaluacion,bloque_x_regimen,1,cierre (16:00 en adelante) x raro,todos,9,2,2,True,XGBoost,0.4250899999999991,Combinada (26s/52s),6.408243333333337,XGBoost,-0.15287000000000184
+evaluacion,bloque_x_regimen,1,madrugada (04:00-04:59) x ordinario,todos,9,52,52,True,Combinada (26s/52s) = Referencia (26s),21.635395210849758,GRU,0.7786912955398968,Prophet,3.0485275153870677
+evaluacion,bloque_x_regimen,1,manana (07:00-09:59) x ordinario,todos,9,345,61,False,LSTM,27.038847817202548,CNN-LSTM,0.023783993920137192,XGBoost,0.9837612347826086
+evaluacion,bloque_x_regimen,1,manana (07:00-09:59) x raro,todos,9,22,5,True,Prophet,13.7466549235936,LSTM,0.14761757368345307,Combinada (26s/52s) = Referencia (52s),0.598484848484847
+evaluacion,bloque_x_regimen,1,pico manana (05:00-06:59) x ordinario,todos,9,210,54,False,GRU,24.46406782142413,LSTM,0.13188599736642104,LSTM,-0.02508418481288119
+evaluacion,bloque_x_regimen,1,pico manana (05:00-06:59) x raro,todos,9,1,1,True,Combinada (26s/52s) = Referencia (52s),1.5,Referencia (26s),8.5,Combinada (26s/52s) = Referencia (52s),1.5
+evaluacion,bloque_x_regimen,1,pico tarde (14:00-15:59) x ordinario,todos,9,214,60,False,CNN-LSTM,33.27724433193361,LSTM,0.16151079706937566,XGBoost,-0.1016145700934579
+evaluacion,bloque_x_regimen,1,pico tarde (14:00-15:59) x raro,todos,9,9,5,True,GRU,8.61319281567584,LSTM,1.9273571756457901,Combinada (26s/52s) = Referencia (52s),-0.5880952380952399
+evaluacion,bloque_x_regimen,1,valle (10:00-13:59) x ordinario,todos,9,450,61,False,Combinada (26s/52s) = Referencia (26s),25.77536423557474,XGBoost,0.2601977933141484,Prophet,0.8078845991237957
+evaluacion,bloque_x_regimen,1,valle (10:00-13:59) x raro,todos,9,27,5,True,LSTM,10.693180089240933,Combinada (26s/52s),0.6796594169319068,LSTM,0.05004522000047689
+evaluacion,bloque_x_regimen,3,cierre (16:00 en adelante) x ordinario,todos,9,128,50,False,XGBoost,18.489117359375,Combinada (26s/52s),0.9848737282875888,Prophet,6.069025430385632
+evaluacion,bloque_x_regimen,3,cierre (16:00 en adelante) x raro,todos,9,1,1,True,LSTM,10.257699983405075,Combinada (26s/52s),1.7423000165949247,LSTM,-10.257699983405075
+evaluacion,bloque_x_regimen,3,madrugada (04:00-04:59) x ordinario,todos,9,100,53,False,XGBoost,21.62357337,Combinada (26s/52s),0.9874066186316703,XGBoost,0.4940448099999993
+evaluacion,bloque_x_regimen,3,manana (07:00-09:59) x ordinario,todos,9,360,63,False,Combinada (26s/52s) = Referencia (26s),28.91083258625088,XGBoost,0.3165256693046743,SARIMA,1.9165986109874547
+evaluacion,bloque_x_regimen,3,manana (07:00-09:59) x raro,todos,9,25,5,True,Combinada (26s/52s) = Referencia (52s),14.525873015873017,XGBoost,0.21422462412698096,Combinada (26s/52s) = Referencia (52s),0.5613333333333338
+evaluacion,bloque_x_regimen,3,pico manana (05:00-06:59) x ordinario,todos,9,213,54,False,Combinada (26s/52s) = Referencia (26s),45.230265995919005,Referencia (52s),2.2572551288747533,Combinada (26s/52s) = Referencia (26s),2.7611008887257276
+evaluacion,bloque_x_regimen,3,pico tarde (14:00-15:59) x ordinario,todos,9,221,63,False,XGBoost,29.266809864253393,Combinada (26s/52s),0.2053964022398489,XGBoost,4.081708054298642
+evaluacion,bloque_x_regimen,3,pico tarde (14:00-15:59) x raro,todos,9,13,5,True,Prophet,6.06289824224932,Combinada (26s/52s),3.249067569716491,Prophet,3.5611876376198457
+evaluacion,bloque_x_regimen,3,valle (10:00-13:59) x ordinario,todos,9,463,63,False,Combinada (26s/52s) = Referencia (26s),28.031134844456542,LSTM,0.4395021662342913,Prophet,0.5160901082703371
+evaluacion,bloque_x_regimen,3,valle (10:00-13:59) x raro,todos,9,31,5,True,Prophet,10.338149402117862,Combinada (26s/52s),0.6972448631151131,Combinada (26s/52s) = Referencia (52s),0.6969918074756778
+evaluacion,bloque_x_regimen,ambas,cierre (16:00 en adelante) x ordinario,todos,9,279,105,False,XGBoost,22.6447221218638,Combinada (26s/52s),0.6837634707644646,Prophet,7.761839901667339
+evaluacion,bloque_x_regimen,ambas,cierre (16:00 en adelante) x raro,todos,9,3,3,True,XGBoost,6.2179623333333325,Combinada (26s/52s),2.3375932222222247,LSTM,-0.5432480682277827
+evaluacion,bloque_x_regimen,ambas,madrugada (04:00-04:59) x ordinario,todos,9,152,105,False,XGBoost,21.95273755263158,Combinada (26s/52s),0.32448974886417403,LSTM,0.7252418833258808
+evaluacion,bloque_x_regimen,ambas,manana (07:00-09:59) x ordinario,todos,9,705,124,False,Combinada (26s/52s) = Referencia (26s),28.021478784712528,XGBoost,0.18131023089030762,Prophet,0.3884082707816503
+evaluacion,bloque_x_regimen,ambas,manana (07:00-09:59) x raro,todos,9,47,10,True,XGBoost,15.304937255319148,Combinada (26s/52s),0.3899124576156705,Prophet,0.15805705999434283
+evaluacion,bloque_x_regimen,ambas,pico manana (05:00-06:59) x ordinario,todos,9,423,108,False,Combinada (26s/52s) = Referencia (26s),35.05073460946541,Referencia (52s),1.6376205037187503,Combinada (26s/52s) = Referencia (26s),2.0629067087407047
+evaluacion,bloque_x_regimen,ambas,pico manana (05:00-06:59) x raro,todos,9,1,1,True,Combinada (26s/52s) = Referencia (52s),1.5,Referencia (26s),8.5,Combinada (26s/52s) = Referencia (52s),1.5
+evaluacion,bloque_x_regimen,ambas,pico tarde (14:00-15:59) x ordinario,todos,9,435,123,False,Combinada (26s/52s) = Referencia (26s),31.7223655912216,CNN-LSTM,0.5966830333987438,XGBoost,2.023705659770115
+evaluacion,bloque_x_regimen,ambas,pico tarde (14:00-15:59) x raro,todos,9,22,10,True,Combinada (26s/52s) = Referencia (52s),10.443759018759017,XGBoost,1.5130036630591661,Combinada (26s/52s) = Referencia (52s),4.534668109668107
+evaluacion,bloque_x_regimen,ambas,valle (10:00-13:59) x ordinario,todos,9,913,124,False,Combinada (26s/52s) = Referencia (26s),26.91930924314569,XGBoost,0.5728839288148784,Prophet,0.6599099558980001
+evaluacion,bloque_x_regimen,ambas,valle (10:00-13:59) x raro,todos,9,58,10,True,Combinada (26s/52s) = Referencia (52s),11.192480842911877,Prophet,0.3690049717057615,XGBoost,1.7311806896551725

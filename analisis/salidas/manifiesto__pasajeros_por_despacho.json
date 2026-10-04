@@ -1,0 +1,128 @@
+{
+  "script": "analisis/36_pasajeros_por_despacho.py",
+  "generado": "2026-10-03T16:01:15",
+  "sufijo": "pasajeros_por_despacho",
+  "fuente": "data\\processed\\model_ready\\despachos_model_ready_freeze_20260823_203700.parquet",
+  "columna_pasajeros": "PASAJEROS_REALES",
+  "periodos": {
+    "validacion": [
+      "2025-12-25",
+      "2026-04-01"
+    ],
+    "evaluacion": [
+      "2026-04-02",
+      "2026-06-10"
+    ]
+  },
+  "conteos": {
+    "evaluacion": {
+      "jornadas": 138,
+      "despachos": 7483,
+      "jornadas_raras": 10
+    },
+    "validacion": {
+      "jornadas": 196,
+      "despachos": 11178,
+      "jornadas_raras": 8
+    }
+  },
+  "bloques": {
+    "madrugada (04:00-04:59)": [
+      4,
+      5
+    ],
+    "pico manana (05:00-06:59)": [
+      5,
+      7
+    ],
+    "manana (07:00-09:59)": [
+      7,
+      10
+    ],
+    "valle (10:00-13:59)": [
+      10,
+      14
+    ],
+    "pico tarde (14:00-15:59)": [
+      14,
+      16
+    ],
+    "cierre (16:00 en adelante)": [
+      16,
+      24
+    ]
+  },
+  "tipos_baja_frecuencia": [
+    "FESTIVO",
+    "FESTIVO_PUENTE"
+  ],
+  "cuantiles": {
+    "q1": 0.25,
+    "mediana": 0.5,
+    "q3": 0.75,
+    "p90": 0.9
+  },
+  "bootstrap": {
+    "replicas": 1000,
+    "unidad": "jornada",
+    "semilla": 42
+  },
+  "criterio_apreciable": {
+    "entre_periodos": "IC 95 % de la diferencia excluye 0 y |dif| >= 10 % del valor de validacion",
+    "entre_bloques": "rango entre bloques >= 10 % del valor de la ruta completa"
+  },
+  "verificacion_dataset_modelado": {
+    "franjas_comparadas": 38931,
+    "max_dif_pasajeros": 0.0,
+    "max_dif_despachos": 0.0,
+    "franjas_tipo_dia_distinto": 0
+  },
+  "capacidad": [
+    {
+      "route": "1",
+      "jornadas": 69,
+      "max_despachos_jornada": 76,
+      "jornada_max_despachos": "2026-05-26",
+      "tipo_dia_jornada_max": "LABORAL",
+      "mediana_despachos_jornada_laboral": 67.0,
+      "vehiculos_activos_periodo": 41,
+      "max_vehiculos_jornada": 39,
+      "mediana_vehiculos_jornada_laboral": 36.0,
+      "vehiculos_en_jornada_max_despachos": 37
+    },
+    {
+      "route": "3",
+      "jornadas": 69,
+      "max_despachos_jornada": 81,
+      "jornada_max_despachos": "2026-04-27",
+      "tipo_dia_jornada_max": "LABORAL",
+      "mediana_despachos_jornada_laboral": 72.5,
+      "vehiculos_activos_periodo": 42,
+      "max_vehiculos_jornada": 41,
+      "mediana_vehiculos_jornada_laboral": 36.0,
+      "vehiculos_en_jornada_max_despachos": 38
+    },
+    {
+      "route": "ambas",
+      "jornadas": 69,
+      "max_despachos_jornada": 154,
+      "jornada_max_despachos": "2026-04-07",
+      "tipo_dia_jornada_max": "LABORAL",
+      "mediana_despachos_jornada_laboral": 139.0,
+      "vehiculos_activos_periodo": 42,
+      "max_vehiculos_jornada": 41,
+      "mediana_vehiculos_jornada_laboral": 37.0,
+      "vehiculos_en_jornada_max_despachos": 41
+    }
+  ],
+  "salidas": [
+    "analisis\\salidas\\distribucion__pasajeros_por_despacho.csv",
+    "analisis\\salidas\\comparacion_periodos__pasajeros_por_despacho.csv",
+    "analisis\\salidas\\variacion_bloques__pasajeros_por_despacho.csv",
+    "analisis\\salidas\\franjas__pasajeros_por_despacho.csv",
+    "analisis\\salidas\\clasificacion_franjas__pasajeros_por_despacho.csv",
+    "analisis\\salidas\\capacidad_flota__pasajeros_por_despacho.csv",
+    "analisis\\salidas\\resumen__pasajeros_por_despacho.md",
+    "analisis\\salidas\\manifiesto__pasajeros_por_despacho.json"
+  ]
+}

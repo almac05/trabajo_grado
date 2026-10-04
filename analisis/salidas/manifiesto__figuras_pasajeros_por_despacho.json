@@ -1,0 +1,28 @@
+{
+  "script": "analisis/37_figuras_pasajeros_por_despacho.py",
+  "generado": "2026-10-03T16:13:04",
+  "entradas": [
+    "analisis\\salidas\\distribucion__pasajeros_por_despacho.csv",
+    "analisis\\salidas\\clasificacion_franjas__pasajeros_por_despacho.csv",
+    "analisis\\salidas\\franjas__pasajeros_por_despacho.csv",
+    "analisis\\salidas\\capacidad_flota__pasajeros_por_despacho.csv"
+  ],
+  "figuras": {
+    "figura_1": [
+      "reports\\figures\\pasajeros_por_despacho\\figura_1_pasajeros_por_despacho_bloque.png",
+      "reports\\figures\\pasajeros_por_despacho\\figura_1_pasajeros_por_despacho_bloque.pdf"
+    ],
+    "figura_2": [
+      "reports\\figures\\pasajeros_por_despacho\\figura_2_clasificacion_franjas_bloque.png",
+      "reports\\figures\\pasajeros_por_despacho\\figura_2_clasificacion_franjas_bloque.pdf"
+    ],
+    "figura_3": [
+      "reports\\figures\\pasajeros_por_despacho\\figura_3_mapa_calor_clases_evaluacion.png",
+      "reports\\figures\\pasajeros_por_despacho\\figura_3_mapa_calor_clases_evaluacion.pdf"
+    ],
+    "figura_4": [
+      "reports\\figures\\pasajeros_por_despacho\\figura_4_despachos_por_jornada_evaluacion.png",
+      "reports\\figures\\pasajeros_por_despacho\\figura_4_despachos_por_jornada_evaluacion.pdf"
+    ]
+  }
+}

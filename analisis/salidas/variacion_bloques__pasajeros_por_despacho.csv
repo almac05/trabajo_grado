@@ -1,0 +1,17 @@
+periodo,route,cuantil,valor_ruta,minimo,bloque_minimo,maximo,bloque_maximo,rango,rango_pct_ruta,apreciable
+evaluacion,1,q1,34.0,32.0,madrugada (04:00-04:59),44.0,pico tarde (14:00-15:59),12.0,35.294117647058826,True
+evaluacion,1,mediana,43.0,39.0,madrugada (04:00-04:59),52.0,pico tarde (14:00-15:59),13.0,30.232558139534884,True
+evaluacion,1,q3,51.0,45.0,madrugada (04:00-04:59),62.0,pico tarde (14:00-15:59),17.0,33.333333333333336,True
+evaluacion,1,p90,60.0,48.0,madrugada (04:00-04:59),72.0,pico tarde (14:00-15:59),24.0,40.0,True
+evaluacion,3,q1,37.0,31.0,madrugada (04:00-04:59),40.0,pico manana (05:00-06:59),9.0,24.324324324324323,True
+evaluacion,3,mediana,47.0,37.0,madrugada (04:00-04:59),53.0,pico manana (05:00-06:59),16.0,34.04255319148936,True
+evaluacion,3,q3,58.0,44.0,madrugada (04:00-04:59),67.0,pico manana (05:00-06:59),23.0,39.6551724137931,True
+evaluacion,3,p90,68.0,50.0,madrugada (04:00-04:59),79.0,pico manana (05:00-06:59),29.0,42.64705882352941,True
+validacion,1,q1,35.0,31.0,madrugada (04:00-04:59),45.0,pico tarde (14:00-15:59),14.0,40.0,True
+validacion,1,mediana,44.0,37.0,madrugada (04:00-04:59),54.0,pico tarde (14:00-15:59),17.0,38.63636363636363,True
+validacion,1,q3,53.0,43.5,madrugada (04:00-04:59),65.0,pico tarde (14:00-15:59),21.5,40.56603773584906,True
+validacion,1,p90,62.0,48.0,madrugada (04:00-04:59),74.0,pico tarde (14:00-15:59),26.0,41.935483870967744,True
+validacion,3,q1,38.0,31.0,madrugada (04:00-04:59),43.0,pico tarde (14:00-15:59),12.0,31.57894736842105,True
+validacion,3,mediana,48.0,37.0,madrugada (04:00-04:59),52.0,pico manana (05:00-06:59),15.0,31.25,True
+validacion,3,q3,59.0,46.0,madrugada (04:00-04:59),67.0,pico manana (05:00-06:59),21.0,35.59322033898305,True
+validacion,3,p90,69.0,53.0,madrugada (04:00-04:59),80.0,pico manana (05:00-06:59),27.0,39.130434782608695,True

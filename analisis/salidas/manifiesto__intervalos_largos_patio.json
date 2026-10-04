@@ -1,0 +1,30 @@
+{
+  "origen_despachos": "C:\\Users\\regis\\proyecto_grado\\data\\processed\\model_ready\\despachos_model_ready.parquet",
+  "origen_jornadas": "C:\\Users\\regis\\proyecto_grado\\data\\processed\\modeling\\modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet",
+  "dataset_version_modelado": "freeze_20260823_203700",
+  "n_jornadas": 785,
+  "n_jornadas_con_despachos": 785,
+  "n_despachos": 109559,
+  "criterio_ocupacion": "fleet_availability.py: EN_PATIO desde HORA_FIN_FINAL hasta la siguiente HORA_INICIAL_REAL de la misma placa y dia calendario; cuenta en t si inicio <= t < fin; patio comun a ambas rutas",
+  "criterio_intervalo_largo": "por dia calendario y ruta, diferencia entre salidas consecutivas > umbral; ambas salidas en [04:00, 19:00); franja por la hora de la salida que cierra",
+  "criterio_disponibilidad": "patio vacio si ningun vehiculo esta EN_PATIO en t* = salida que abre + umbral",
+  "umbrales_min": [
+    15,
+    30
+  ],
+  "n_intervalos_por_umbral": {
+    "15": 18086,
+    "30": 3298
+  },
+  "contraste_fleet_availability_by_day": {
+    "disponible": true,
+    "dias": 30,
+    "total_csv": 447,
+    "total_reproducido": 447,
+    "coincide": true
+  },
+  "artefactos": {
+    "detalle": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\intervalos_largos_patio__detalle.csv",
+    "resumen": "C:\\Users\\regis\\proyecto_grado\\analisis\\salidas\\intervalos_largos_patio__resumen.csv"
+  }
+}

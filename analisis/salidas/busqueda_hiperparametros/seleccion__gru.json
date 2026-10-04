@@ -1,0 +1,36 @@
+{
+  "metodo": "GRU",
+  "criterio_seleccion": "mae_global (unico criterio)",
+  "n_iter": 10,
+  "semilla": 42,
+  "periodo_validacion": {
+    "inicio": "2025-12-25",
+    "fin": "2026-04-01"
+  },
+  "trial_seleccionado": {
+    "trial": 6.0,
+    "unidades": 128.0,
+    "lr": 0.004421027603802802,
+    "paciencia": 30.0,
+    "mae_global": 28.928565926786433,
+    "sesgo_global": 5.070987582658017,
+    "rmse_global": 38.421555260512214,
+    "wape_global": 25.633185739769274,
+    "n_jornadas": 188.0,
+    "segundos": 483.6306406999938,
+    "mae_ruta_1": 26.620133265566256,
+    "sesgo_ruta_1": 5.01899381244936,
+    "mae_ruta_3": 31.284340497242518,
+    "sesgo_ruta_3": 5.124047653994447,
+    "mae_tipo_DOMINGO": 10.04346104278936,
+    "sesgo_tipo_DOMINGO": -3.2877982857308186,
+    "mae_tipo_FESTIVO": 17.350982127558428,
+    "sesgo_tipo_FESTIVO": 14.500062555727634,
+    "mae_tipo_FESTIVO_PUENTE": 33.38057538457593,
+    "sesgo_tipo_FESTIVO_PUENTE": 27.96262301676775,
+    "mae_tipo_LABORAL": 31.62207653384774,
+    "sesgo_tipo_LABORAL": 6.5968249713319045,
+    "mae_tipo_SABADO": 25.5271335932672,
+    "sesgo_tipo_SABADO": -0.27489091230357504
+  }
+}

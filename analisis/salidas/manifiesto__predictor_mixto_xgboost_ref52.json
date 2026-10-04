@@ -1,0 +1,98 @@
+{
+  "script": "analisis/33_predictor_mixto_xgboost_ref52.py",
+  "generado": "2026-09-30T20:30:51",
+  "sufijo": "predictor_mixto_xgboost_ref52",
+  "definicion_mixto": "pred_xgboost si regimen == 'ordinario'; pred_ref52 si regimen == 'raro'",
+  "entradas": [
+    "analisis\\salidas\\observaciones__referencia_combinada_regimen__validacion.csv",
+    "analisis\\salidas\\observaciones__referencia_combinada_regimen__freeze_20260922_203820.csv",
+    "analisis\\salidas\\metricas__referencia_combinada_regimen__validacion.csv",
+    "analisis\\salidas\\metricas__referencia_combinada_regimen__freeze_20260922_203820.csv",
+    "analisis\\salidas\\observaciones__barrido_ventana__validacion_hparam.csv"
+  ],
+  "periodos": {
+    "validacion": {
+      "franjas": 4637,
+      "jornadas": 192,
+      "franjas_raras": 79
+    },
+    "evaluacion": {
+      "franjas": 3038,
+      "jornadas": 134,
+      "franjas_raras": 131
+    }
+  },
+  "verificacion_script25_coincide": true,
+  "max_dif_xgboost_script31_vs_script25": 0.0,
+  "metricas_globales": {
+    "evaluacion": {
+      "Mixto (XGBoost ordinario / 52s raro)": {
+        "mae": 28.32254108837268,
+        "medae": 21.974024999999997,
+        "sesgo": 2.2001248869139056,
+        "wape": 25.94856355256012
+      },
+      "XGBoost": {
+        "mae": 28.344185865371955,
+        "medae": 21.958395000000003,
+        "sesgo": 2.342338142527979,
+        "wape": 25.968394077998997
+      },
+      "Referencia (26s)": {
+        "mae": 28.35796745198288,
+        "medae": 21.875,
+        "sesgo": 6.259657190658787,
+        "wape": 25.981020500709903
+      },
+      "Referencia (52s)": {
+        "mae": 29.33639588592733,
+        "medae": 22.910393082852984,
+        "sesgo": 12.503934213630362,
+        "wape": 26.877437680249717
+      },
+      "Combinada (26s/52s)": {
+        "mae": 27.813264935762486,
+        "medae": 21.6266592920354,
+        "sesgo": 5.859057676622375,
+        "wape": 25.481974605947766
+      }
+    },
+    "validacion": {
+      "Mixto (XGBoost ordinario / 52s raro)": {
+        "mae": 28.99004947242162,
+        "medae": 22.469123999999994,
+        "sesgo": 7.057769630521924,
+        "wape": 25.66563809585633
+      },
+      "XGBoost": {
+        "mae": 29.072855706706928,
+        "medae": 22.656560000000013,
+        "sesgo": 7.163163644597799,
+        "wape": 25.73894858962659
+      },
+      "Referencia (26s)": {
+        "mae": 29.02917538139729,
+        "medae": 22.15573770491804,
+        "sesgo": 10.192035722938657,
+        "wape": 25.700277271649956
+      },
+      "Referencia (52s)": {
+        "mae": 30.510606594548875,
+        "medae": 23.358024691358054,
+        "sesgo": 15.122212547474895,
+        "wape": 27.011826512599832
+      },
+      "Combinada (26s/52s)": {
+        "mae": 29.004400543670506,
+        "medae": 22.122950819672127,
+        "sesgo": 10.185964309360624,
+        "wape": 25.67834346917114
+      }
+    }
+  },
+  "salidas": [
+    "analisis\\salidas\\metricas__predictor_mixto_xgboost_ref52.csv",
+    "analisis\\salidas\\resumen__predictor_mixto_xgboost_ref52.md",
+    "analisis\\salidas\\manifiesto__predictor_mixto_xgboost_ref52.json"
+  ]
+}

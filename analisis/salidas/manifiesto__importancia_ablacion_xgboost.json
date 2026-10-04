@@ -1,0 +1,222 @@
+{
+  "script": "analisis/34_importancia_ablacion_xgboost.py",
+  "generado": "2026-10-01T19:22:31",
+  "sufijo": "importancia_ablacion_xgboost",
+  "freeze": "freeze_20260922_203820",
+  "dataset": "data\\processed\\modeling\\modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet",
+  "hiperparametros": {
+    "fijos": {
+      "objective": "reg:absoluteerror",
+      "eval_metric": "mae",
+      "n_estimators": 2000,
+      "early_stopping_rounds": 50,
+      "random_state": 42
+    },
+    "seleccionados": {
+      "max_depth": 4,
+      "min_child_weight": 7,
+      "learning_rate": 0.016085381438354866,
+      "subsample": 0.6799632809900433,
+      "colsample_bytree": 0.6029449079004022,
+      "reg_lambda": 3.748424389563135,
+      "reg_alpha": 0.09875351660720856
+    }
+  },
+  "protocolo": {
+    "semanas_entrenamiento": 26,
+    "semanas_parada_temprana": 2
+  },
+  "ajustes_por_ruta": {
+    "1": 66,
+    "3": 68
+  },
+  "features": {
+    "1": {
+      "completas": [
+        "dentro_horario_operativo",
+        "hora_del_dia",
+        "dia_semana",
+        "es_fin_semana",
+        "es_festivo",
+        "pasajeros_total_lag_48",
+        "pasajeros_total_lag_96",
+        "pasajeros_total_lag_336",
+        "pasajeros_por_despacho_lag_48",
+        "pasajeros_por_despacho_lag_96",
+        "pasajeros_por_despacho_lag_336",
+        "hora_sin",
+        "hora_cos",
+        "dia_semana_sin",
+        "dia_semana_cos"
+      ],
+      "sin_rezagos": [
+        "dentro_horario_operativo",
+        "hora_del_dia",
+        "dia_semana",
+        "es_fin_semana",
+        "es_festivo",
+        "hora_sin",
+        "hora_cos",
+        "dia_semana_sin",
+        "dia_semana_cos"
+      ]
+    },
+    "3": {
+      "completas": [
+        "dentro_horario_operativo",
+        "hora_del_dia",
+        "dia_semana",
+        "es_fin_semana",
+        "es_festivo",
+        "pasajeros_total_lag_48",
+        "pasajeros_total_lag_96",
+        "pasajeros_total_lag_336",
+        "pasajeros_por_despacho_lag_48",
+        "pasajeros_por_despacho_lag_96",
+        "pasajeros_por_despacho_lag_336",
+        "hora_sin",
+        "hora_cos",
+        "dia_semana_sin",
+        "dia_semana_cos"
+      ],
+      "sin_rezagos": [
+        "dentro_horario_operativo",
+        "hora_del_dia",
+        "dia_semana",
+        "es_fin_semana",
+        "es_festivo",
+        "hora_sin",
+        "hora_cos",
+        "dia_semana_sin",
+        "dia_semana_cos"
+      ]
+    }
+  },
+  "rezagos_excluidos_en_ablacion": [
+    "pasajeros_total_lag_48",
+    "pasajeros_total_lag_96",
+    "pasajeros_total_lag_336",
+    "pasajeros_por_despacho_lag_48",
+    "pasajeros_por_despacho_lag_96",
+    "pasajeros_por_despacho_lag_336"
+  ],
+  "conceptos": {
+    "Hora": [
+      "hora_del_dia",
+      "hora_sin",
+      "hora_cos"
+    ],
+    "Dia de la semana": [
+      "dia_semana",
+      "dia_semana_sin",
+      "dia_semana_cos"
+    ],
+    "Festivo y fin de semana": [
+      "es_festivo",
+      "es_fin_semana"
+    ],
+    "Rezagos de demanda": [
+      "pasajeros_total_lag_48",
+      "pasajeros_total_lag_96",
+      "pasajeros_total_lag_336"
+    ],
+    "Rezagos de productividad": [
+      "pasajeros_por_despacho_lag_48",
+      "pasajeros_por_despacho_lag_96",
+      "pasajeros_por_despacho_lag_336"
+    ],
+    "Horario operativo (constante)": [
+      "dentro_horario_operativo"
+    ]
+  },
+  "importancia": "total_gain por ajuste, porcentaje del total del ajuste, media por ruta",
+  "max_dif_reajuste_vs_freeze": 1.5185546885732037e-05,
+  "verificacion_freeze": [
+    {
+      "metodo": "XGBoost completo",
+      "mae": 28.344185865371955,
+      "mae_freeze": 28.3442,
+      "n": 3038,
+      "n_freeze": 3038,
+      "coincide": true
+    },
+    {
+      "metodo": "Referencia (26s)",
+      "mae": 28.35796745198288,
+      "mae_freeze": 28.358,
+      "n": 3038,
+      "n_freeze": 3038,
+      "coincide": true
+    }
+  ],
+  "spearman": {
+    "variables": [
+      "hora_del_dia",
+      "hora_sin",
+      "hora_cos",
+      "dia_semana",
+      "dia_semana_sin",
+      "dia_semana_cos",
+      "es_festivo",
+      "es_fin_semana",
+      "pasajeros_total_lag_48",
+      "pasajeros_total_lag_96",
+      "pasajeros_total_lag_336",
+      "pasajeros_por_despacho_lag_48",
+      "pasajeros_por_despacho_lag_96",
+      "pasajeros_por_despacho_lag_336"
+    ],
+    "inicio": "2025-10-02 04:00:00",
+    "fin": "2026-06-11 04:00:00",
+    "franjas_por_ruta": {
+      "1": 5897,
+      "3": 5992
+    },
+    "pares_abs_rho_ge_0_7": [
+      [
+        "hora_del_dia",
+        "hora_sin"
+      ],
+      [
+        "dia_semana",
+        "es_fin_semana"
+      ],
+      [
+        "dia_semana_sin",
+        "es_fin_semana"
+      ]
+    ]
+  },
+  "metricas_globales": {
+    "XGBoost completo": {
+      "mae": 28.344185865371955,
+      "medae": 21.958395000000003,
+      "sesgo": 2.342338142527979,
+      "wape": 25.968394077998997
+    },
+    "XGBoost sin rezagos": {
+      "mae": 27.696688817785788,
+      "medae": 21.319652557373047,
+      "sesgo": 5.792793125129986,
+      "wape": 25.375169824675122
+    },
+    "Referencia (26s)": {
+      "mae": 28.35796745198288,
+      "medae": 21.875,
+      "sesgo": 6.259657190658787,
+      "wape": 25.981020500709903
+    }
+  },
+  "minutos_ejecucion": 11.8,
+  "salidas": [
+    "analisis\\salidas\\importancia_por_ajuste__importancia_ablacion_xgboost.csv",
+    "analisis\\salidas\\importancia__importancia_ablacion_xgboost.csv",
+    "analisis\\salidas\\observaciones__importancia_ablacion_xgboost.csv",
+    "analisis\\salidas\\metricas__importancia_ablacion_xgboost.csv",
+    "analisis\\salidas\\spearman__importancia_ablacion_xgboost.csv",
+    "analisis\\salidas\\figura_spearman__importancia_ablacion_xgboost.png",
+    "analisis\\salidas\\figura_spearman__importancia_ablacion_xgboost.pdf",
+    "analisis\\salidas\\resumen__importancia_ablacion_xgboost.md",
+    "analisis\\salidas\\manifiesto__importancia_ablacion_xgboost.json"
+  ]
+}

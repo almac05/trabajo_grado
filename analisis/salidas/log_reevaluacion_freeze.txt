@@ -1,0 +1,432 @@
+Importing plotly failed. Interactive plots will not work.
+
+============================================================
+SARIMA (freeze freeze_20260922_203820)
+============================================================
+params={'p': 0, 'q': 0, 'P': 1, 'Q': 1}
+C:\Users\regis\proyecto_grado\.venv\Lib\site-packages\statsmodels\base\model.py:607: ConvergenceWarning: Maximum Likelihood optimization failed to converge. Check mle_retvals
+  warnings.warn("Maximum Likelihood optimization failed to "
+C:\Users\regis\proyecto_grado\.venv\Lib\site-packages\statsmodels\base\model.py:607: ConvergenceWarning: Maximum Likelihood optimization failed to converge. Check mle_retvals
+  warnings.warn("Maximum Likelihood optimization failed to "
+C:\Users\regis\proyecto_grado\.venv\Lib\site-packages\statsmodels\base\model.py:607: ConvergenceWarning: Maximum Likelihood optimization failed to converge. Check mle_retvals
+  warnings.warn("Maximum Likelihood optimization failed to "
+jornadas: 137
+guardado: resumen__sarima__freeze_20260922_203820.csv, predicciones__sarima__freeze_20260922_203820.csv
+
+============================================================
+Prophet (freeze freeze_20260922_203820)
+============================================================
+params={'changepoint_prior_scale': 0.17129776945584144, 'seasonality_prior_scale': 0.7852233350555969, 'holidays_prior_scale': 1.8804561916113502, 'seasonality_mode': 'multiplicative', 'changepoint_range': 0.9456047036592354}
+20:49:23 - cmdstanpy - INFO - Chain [1] start processing
+20:49:25 - cmdstanpy - INFO - Chain [1] done processing
+20:49:25 - cmdstanpy - INFO - Chain [1] start processing
+20:49:26 - cmdstanpy - INFO - Chain [1] done processing
+20:49:27 - cmdstanpy - INFO - Chain [1] start processing
+20:49:27 - cmdstanpy - INFO - Chain [1] done processing
+20:49:28 - cmdstanpy - INFO - Chain [1] start processing
+20:49:29 - cmdstanpy - INFO - Chain [1] done processing
+20:49:29 - cmdstanpy - INFO - Chain [1] start processing
+20:49:30 - cmdstanpy - INFO - Chain [1] done processing
+20:49:30 - cmdstanpy - INFO - Chain [1] start processing
+20:49:31 - cmdstanpy - INFO - Chain [1] done processing
+20:49:31 - cmdstanpy - INFO - Chain [1] start processing
+20:49:32 - cmdstanpy - INFO - Chain [1] done processing
+20:49:33 - cmdstanpy - INFO - Chain [1] start processing
+20:49:34 - cmdstanpy - INFO - Chain [1] done processing
+20:49:34 - cmdstanpy - INFO - Chain [1] start processing
+20:49:35 - cmdstanpy - INFO - Chain [1] done processing
+20:49:36 - cmdstanpy - INFO - Chain [1] start processing
+20:49:36 - cmdstanpy - INFO - Chain [1] done processing
+20:49:37 - cmdstanpy - INFO - Chain [1] start processing
+20:49:38 - cmdstanpy - INFO - Chain [1] done processing
+20:49:38 - cmdstanpy - INFO - Chain [1] start processing
+20:49:39 - cmdstanpy - INFO - Chain [1] done processing
+20:49:40 - cmdstanpy - INFO - Chain [1] start processing
+20:49:40 - cmdstanpy - INFO - Chain [1] done processing
+20:49:41 - cmdstanpy - INFO - Chain [1] start processing
+20:49:41 - cmdstanpy - INFO - Chain [1] done processing
+20:49:42 - cmdstanpy - INFO - Chain [1] start processing
+20:49:43 - cmdstanpy - INFO - Chain [1] done processing
+20:49:43 - cmdstanpy - INFO - Chain [1] start processing
+20:49:44 - cmdstanpy - INFO - Chain [1] done processing
+20:49:44 - cmdstanpy - INFO - Chain [1] start processing
+20:49:45 - cmdstanpy - INFO - Chain [1] done processing
+20:49:46 - cmdstanpy - INFO - Chain [1] start processing
+20:49:46 - cmdstanpy - INFO - Chain [1] done processing
+20:49:47 - cmdstanpy - INFO - Chain [1] start processing
+20:49:47 - cmdstanpy - INFO - Chain [1] done processing
+20:49:48 - cmdstanpy - INFO - Chain [1] start processing
+20:49:49 - cmdstanpy - INFO - Chain [1] done processing
+20:49:49 - cmdstanpy - INFO - Chain [1] start processing
+20:49:50 - cmdstanpy - INFO - Chain [1] done processing
+20:49:51 - cmdstanpy - INFO - Chain [1] start processing
+20:49:51 - cmdstanpy - INFO - Chain [1] done processing
+20:49:52 - cmdstanpy - INFO - Chain [1] start processing
+20:49:52 - cmdstanpy - INFO - Chain [1] done processing
+20:49:53 - cmdstanpy - INFO - Chain [1] start processing
+20:49:53 - cmdstanpy - INFO - Chain [1] done processing
+20:49:54 - cmdstanpy - INFO - Chain [1] start processing
+20:49:54 - cmdstanpy - INFO - Chain [1] done processing
+20:49:55 - cmdstanpy - INFO - Chain [1] start processing
+20:49:55 - cmdstanpy - INFO - Chain [1] done processing
+20:49:56 - cmdstanpy - INFO - Chain [1] start processing
+20:49:56 - cmdstanpy - INFO - Chain [1] done processing
+20:49:57 - cmdstanpy - INFO - Chain [1] start processing
+20:49:58 - cmdstanpy - INFO - Chain [1] done processing
+20:49:58 - cmdstanpy - INFO - Chain [1] start processing
+20:49:59 - cmdstanpy - INFO - Chain [1] done processing
+20:50:00 - cmdstanpy - INFO - Chain [1] start processing
+20:50:00 - cmdstanpy - INFO - Chain [1] done processing
+20:50:01 - cmdstanpy - INFO - Chain [1] start processing
+20:50:01 - cmdstanpy - INFO - Chain [1] done processing
+20:50:02 - cmdstanpy - INFO - Chain [1] start processing
+20:50:03 - cmdstanpy - INFO - Chain [1] done processing
+20:50:04 - cmdstanpy - INFO - Chain [1] start processing
+20:50:04 - cmdstanpy - INFO - Chain [1] done processing
+20:50:05 - cmdstanpy - INFO - Chain [1] start processing
+20:50:05 - cmdstanpy - INFO - Chain [1] done processing
+20:50:06 - cmdstanpy - INFO - Chain [1] start processing
+20:50:07 - cmdstanpy - INFO - Chain [1] done processing
+20:50:07 - cmdstanpy - INFO - Chain [1] start processing
+20:50:08 - cmdstanpy - INFO - Chain [1] done processing
+20:50:08 - cmdstanpy - INFO - Chain [1] start processing
+20:50:09 - cmdstanpy - INFO - Chain [1] done processing
+20:50:09 - cmdstanpy - INFO - Chain [1] start processing
+20:50:10 - cmdstanpy - INFO - Chain [1] done processing
+20:50:10 - cmdstanpy - INFO - Chain [1] start processing
+20:50:11 - cmdstanpy - INFO - Chain [1] done processing
+20:50:12 - cmdstanpy - INFO - Chain [1] start processing
+20:50:12 - cmdstanpy - INFO - Chain [1] done processing
+20:50:13 - cmdstanpy - INFO - Chain [1] start processing
+20:50:13 - cmdstanpy - INFO - Chain [1] done processing
+20:50:14 - cmdstanpy - INFO - Chain [1] start processing
+20:50:15 - cmdstanpy - INFO - Chain [1] done processing
+20:50:15 - cmdstanpy - INFO - Chain [1] start processing
+20:50:16 - cmdstanpy - INFO - Chain [1] done processing
+20:50:16 - cmdstanpy - INFO - Chain [1] start processing
+20:50:17 - cmdstanpy - INFO - Chain [1] done processing
+20:50:17 - cmdstanpy - INFO - Chain [1] start processing
+20:50:18 - cmdstanpy - INFO - Chain [1] done processing
+20:50:18 - cmdstanpy - INFO - Chain [1] start processing
+20:50:19 - cmdstanpy - INFO - Chain [1] done processing
+20:50:19 - cmdstanpy - INFO - Chain [1] start processing
+20:50:20 - cmdstanpy - INFO - Chain [1] done processing
+20:50:20 - cmdstanpy - INFO - Chain [1] start processing
+20:50:21 - cmdstanpy - INFO - Chain [1] done processing
+20:50:21 - cmdstanpy - INFO - Chain [1] start processing
+20:50:22 - cmdstanpy - INFO - Chain [1] done processing
+20:50:22 - cmdstanpy - INFO - Chain [1] start processing
+20:50:23 - cmdstanpy - INFO - Chain [1] done processing
+20:50:24 - cmdstanpy - INFO - Chain [1] start processing
+20:50:24 - cmdstanpy - INFO - Chain [1] done processing
+20:50:25 - cmdstanpy - INFO - Chain [1] start processing
+20:50:25 - cmdstanpy - INFO - Chain [1] done processing
+20:50:26 - cmdstanpy - INFO - Chain [1] start processing
+20:50:27 - cmdstanpy - INFO - Chain [1] done processing
+20:50:27 - cmdstanpy - INFO - Chain [1] start processing
+20:50:28 - cmdstanpy - INFO - Chain [1] done processing
+20:50:28 - cmdstanpy - INFO - Chain [1] start processing
+20:50:29 - cmdstanpy - INFO - Chain [1] done processing
+20:50:29 - cmdstanpy - INFO - Chain [1] start processing
+20:50:30 - cmdstanpy - INFO - Chain [1] done processing
+20:50:30 - cmdstanpy - INFO - Chain [1] start processing
+20:50:31 - cmdstanpy - INFO - Chain [1] done processing
+20:50:31 - cmdstanpy - INFO - Chain [1] start processing
+20:50:32 - cmdstanpy - INFO - Chain [1] done processing
+20:50:32 - cmdstanpy - INFO - Chain [1] start processing
+20:50:33 - cmdstanpy - INFO - Chain [1] done processing
+20:50:34 - cmdstanpy - INFO - Chain [1] start processing
+20:50:34 - cmdstanpy - INFO - Chain [1] done processing
+20:50:35 - cmdstanpy - INFO - Chain [1] start processing
+20:50:35 - cmdstanpy - INFO - Chain [1] done processing
+20:50:36 - cmdstanpy - INFO - Chain [1] start processing
+20:50:37 - cmdstanpy - INFO - Chain [1] done processing
+20:50:37 - cmdstanpy - INFO - Chain [1] start processing
+20:50:38 - cmdstanpy - INFO - Chain [1] done processing
+20:50:38 - cmdstanpy - INFO - Chain [1] start processing
+20:50:39 - cmdstanpy - INFO - Chain [1] done processing
+20:50:39 - cmdstanpy - INFO - Chain [1] start processing
+20:50:40 - cmdstanpy - INFO - Chain [1] done processing
+20:50:40 - cmdstanpy - INFO - Chain [1] start processing
+20:50:41 - cmdstanpy - INFO - Chain [1] done processing
+20:50:41 - cmdstanpy - INFO - Chain [1] start processing
+20:50:42 - cmdstanpy - INFO - Chain [1] done processing
+20:50:43 - cmdstanpy - INFO - Chain [1] start processing
+20:50:43 - cmdstanpy - INFO - Chain [1] done processing
+20:50:44 - cmdstanpy - INFO - Chain [1] start processing
+20:50:44 - cmdstanpy - INFO - Chain [1] done processing
+20:50:45 - cmdstanpy - INFO - Chain [1] start processing
+20:50:46 - cmdstanpy - INFO - Chain [1] done processing
+20:50:46 - cmdstanpy - INFO - Chain [1] start processing
+20:50:47 - cmdstanpy - INFO - Chain [1] done processing
+20:50:48 - cmdstanpy - INFO - Chain [1] start processing
+20:50:49 - cmdstanpy - INFO - Chain [1] done processing
+20:50:49 - cmdstanpy - INFO - Chain [1] start processing
+20:50:50 - cmdstanpy - INFO - Chain [1] done processing
+20:50:51 - cmdstanpy - INFO - Chain [1] start processing
+20:50:51 - cmdstanpy - INFO - Chain [1] done processing
+20:50:52 - cmdstanpy - INFO - Chain [1] start processing
+20:50:53 - cmdstanpy - INFO - Chain [1] done processing
+20:50:53 - cmdstanpy - INFO - Chain [1] start processing
+20:50:54 - cmdstanpy - INFO - Chain [1] done processing
+20:50:54 - cmdstanpy - INFO - Chain [1] start processing
+20:50:55 - cmdstanpy - INFO - Chain [1] done processing
+20:50:55 - cmdstanpy - INFO - Chain [1] start processing
+20:50:56 - cmdstanpy - INFO - Chain [1] done processing
+20:50:57 - cmdstanpy - INFO - Chain [1] start processing
+20:50:58 - cmdstanpy - INFO - Chain [1] done processing
+20:50:58 - cmdstanpy - INFO - Chain [1] start processing
+20:50:59 - cmdstanpy - INFO - Chain [1] done processing
+20:51:00 - cmdstanpy - INFO - Chain [1] start processing
+20:51:00 - cmdstanpy - INFO - Chain [1] done processing
+20:51:01 - cmdstanpy - INFO - Chain [1] start processing
+20:51:02 - cmdstanpy - INFO - Chain [1] done processing
+20:51:02 - cmdstanpy - INFO - Chain [1] start processing
+20:51:03 - cmdstanpy - INFO - Chain [1] done processing
+20:51:03 - cmdstanpy - INFO - Chain [1] start processing
+20:51:04 - cmdstanpy - INFO - Chain [1] done processing
+20:51:05 - cmdstanpy - INFO - Chain [1] start processing
+20:51:05 - cmdstanpy - INFO - Chain [1] done processing
+20:51:06 - cmdstanpy - INFO - Chain [1] start processing
+20:51:06 - cmdstanpy - INFO - Chain [1] done processing
+20:51:07 - cmdstanpy - INFO - Chain [1] start processing
+20:51:08 - cmdstanpy - INFO - Chain [1] done processing
+20:51:08 - cmdstanpy - INFO - Chain [1] start processing
+20:51:09 - cmdstanpy - INFO - Chain [1] done processing
+20:51:09 - cmdstanpy - INFO - Chain [1] start processing
+20:51:10 - cmdstanpy - INFO - Chain [1] done processing
+20:51:11 - cmdstanpy - INFO - Chain [1] start processing
+20:51:11 - cmdstanpy - INFO - Chain [1] done processing
+20:51:12 - cmdstanpy - INFO - Chain [1] start processing
+20:51:13 - cmdstanpy - INFO - Chain [1] done processing
+20:51:13 - cmdstanpy - INFO - Chain [1] start processing
+20:51:14 - cmdstanpy - INFO - Chain [1] done processing
+20:51:15 - cmdstanpy - INFO - Chain [1] start processing
+20:51:15 - cmdstanpy - INFO - Chain [1] done processing
+20:51:16 - cmdstanpy - INFO - Chain [1] start processing
+20:51:17 - cmdstanpy - INFO - Chain [1] done processing
+20:51:17 - cmdstanpy - INFO - Chain [1] start processing
+20:51:18 - cmdstanpy - INFO - Chain [1] done processing
+20:51:18 - cmdstanpy - INFO - Chain [1] start processing
+20:51:19 - cmdstanpy - INFO - Chain [1] done processing
+20:51:20 - cmdstanpy - INFO - Chain [1] start processing
+20:51:20 - cmdstanpy - INFO - Chain [1] done processing
+20:51:21 - cmdstanpy - INFO - Chain [1] start processing
+20:51:21 - cmdstanpy - INFO - Chain [1] done processing
+20:51:22 - cmdstanpy - INFO - Chain [1] start processing
+20:51:23 - cmdstanpy - INFO - Chain [1] done processing
+20:51:23 - cmdstanpy - INFO - Chain [1] start processing
+20:51:24 - cmdstanpy - INFO - Chain [1] done processing
+20:51:25 - cmdstanpy - INFO - Chain [1] start processing
+20:51:25 - cmdstanpy - INFO - Chain [1] done processing
+20:51:26 - cmdstanpy - INFO - Chain [1] start processing
+20:51:27 - cmdstanpy - INFO - Chain [1] done processing
+20:51:27 - cmdstanpy - INFO - Chain [1] start processing
+20:51:28 - cmdstanpy - INFO - Chain [1] done processing
+20:51:28 - cmdstanpy - INFO - Chain [1] start processing
+20:51:29 - cmdstanpy - INFO - Chain [1] done processing
+20:51:29 - cmdstanpy - INFO - Chain [1] start processing
+20:51:30 - cmdstanpy - INFO - Chain [1] done processing
+20:51:31 - cmdstanpy - INFO - Chain [1] start processing
+20:51:31 - cmdstanpy - INFO - Chain [1] done processing
+20:51:32 - cmdstanpy - INFO - Chain [1] start processing
+20:51:33 - cmdstanpy - INFO - Chain [1] done processing
+20:51:33 - cmdstanpy - INFO - Chain [1] start processing
+20:51:34 - cmdstanpy - INFO - Chain [1] done processing
+20:51:34 - cmdstanpy - INFO - Chain [1] start processing
+20:51:35 - cmdstanpy - INFO - Chain [1] done processing
+20:51:36 - cmdstanpy - INFO - Chain [1] start processing
+20:51:36 - cmdstanpy - INFO - Chain [1] done processing
+20:51:37 - cmdstanpy - INFO - Chain [1] start processing
+20:51:38 - cmdstanpy - INFO - Chain [1] done processing
+20:51:38 - cmdstanpy - INFO - Chain [1] start processing
+20:51:39 - cmdstanpy - INFO - Chain [1] done processing
+20:51:39 - cmdstanpy - INFO - Chain [1] start processing
+20:51:40 - cmdstanpy - INFO - Chain [1] done processing
+20:51:41 - cmdstanpy - INFO - Chain [1] start processing
+20:51:41 - cmdstanpy - INFO - Chain [1] done processing
+20:51:42 - cmdstanpy - INFO - Chain [1] start processing
+20:51:43 - cmdstanpy - INFO - Chain [1] done processing
+20:51:43 - cmdstanpy - INFO - Chain [1] start processing
+20:51:44 - cmdstanpy - INFO - Chain [1] done processing
+20:51:44 - cmdstanpy - INFO - Chain [1] start processing
+20:51:45 - cmdstanpy - INFO - Chain [1] done processing
+20:51:46 - cmdstanpy - INFO - Chain [1] start processing
+20:51:46 - cmdstanpy - INFO - Chain [1] done processing
+20:51:47 - cmdstanpy - INFO - Chain [1] start processing
+20:51:48 - cmdstanpy - INFO - Chain [1] done processing
+20:51:48 - cmdstanpy - INFO - Chain [1] start processing
+20:51:49 - cmdstanpy - INFO - Chain [1] done processing
+20:51:49 - cmdstanpy - INFO - Chain [1] start processing
+20:51:50 - cmdstanpy - INFO - Chain [1] done processing
+20:51:50 - cmdstanpy - INFO - Chain [1] start processing
+20:51:51 - cmdstanpy - INFO - Chain [1] done processing
+20:51:52 - cmdstanpy - INFO - Chain [1] start processing
+20:51:52 - cmdstanpy - INFO - Chain [1] done processing
+20:51:53 - cmdstanpy - INFO - Chain [1] start processing
+20:51:53 - cmdstanpy - INFO - Chain [1] done processing
+20:51:54 - cmdstanpy - INFO - Chain [1] start processing
+20:51:55 - cmdstanpy - INFO - Chain [1] done processing
+20:51:56 - cmdstanpy - INFO - Chain [1] start processing
+20:51:56 - cmdstanpy - INFO - Chain [1] done processing
+20:51:57 - cmdstanpy - INFO - Chain [1] start processing
+20:51:58 - cmdstanpy - INFO - Chain [1] done processing
+20:51:58 - cmdstanpy - INFO - Chain [1] start processing
+20:51:59 - cmdstanpy - INFO - Chain [1] done processing
+20:51:59 - cmdstanpy - INFO - Chain [1] start processing
+20:52:00 - cmdstanpy - INFO - Chain [1] done processing
+20:52:00 - cmdstanpy - INFO - Chain [1] start processing
+20:52:01 - cmdstanpy - INFO - Chain [1] done processing
+20:52:01 - cmdstanpy - INFO - Chain [1] start processing
+20:52:02 - cmdstanpy - INFO - Chain [1] done processing
+20:52:02 - cmdstanpy - INFO - Chain [1] start processing
+20:52:03 - cmdstanpy - INFO - Chain [1] done processing
+20:52:03 - cmdstanpy - INFO - Chain [1] start processing
+20:52:04 - cmdstanpy - INFO - Chain [1] done processing
+20:52:05 - cmdstanpy - INFO - Chain [1] start processing
+20:52:06 - cmdstanpy - INFO - Chain [1] done processing
+20:52:06 - cmdstanpy - INFO - Chain [1] start processing
+20:52:07 - cmdstanpy - INFO - Chain [1] done processing
+20:52:08 - cmdstanpy - INFO - Chain [1] start processing
+20:52:08 - cmdstanpy - INFO - Chain [1] done processing
+20:52:09 - cmdstanpy - INFO - Chain [1] start processing
+20:52:09 - cmdstanpy - INFO - Chain [1] done processing
+jornadas: 137
+guardado: resumen__prophet__freeze_20260922_203820.csv, predicciones__prophet__freeze_20260922_203820.csv
+
+============================================================
+XGBoost (freeze freeze_20260922_203820)
+============================================================
+params={'max_depth': 4, 'min_child_weight': 7, 'learning_rate': 0.016085381438354866, 'subsample': 0.6799632809900433, 'colsample_bytree': 0.6029449079004022, 'reg_lambda': 3.748424389563135, 'reg_alpha': 0.09875351660720856}
+jornadas: 137
+guardado: resumen__xgboost__freeze_20260922_203820.csv, predicciones__xgboost__freeze_20260922_203820.csv
+
+============================================================
+LSTM (freeze freeze_20260922_203820)
+============================================================
+params={'unidades': 64, 'lr': 0.007137234690401974, 'paciencia': 30}
+jornadas: 134
+guardado: resumen__lstm__freeze_20260922_203820.csv, predicciones__lstm__freeze_20260922_203820.csv
+
+============================================================
+GRU (freeze freeze_20260922_203820)
+============================================================
+params={'unidades': 128, 'lr': 0.004421027603802802, 'paciencia': 30}
+jornadas: 134
+guardado: resumen__gru__freeze_20260922_203820.csv, predicciones__gru__freeze_20260922_203820.csv
+
+============================================================
+CNN-LSTM (freeze freeze_20260922_203820)
+============================================================
+params={'unidades': 128, 'lr': 0.004421027603802802, 'paciencia': 30, 'filtros': 32, 'nucleo': 3}
+jornadas: 134
+guardado: resumen__cnn_lstm__freeze_20260922_203820.csv, predicciones__cnn_lstm__freeze_20260922_203820.csv
+
+############################################################
+Freeze nuevo: freeze_20260922_203820
+############################################################
+
+=== global ===
+          metodo    n  demanda_media   mae  rmse  wape  sesgo  mape_parcial  n_mape  n_jornadas
+          SARIMA 3038         109.15 48.07 61.81 44.04  -2.15         78.23    3034         134
+         Prophet 3038         109.15 30.63 39.78 28.06   0.69         39.33    3034         134
+         XGBoost 3038         109.15 28.34 37.32 25.97   2.34         35.41    3034         134
+            LSTM 3038         109.15 29.11 38.56 26.67   3.97         35.63    3034         134
+             GRU 3038         109.15 29.59 39.12 27.11   3.70         36.77    3034         134
+        CNN-LSTM 3038         109.15 29.68 39.24 27.19   3.97         37.71    3034         134
+Referencia (26s) 3038         109.15 28.36 37.31 25.98   6.26         38.39    3034         134
+Referencia (52s) 3038         109.15 29.34 38.49 26.88  12.50         39.33    3034         134
+guardado: C:\Users\regis\proyecto_grado\analisis\salidas\metricas__comparacion_modelos__freeze_20260922_203820__global.csv
+
+=== regimen ===
+          metodo   regimen    n  demanda_media   mae  rmse   wape  sesgo  mape_parcial  n_mape  n_jornadas
+          SARIMA ordinario 2907         112.74 46.73 60.68  41.44  -5.76         67.23    2905         124
+          SARIMA      raro  131          29.35 77.97 82.99 265.65  77.97        326.06     129          10
+         Prophet ordinario 2907         112.74 31.36 40.45  27.82   0.76         38.99    2905         124
+         Prophet      raro  131          29.35 14.34 19.65  48.84  -0.95         47.02     129          10
+         XGBoost ordinario 2907         112.74 29.03 38.00  25.75   2.22         34.65    2905         124
+         XGBoost      raro  131          29.35 13.05 16.15  44.46   5.03         52.48     129          10
+            LSTM ordinario 2907         112.74 29.79 39.19  26.42   4.01         35.09    2905         124
+            LSTM      raro  131          29.35 13.98 19.81  47.63   2.98         47.82     129          10
+             GRU ordinario 2907         112.74 30.00 39.49  26.61   3.40         35.13    2905         124
+             GRU      raro  131          29.35 20.53 29.59  69.93  10.52         73.68     129          10
+        CNN-LSTM ordinario 2907         112.74 29.85 39.27  26.48   3.24         35.02    2905         124
+        CNN-LSTM      raro  131          29.35 25.91 38.60  88.28  20.28         98.28     129          10
+Referencia (26s) ordinario 2907         112.74 28.50 37.19  25.28   6.04         35.57    2905         124
+Referencia (26s)      raro  131          29.35 25.18 39.71  85.79  11.03        101.97     129          10
+Referencia (52s) ordinario 2907         112.74 30.09 39.20  26.69  12.99         38.92    2905         124
+Referencia (52s)      raro  131          29.35 12.55 16.06  42.75   1.74         48.59     129          10
+guardado: C:\Users\regis\proyecto_grado\analisis\salidas\metricas__comparacion_modelos__freeze_20260922_203820__regimen.csv
+
+=== tipo_dia ===
+          metodo       tipo_dia    n  demanda_media   mae  rmse   wape  sesgo  mape_parcial  n_mape  n_jornadas
+          SARIMA        DOMINGO  207          30.96 80.30 87.29 259.40  79.94        311.87     207          19
+          SARIMA        FESTIVO   88          30.15 81.75 87.94 271.16  81.75        337.21      86           6
+          SARIMA FESTIVO_PUENTE   43          27.72 70.24 71.80 253.39  70.24        303.74      43           4
+          SARIMA        LABORAL 2215         127.37 44.87 59.91  35.23 -21.66         41.08    2214          85
+          SARIMA         SABADO  485          80.88 40.88 49.30  50.54  30.27         82.19     484          20
+         Prophet        DOMINGO  207          30.96 18.51 23.59  59.79   8.40         71.89     207          19
+         Prophet        FESTIVO   88          30.15 15.69 21.32  52.05  -0.75         50.00      86           6
+         Prophet FESTIVO_PUENTE   43          27.72 11.56 15.69  41.70  -1.35         41.06      43           4
+         Prophet        LABORAL 2215         127.37 33.32 42.80  26.16  -0.53         34.29    2214          85
+         Prophet         SABADO  485          80.88 27.92 34.71  34.53   3.42         46.43     484          20
+         XGBoost        DOMINGO  207          30.96 10.19 13.30  32.92   1.57         37.51     207          19
+         XGBoost        FESTIVO   88          30.15 13.13 16.56  43.54   3.01         50.45      86           6
+         XGBoost FESTIVO_PUENTE   43          27.72 12.89 15.27  46.50   9.17         56.53      43           4
+         XGBoost        LABORAL 2215         127.37 31.57 40.69  24.79   2.01         32.56    2214          85
+         XGBoost         SABADO  485          80.88 25.48 31.90  31.50   3.47         43.02     484          20
+            LSTM        DOMINGO  207          30.96  9.31 13.09  30.06  -1.31         31.92     207          19
+            LSTM        FESTIVO   88          30.15 16.55 22.68  54.90   6.42         56.92      86           6
+            LSTM FESTIVO_PUENTE   43          27.72  8.72 11.94  31.45  -4.06         29.63      43           4
+            LSTM        LABORAL 2215         127.37 32.81 42.18  25.76   5.91         34.58    2214          85
+            LSTM         SABADO  485          80.88 24.72 31.73  30.56  -2.37         38.77     484          20
+             GRU        DOMINGO  207          30.96  9.57 13.47  30.92  -1.58         32.69     207          19
+             GRU        FESTIVO   88          30.15 21.03 28.57  69.75  13.52         73.92      86           6
+             GRU FESTIVO_PUENTE   43          27.72 19.50 31.56  70.33   4.39         73.21      43           4
+             GRU        LABORAL 2215         127.37 33.00 42.40  25.91   5.57         34.73    2214          85
+             GRU         SABADO  485          80.88 25.01 32.57  30.93  -4.43         38.00     484          20
+        CNN-LSTM        DOMINGO  207          30.96  9.26 12.83  29.91  -1.01         31.85     207          19
+        CNN-LSTM        FESTIVO   88          30.15 27.63 40.92  91.66  22.22         97.71      86           6
+        CNN-LSTM FESTIVO_PUENTE   43          27.72 22.39 33.36  80.76  16.29         99.44      43           4
+        CNN-LSTM        LABORAL 2215         127.37 32.90 42.28  25.83   4.90         34.49    2214          85
+        CNN-LSTM         SABADO  485          80.88 24.71 31.78  30.55  -2.52         38.81     484          20
+Referencia (26s)        DOMINGO  207          30.96 10.92 13.68  35.28   3.95         42.20     207          19
+Referencia (26s)        FESTIVO   88          30.15 30.92 46.34 102.57  15.31        128.05      86           6
+Referencia (26s) FESTIVO_PUENTE   43          27.72 13.43 20.27  48.44   2.27         49.83      43           4
+Referencia (26s)        LABORAL 2215         127.37 30.88 39.72  24.25   5.99         33.10    2214          85
+Referencia (26s)         SABADO  485          80.88 25.14 31.75  31.08   7.18         44.02     484          20
+Referencia (52s)        DOMINGO  207          30.96 11.09 13.54  35.83   4.54         43.36     207          19
+Referencia (52s)        FESTIVO   88          30.15 13.58 17.40  45.04   1.08         52.30      86           6
+Referencia (52s) FESTIVO_PUENTE   43          27.72 10.44 12.90  37.66   3.07         41.16      43           4
+Referencia (52s)        LABORAL 2215         127.37 32.68 41.92  25.66  13.76         36.45    2214          85
+Referencia (52s)         SABADO  485          80.88 26.38 33.27  32.61  13.07         48.33     484          20
+guardado: C:\Users\regis\proyecto_grado\analisis\salidas\metricas__comparacion_modelos__freeze_20260922_203820__tipo_dia.csv
+
+=== por_ruta ===
+          metodo  route    n  demanda_media   mae  rmse  wape  sesgo  mape_parcial  n_mape  n_jornadas
+          SARIMA      1 1483         100.60 39.72 48.61 39.49  -0.12         70.22    1481          66
+          SARIMA      3 1555         117.31 56.04 72.19 47.77  -4.08         85.88    1553          68
+         Prophet      1 1483         100.60 28.01 35.48 27.85   0.56         39.08    1481          66
+         Prophet      3 1555         117.31 33.12 43.48 28.23   0.81         39.58    1553          68
+         XGBoost      1 1483         100.60 26.92 34.76 26.76   2.81         36.31    1481          66
+         XGBoost      3 1555         117.31 29.70 39.61 25.32   1.89         34.55    1553          68
+            LSTM      1 1483         100.60 26.91 35.21 26.75   3.86         35.08    1481          66
+            LSTM      3 1555         117.31 31.20 41.50 26.60   4.08         36.16    1553          68
+             GRU      1 1483         100.60 27.07 35.36 26.91   3.09         35.60    1481          66
+             GRU      3 1555         117.31 31.99 42.39 27.27   4.29         37.89    1553          68
+        CNN-LSTM      1 1483         100.60 27.37 35.66 27.21   3.57         37.23    1481          66
+        CNN-LSTM      3 1555         117.31 31.89 42.38 27.18   4.36         38.17    1553          68
+Referencia (26s)      1 1483         100.60 26.96 34.71 26.80   6.12         38.43    1481          66
+Referencia (26s)      3 1555         117.31 29.69 39.62 25.31   6.39         38.35    1553          68
+Referencia (52s)      1 1483         100.60 27.78 35.89 27.62  11.41         39.77    1481          66
+Referencia (52s)      3 1555         117.31 30.82 40.83 26.27  13.54         38.92    1553          68
+guardado: C:\Users\regis\proyecto_grado\analisis\salidas\metricas__comparacion_modelos__freeze_20260922_203820__por_ruta.csv
+
+############################################################
+Soporte comun
+############################################################
+Freeze anterior (freeze_20260823_203700): 134 jornadas comunes
+Freeze nuevo (freeze_20260922_203820): 134 jornadas comunes
+Sin cambios: el soporte comun es identico al del freeze anterior.
+
+Manifiesto: C:\Users\regis\proyecto_grado\analisis\salidas\manifiesto__reevaluacion__freeze_20260922_203820.json
