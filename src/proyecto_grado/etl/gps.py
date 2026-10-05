@@ -2,6 +2,7 @@
 
 import logging
 import os
+from dataclasses import replace
 from datetime import timedelta
 
 import matplotlib.pyplot as plt
@@ -9,7 +10,13 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-from .config import DESPACHOS_CSV, GPS_CONFIG, RUTAS_OPERATIVAS, inicializar_entorno
+from .config import (
+    DESPACHOS_CSV,
+    GPS_CONFIG,
+    RUTAS_OPERATIVAS,
+    RUTAS_PREDETERMINADAS,
+    inicializar_entorno,
+)
 from .db import asegurar_conexion, cerrar_conexion, conectar_bd, guardar_csv
 from .utils import display
 
@@ -20,6 +27,11 @@ RUN_VALIDATION = False
 PUNTOS: dict = GPS_CONFIG["puntos"]
 RADIO_GEOCERCA_M: int = GPS_CONFIG["radio_geocerca_m"]
 RADIO_VALIDACION_M: int = GPS_CONFIG["radio_validacion_m"]
+
+
+def _rutas_modulo():
+    """Rutas por defecto, leidas de las constantes del modulo al llamar."""
+    return replace(RUTAS_PREDETERMINADAS, despachos_csv=DESPACHOS_CSV)
 
 
 def haversine_m_local(lat1, lon1, lat2, lon2):
@@ -290,9 +302,10 @@ def encontrar_hora_salida(hora_plan_dt, datos_rastreo, nombre_punto, radio_m=RAD
     )
 
 
-def run_block5(despachos: pd.DataFrame) -> pd.DataFrame:
+def run_block5(despachos: pd.DataFrame, rutas=None) -> pd.DataFrame:
     """Bloque 5: Imputacion de HORA_INICIAL_REAL via telemetria GPS (Haversine + geocerca)."""
-    inicializar_entorno(verbose=False)
+    rutas = _rutas_modulo() if rutas is None else rutas
+    inicializar_entorno(verbose=False, rutas=rutas)
     con_pri = conectar_bd("bd_montebello_rdw")
     con_gps = conectar_bd("bd_montebello_rdw_gps")
 
@@ -378,7 +391,7 @@ def run_block5(despachos: pd.DataFrame) -> pd.DataFrame:
     cerrar_conexion(con_gps)
 
     logger.info("BLOQUE 5 - actualizaciones HORA_INICIAL_REAL: %d", len(updates))
-    guardar_csv(despachos, DESPACHOS_CSV)
+    guardar_csv(despachos, rutas.verificar(rutas.despachos_csv))
 
     desp = despachos.copy()
 

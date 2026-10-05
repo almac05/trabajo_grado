@@ -3,11 +3,19 @@
 import datetime as _dt
 import logging
 import os
+from dataclasses import replace
 
 import numpy as np
 import pandas as pd
 
-from .config import QC_CONFIG, QC_DIR, QC_PATH, QC_REPORTS_DIR, inicializar_entorno
+from .config import (
+    QC_CONFIG,
+    QC_DIR,
+    QC_PATH,
+    QC_REPORTS_DIR,
+    RUTAS_PREDETERMINADAS,
+    inicializar_entorno,
+)
 from .utils import display
 
 logger = logging.getLogger(__name__)
@@ -41,6 +49,13 @@ SOFT_FAILS = [
 ]
 
 CFG: dict = QC_CONFIG.copy()
+
+
+def _rutas_modulo():
+    """Rutas por defecto, leidas de las constantes del modulo al llamar."""
+    return replace(
+        RUTAS_PREDETERMINADAS, qc_path=QC_PATH, qc_dir=QC_DIR, qc_reports_dir=QC_REPORTS_DIR
+    )
 
 
 def _join_reasons(row, cols):
@@ -297,9 +312,10 @@ def validar_coherencia_operacional_avanzada(
     return out, qc_resumen, qc_top_vehiculos, qc_top_rutas
 
 
-def run_block6(despachos: pd.DataFrame) -> pd.DataFrame:
+def run_block6(despachos: pd.DataFrame, rutas=None) -> pd.DataFrame:
     """Bloque 6: QC de coherencia operacional, export de parquets y reportes."""
-    inicializar_entorno(verbose=False)
+    rutas = _rutas_modulo() if rutas is None else rutas
+    inicializar_entorno(verbose=False, rutas=rutas)
     # Asegurar datetime
     despachos[col_hi] = pd.to_datetime(despachos[col_hi], errors="coerce")
     despachos[col_hf] = pd.to_datetime(despachos[col_hf], errors="coerce")
@@ -375,22 +391,34 @@ def run_block6(despachos: pd.DataFrame) -> pd.DataFrame:
     despachos_gps_ready = _fix_object_dates_for_parquet(despachos_gps_ready)
     despachos_hard_excluded = _fix_object_dates_for_parquet(despachos_hard_excluded)
 
-    despachos_qc.to_parquet(QC_PATH, index=False)
-    despachos_gps_ready.to_parquet(os.path.join(QC_DIR, "despachos_gps_ready.parquet"), index=False)
+    despachos_qc.to_parquet(rutas.verificar(rutas.qc_path), index=False)
+    despachos_gps_ready.to_parquet(
+        rutas.verificar(os.path.join(rutas.qc_dir, "despachos_gps_ready.parquet")),
+        index=False,
+    )
     despachos_hard_excluded.to_parquet(
-        os.path.join(QC_DIR, "despachos_hard_excluded.parquet"), index=False
+        rutas.verificar(os.path.join(rutas.qc_dir, "despachos_hard_excluded.parquet")),
+        index=False,
     )
 
     # Los CSV de resumen son reportes, no datos intermedios: van a reports/tables/qc
-    qc_resumen.to_csv(os.path.join(QC_REPORTS_DIR, "qc_resumen.csv"), index=False)
+    qc_resumen.to_csv(
+        rutas.verificar(os.path.join(rutas.qc_reports_dir, "qc_resumen.csv")), index=False
+    )
     if qc_top_vehiculos is not None:
-        qc_top_vehiculos.to_csv(os.path.join(QC_REPORTS_DIR, "qc_top_vehiculos.csv"), index=False)
+        qc_top_vehiculos.to_csv(
+            rutas.verificar(os.path.join(rutas.qc_reports_dir, "qc_top_vehiculos.csv")),
+            index=False,
+        )
     if qc_top_rutas is not None:
-        qc_top_rutas.to_csv(os.path.join(QC_REPORTS_DIR, "qc_top_rutas.csv"), index=False)
+        qc_top_rutas.to_csv(
+            rutas.verificar(os.path.join(rutas.qc_reports_dir, "qc_top_rutas.csv")),
+            index=False,
+        )
 
-    logger.info("BLOQUE 6 - QC parquets exportados en: %s", QC_DIR)
-    logger.info("BLOQUE 6 - QC reportes exportados en: %s", QC_REPORTS_DIR)
-    logger.info("BLOQUE 6 - QC_PATH (principal): %s", QC_PATH)
+    logger.info("BLOQUE 6 - QC parquets exportados en: %s", rutas.qc_dir)
+    logger.info("BLOQUE 6 - QC reportes exportados en: %s", rutas.qc_reports_dir)
+    logger.info("BLOQUE 6 - QC_PATH (principal): %s", rutas.qc_path)
 
     neg = despachos_qc[despachos_qc["duracion_min"].notna() & (despachos_qc["duracion_min"] < 0)]
     logger.info("BLOQUE 6 - duraciones negativas reales: %d", len(neg))

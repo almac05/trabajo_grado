@@ -2,12 +2,19 @@
 
 import logging
 import os
+from dataclasses import replace
 from datetime import timedelta
 
 import pandas as pd
 from mysql.connector import Error
 
-from .config import END_PATH, QC_PATH, TRIP_END_CONFIG, inicializar_entorno
+from .config import (
+    END_PATH,
+    QC_PATH,
+    RUTAS_PREDETERMINADAS,
+    TRIP_END_CONFIG,
+    inicializar_entorno,
+)
 from .db import asegurar_conexion, cerrar_conexion, conectar_bd
 from .utils import display
 
@@ -29,6 +36,11 @@ PCT_BAJA: float = TRIP_END_CONFIG["pct_baja"]
 USAR_MSG_APAGADO: bool = TRIP_END_CONFIG["usar_msg_apagado"]
 W_MSG: float = TRIP_END_CONFIG["w_msg"]
 MSG_APAGADO: str = TRIP_END_CONFIG["msg_apagado"]
+
+
+def _rutas_modulo():
+    """Rutas por defecto, leidas de las constantes del modulo al llamar."""
+    return replace(RUTAS_PREDETERMINADAS, qc_path=QC_PATH, end_path=END_PATH)
 
 
 def fetch_gps_events_by_time_window(con_gps, placa, t_ini, t_fin, tabla=TABLA_GPS):
@@ -391,17 +403,20 @@ def classify_trip_end_block7(
     return base
 
 
-def run_block7() -> pd.DataFrame:
+def run_block7(rutas=None) -> pd.DataFrame:
     """Bloque 7: Inferencia del fin del recorrido via telemetria GPS. Lee QC_PATH, escribe END_PATH."""
-    inicializar_entorno(verbose=False)
+    rutas = _rutas_modulo() if rutas is None else rutas
+    qc_path = rutas.verificar(rutas.qc_path)
+    end_path = rutas.verificar(rutas.end_path)
+    inicializar_entorno(verbose=False, rutas=rutas)
     con_gps = conectar_bd("bd_montebello_rdw_gps")
 
-    base = pd.read_parquet(QC_PATH)
-    logger.info("BLOQUE 7 - base desde QC: %s filas=%d", QC_PATH, len(base))
+    base = pd.read_parquet(qc_path)
+    logger.info("BLOQUE 7 - base desde QC: %s filas=%d", qc_path, len(base))
 
-    if os.path.exists(END_PATH):
-        logger.info("BLOQUE 7 - cargando estimaciones previas desde: %s", END_PATH)
-        prev = pd.read_parquet(END_PATH)[
+    if os.path.exists(end_path):
+        logger.info("BLOQUE 7 - cargando estimaciones previas desde: %s", end_path)
+        prev = pd.read_parquet(end_path)[
             [PK_COL, "RECORRIDO_COMPLETO", "HORA_FIN_ESTIMADA", "FIN_TIPO", "HORA_FIN_FUENTE"]
         ].drop_duplicates(subset=[PK_COL])
 
@@ -416,9 +431,9 @@ def run_block7() -> pd.DataFrame:
                 base.drop(columns=[cprev], inplace=True)
 
     despachos_end = classify_trip_end_block7(
-        base, con_gps, checkpoint_path=END_PATH, checkpoint_every=500, debug=True
+        base, con_gps, checkpoint_path=end_path, checkpoint_every=500, debug=True
     )
-    despachos_end.to_parquet(END_PATH, index=False)
+    despachos_end.to_parquet(end_path, index=False)
 
     display(
         despachos_end[

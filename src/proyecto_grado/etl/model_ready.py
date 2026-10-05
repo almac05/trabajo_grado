@@ -8,18 +8,35 @@ versiones trazables de la salida procesada.
 import json
 import logging
 import os
+from dataclasses import replace
 from datetime import datetime
 
 import numpy as np
 import pandas as pd
 
-from .config import END_PATH, ETL_REPORTS_DIR, MODEL_READY_DIR, inicializar_entorno
+from .config import (
+    END_PATH,
+    ETL_REPORTS_DIR,
+    MODEL_READY_DIR,
+    RUTAS_PREDETERMINADAS,
+    inicializar_entorno,
+)
 from .utils import display
 
 logger = logging.getLogger(__name__)
 
 
-def run_block8() -> pd.DataFrame:
+def _rutas_modulo():
+    """Rutas por defecto, leidas de las constantes del modulo al llamar."""
+    return replace(
+        RUTAS_PREDETERMINADAS,
+        end_path=END_PATH,
+        model_ready_dir=MODEL_READY_DIR,
+        etl_reports_dir=ETL_REPORTS_DIR,
+    )
+
+
+def run_block8(rutas=None) -> pd.DataFrame:
     """Construye el dataset model-ready a partir de la salida del Bloque 7.
 
     La funcion carga el parquet definido por ``END_PATH``, normaliza columnas
@@ -39,12 +56,14 @@ def run_block8() -> pd.DataFrame:
         FileNotFoundError: Si no existe la salida del Bloque 7 requerida en
         ``END_PATH``.
     """
-    inicializar_entorno(verbose=False)
-    if not os.path.exists(END_PATH):
-        raise FileNotFoundError(f"No existe END_PATH. Ejecuta Bloque 7 primero: {END_PATH}")
+    rutas = _rutas_modulo() if rutas is None else rutas
+    end_path = rutas.verificar(rutas.end_path)
+    inicializar_entorno(verbose=False, rutas=rutas)
+    if not os.path.exists(end_path):
+        raise FileNotFoundError(f"No existe END_PATH. Ejecuta Bloque 7 primero: {end_path}")
 
-    df = pd.read_parquet(END_PATH)
-    logger.info("BLOQUE 8 - cargado despachos_end: %s filas=%d", END_PATH, len(df))
+    df = pd.read_parquet(end_path)
+    logger.info("BLOQUE 8 - cargado despachos_end: %s filas=%d", end_path, len(df))
 
     # Normalizar datetimes y numericos
     for c in ["HORA_INICIAL_REAL", "HORA_FINAL_REAL", "HORA_FIN_ESTIMADA", "FECHA_INICIAL"]:
@@ -111,9 +130,11 @@ def run_block8() -> pd.DataFrame:
 
     logger.info("BLOQUE 8 - model_ready filas: %d de %d", len(df_model), len(df))
 
-    os.makedirs(MODEL_READY_DIR, exist_ok=True)
-    out_parquet = os.path.join(MODEL_READY_DIR, "despachos_model_ready.parquet")
-    out_csv = os.path.join(MODEL_READY_DIR, "despachos_model_ready.csv")
+    os.makedirs(rutas.verificar(rutas.model_ready_dir), exist_ok=True)
+    out_parquet = rutas.verificar(
+        os.path.join(rutas.model_ready_dir, "despachos_model_ready.parquet")
+    )
+    out_csv = rutas.verificar(os.path.join(rutas.model_ready_dir, "despachos_model_ready.csv"))
 
     df_model.to_parquet(out_parquet, index=False)
     df_model.to_csv(out_csv, index=False)
@@ -124,7 +145,7 @@ def run_block8() -> pd.DataFrame:
     return df_model
 
 
-def run_block9() -> None:
+def run_block9(rutas=None) -> None:
     """Consolida, versiona y documenta el dataset model-ready final.
 
     La funcion toma como fuente principal el dataset generado por el Bloque 8.
@@ -144,21 +165,31 @@ def run_block9() -> None:
         FileNotFoundError: Si no existe ni el dataset model-ready del Bloque 8 ni
         la salida del Bloque 7.
     """
-    inicializar_entorno(verbose=False)
-    os.makedirs(MODEL_READY_DIR, exist_ok=True)
+    rutas = _rutas_modulo() if rutas is None else rutas
+    end_path = rutas.verificar(rutas.end_path)
+    model_ready_dir = rutas.verificar(rutas.model_ready_dir)
+    inicializar_entorno(verbose=False, rutas=rutas)
+    os.makedirs(model_ready_dir, exist_ok=True)
 
-    report_dir = ETL_REPORTS_DIR
+    report_dir = rutas.verificar(rutas.etl_reports_dir)
     os.makedirs(report_dir, exist_ok=True)
 
     stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    model_ready_path = os.path.join(MODEL_READY_DIR, "despachos_model_ready.parquet")
-    freeze_path = os.path.join(MODEL_READY_DIR, f"despachos_model_ready_freeze_{stamp}.parquet")
-    freeze_csv = os.path.join(MODEL_READY_DIR, f"despachos_model_ready_freeze_{stamp}.csv")
-    meta_path = os.path.join(report_dir, f"model_ready_metadata_{stamp}.json")
-    qc_report_path = os.path.join(report_dir, f"model_ready_qc_{stamp}.csv")
+    model_ready_path = os.path.join(model_ready_dir, "despachos_model_ready.parquet")
+    # Con raiz alternativa, los archivos versionados no pueden existir de antemano.
+    freeze_path = rutas.verificar_nuevo(
+        os.path.join(model_ready_dir, f"despachos_model_ready_freeze_{stamp}.parquet")
+    )
+    freeze_csv = rutas.verificar_nuevo(
+        os.path.join(model_ready_dir, f"despachos_model_ready_freeze_{stamp}.csv")
+    )
+    meta_path = rutas.verificar_nuevo(
+        os.path.join(report_dir, f"model_ready_metadata_{stamp}.json")
+    )
+    qc_report_path = rutas.verificar_nuevo(os.path.join(report_dir, f"model_ready_qc_{stamp}.csv"))
 
-    logger.info("BLOQUE 9 - END_PATH=%s", END_PATH)
+    logger.info("BLOQUE 9 - END_PATH=%s", end_path)
     logger.info("BLOQUE 9 - MODEL_READY_PATH=%s", model_ready_path)
     logger.info("BLOQUE 9 - REPORT_DIR=%s", report_dir)
 
@@ -166,14 +197,14 @@ def run_block9() -> None:
     if os.path.exists(model_ready_path):
         df = pd.read_parquet(model_ready_path)
         fuente = "MODEL_READY_PATH (Bloque 8)"
-    elif os.path.exists(END_PATH):
-        df = pd.read_parquet(END_PATH)
+    elif os.path.exists(end_path):
+        df = pd.read_parquet(end_path)
         fuente = "END_PATH (Bloque 7)"
     else:
         raise FileNotFoundError(
             "No existe ni el dataset model-ready del Bloque 8 ni la salida del Bloque 7.\n"
             f"- Esperado Bloque 8: {model_ready_path}\n"
-            f"- Esperado Bloque 7: {END_PATH}"
+            f"- Esperado Bloque 7: {end_path}"
         )
 
     logger.info(
@@ -277,7 +308,7 @@ def run_block9() -> None:
     meta = {
         "timestamp": stamp,
         "fuente_carga": fuente,
-        "ruta_fuente": model_ready_path if fuente.startswith("MODEL_READY") else END_PATH,
+        "ruta_fuente": model_ready_path if fuente.startswith("MODEL_READY") else end_path,
         "rows_final": len(base),
         "cols_final": int(base.shape[1]),
         "columns": list(base.columns),

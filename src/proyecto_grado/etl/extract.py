@@ -1,15 +1,21 @@
 """Extraccion incremental de despachos operacionales."""
 
 import logging
+from dataclasses import replace
 
 import numpy as np
 import pandas as pd
 from mysql.connector import Error
 
-from .config import DESPACHOS_CSV, inicializar_entorno
+from .config import DESPACHOS_CSV, RUTAS_PREDETERMINADAS, inicializar_entorno
 from .db import cargar_csv_si_existe, cerrar_conexion, conectar_bd, guardar_csv
 
 logger = logging.getLogger(__name__)
+
+
+def _rutas_modulo():
+    """Rutas por defecto, leidas de las constantes del modulo al llamar."""
+    return replace(RUTAS_PREDETERMINADAS, despachos_csv=DESPACHOS_CSV)
 
 
 def obtener_despachos(conexion, fecha_ini, fecha_fin, max_pk):
@@ -80,16 +86,22 @@ def obtener_despachos(conexion, fecha_ini, fecha_fin, max_pk):
         return None
 
 
-def actualizar_despachos_desde_bd(fecha_ini="2024-04-16"):
+def actualizar_despachos_desde_bd(fecha_ini="2024-04-16", fecha_fin=None, rutas=None):
+    """Extrae despachos nuevos y los anexa al CSV crudo de ``rutas``.
+
+    ``fecha_fin`` (AAAA-MM-DD) es inclusiva; por defecto, la fecha de hoy.
+    """
+    rutas = _rutas_modulo() if rutas is None else rutas
     # cargar existentes para max_pk
-    df_exist = cargar_csv_si_existe(DESPACHOS_CSV)
+    df_exist = cargar_csv_si_existe(rutas.verificar(rutas.despachos_csv))
     if df_exist is not None and "PK_INTERVALO_DESPACHO" in df_exist.columns:
         max_pk = int(pd.to_numeric(df_exist["PK_INTERVALO_DESPACHO"], errors="coerce").max())
         max_pk = 0 if np.isnan(max_pk) else max_pk
     else:
         max_pk = 0
 
-    fecha_fin = pd.to_datetime("today").strftime("%Y-%m-%d")
+    if fecha_fin is None:
+        fecha_fin = pd.to_datetime("today").strftime("%Y-%m-%d")
 
     con = conectar_bd("bd_montebello_rdw")
     nuevos = obtener_despachos(con, fecha_ini, fecha_fin, max_pk)
@@ -107,14 +119,16 @@ def actualizar_despachos_desde_bd(fecha_ini="2024-04-16"):
         )
         df_total = df_total.drop_duplicates(subset=["PK_INTERVALO_DESPACHO"], keep="last")
 
-    guardar_csv(df_total, DESPACHOS_CSV)
+    guardar_csv(df_total, rutas.verificar(rutas.despachos_csv))
     logger.info("Nuevos despachos traídos: %d", len(nuevos))
     return df_total
 
 
-def run_block3() -> pd.DataFrame:
+def run_block3(fecha_fin=None, rutas=None) -> pd.DataFrame:
     """Bloque 3: Extraccion incremental de despachos desde Registel MySQL."""
-    inicializar_entorno(verbose=False)
-    despachos = actualizar_despachos_desde_bd(fecha_ini="2024-04-16")
+    inicializar_entorno(verbose=False, rutas=rutas)
+    despachos = actualizar_despachos_desde_bd(
+        fecha_ini="2024-04-16", fecha_fin=fecha_fin, rutas=rutas
+    )
     logger.info("BLOQUE 3 - total despachos: %d", len(despachos))
     return despachos
