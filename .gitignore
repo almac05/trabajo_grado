@@ -35,6 +35,7 @@ data/raw/*
 data/interim/*
 data/processed/*
 data/external/*
+data/actualizacion_*/
 !data/**/.gitkeep
 
 # === Modelos entrenados y artefactos ===
