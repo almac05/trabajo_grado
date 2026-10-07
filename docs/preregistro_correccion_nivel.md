@@ -113,3 +113,17 @@ No cambian el diseño; si alguno falla, se detiene la ejecución y se reporta.
   - la Tabla 2 del módulo;
   - los conteos de la sección 6.
 - Cualquier desviación de este documento que resulte necesaria durante la ejecución se detiene y se reporta antes de continuar.
+
+## 9. Salidas adicionales (descriptivas)
+
+Estas salidas son **descriptivas**: no intervienen en la selección, en la confirmación ni en ninguna otra decisión de este documento.
+
+- **Serie diaria de la corrección:** para cada ruta, cada ventana *k* ∈ {7, 14, 28} y cada jornada del soporte del 2025-12-25 al 2026-10-03:
+  - el factor multiplicativo;
+  - el término aditivo (error medio de la ventana, que se resta);
+  - el número de franjas de la ventana;
+  - y si la corrección se aplicó o no (sección 6).
+- **Resumen:** mínimo, mediana y máximo del factor y del término aditivo, por ruta, ventana y período (validación, evaluación y extensión).
+- **Figura:** el factor multiplicativo de 14 días junto con la demanda media diaria (media de la demanda real por franja de la jornada, en el soporte), del 2025-12-25 al 2026-10-03, con los límites entre períodos marcados.
+  - Una columna por ruta; arriba el factor (con la línea de referencia en 1) y abajo la demanda media, con eje temporal compartido. No se usa doble eje vertical.
+  - Sin título incrustado; se guarda como PNG con el sufijo de la sección 8.
