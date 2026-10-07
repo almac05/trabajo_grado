@@ -1,0 +1,28 @@
+periodo,candidato,franjas_negativas,jornadas_ordinarias,jornadas_sin_correccion
+validacion,C1 Mixto sin correccion,0,186,
+validacion,C2 Mixto multiplicativo 7d,0,186,0
+validacion,C3 Mixto multiplicativo 14d,0,186,0
+validacion,C4 Mixto multiplicativo 28d,0,186,0
+validacion,C5 Mixto aditivo 7d,0,186,0
+validacion,C6 Mixto aditivo 14d,0,186,0
+validacion,C7 Mixto aditivo 28d,0,186,0
+validacion,C8 Prophet ordinario,9,186,
+validacion,C9 Promedio XGBoost-Prophet ordinario,2,186,
+evaluacion,C1 Mixto sin correccion,0,127,
+evaluacion,C2 Mixto multiplicativo 7d,0,127,0
+evaluacion,C3 Mixto multiplicativo 14d,0,127,0
+evaluacion,C4 Mixto multiplicativo 28d,0,127,0
+evaluacion,C5 Mixto aditivo 7d,0,127,0
+evaluacion,C6 Mixto aditivo 14d,0,127,0
+evaluacion,C7 Mixto aditivo 28d,0,127,0
+evaluacion,C8 Prophet ordinario,8,127,
+evaluacion,C9 Promedio XGBoost-Prophet ordinario,0,127,
+extension,C1 Mixto sin correccion,0,213,
+extension,C2 Mixto multiplicativo 7d,0,213,0
+extension,C3 Mixto multiplicativo 14d,0,213,0
+extension,C4 Mixto multiplicativo 28d,0,213,0
+extension,C5 Mixto aditivo 7d,11,213,0
+extension,C6 Mixto aditivo 14d,1,213,0
+extension,C7 Mixto aditivo 28d,0,213,0
+extension,C8 Prophet ordinario,7,213,
+extension,C9 Promedio XGBoost-Prophet ordinario,0,213,

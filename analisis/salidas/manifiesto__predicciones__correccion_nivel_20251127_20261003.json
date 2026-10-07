@@ -1,0 +1,88 @@
+{
+  "metodos": {
+    "XGBoost": {
+      "parametros": {
+        "max_depth": 4,
+        "min_child_weight": 7,
+        "learning_rate": 0.016085381438354866,
+        "subsample": 0.6799632809900433,
+        "colsample_bytree": 0.6029449079004022,
+        "reg_lambda": 3.748424389563135,
+        "reg_alpha": 0.09875351660720856
+      },
+      "columna": "pred_xgboost",
+      "semanas_entrenamiento": 26,
+      "semanas_parada_temprana": 2,
+      "jornadas": 606,
+      "franjas": 14074,
+      "minutos": 6.3
+    },
+    "Prophet": {
+      "parametros": {
+        "changepoint_prior_scale": 0.17129776945584144,
+        "seasonality_prior_scale": 0.7852233350555969,
+        "holidays_prior_scale": 1.8804561916113502,
+        "seasonality_mode": "multiplicative",
+        "changepoint_range": 0.9456047036592354
+      },
+      "columna": "pred_prophet",
+      "semanas_entrenamiento": 26,
+      "semanas_parada_temprana": null,
+      "jornadas": 606,
+      "franjas": 14074,
+      "minutos": 8.8
+    }
+  },
+  "script": "analisis/43_predicciones_correccion_nivel.py",
+  "configuracion": "configs/modeling/correccion_nivel_20251127_20261003.yaml",
+  "preregistro": "docs/preregistro_correccion_nivel.md",
+  "actualizado": "2026-10-06T19:43:45",
+  "corrida": [
+    "2025-11-27",
+    "2026-10-03"
+  ],
+  "dataset": {
+    "ruta": "data/actualizacion_20261004/processed/modeling/modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet",
+    "sha256": "1dd488219afecfe534c7c2695ff9eae29c1579d969f31f2d146b0c61f6f65057"
+  },
+  "contrato_base": {
+    "rutas": [
+      1,
+      3
+    ],
+    "objetivo": "pasajeros_total",
+    "min_franjas": 8,
+    "paso_muestreo": 1,
+    "tipos_baja_frecuencia": [
+      "FESTIVO",
+      "FESTIVO_PUENTE"
+    ]
+  },
+  "referencia_52s": {
+    "semanas": 52,
+    "franjas": 14074,
+    "franjas_sin_media": 0
+  },
+  "controles": {
+    "XGBoost": {
+      "franjas_previo": 4948,
+      "franjas_nuevo_en_jornadas_previo": 4948,
+      "solo_en_uno": 0,
+      "max_dif_pred_xgboost": 1.1279296870725375e-05,
+      "max_dif_real": 0.0,
+      "max_dif_pred_media": 5.684341886080802e-14
+    },
+    "Prophet": {
+      "franjas_previo": 4948,
+      "franjas_nuevo_en_jornadas_previo": 4948,
+      "solo_en_uno": 0,
+      "max_dif_pred_prophet": 5.684341886080802e-14,
+      "max_dif_real": 0.0
+    },
+    "referencia_52s_vs_gru": {
+      "franjas_gru": 4729,
+      "sin_par": 0,
+      "max_dif": 5.684341886080802e-14
+    }
+  }
+}

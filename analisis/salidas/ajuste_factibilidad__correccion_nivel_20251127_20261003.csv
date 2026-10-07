@@ -1,0 +1,7 @@
+periodo,usar_tope,variante,jornadas,jornadas_ajustadas,despachos_retirados,jornadas_no_factibles
+validacion,False,C1 Mixto sin correccion,97,43,268,0
+validacion,False,C3 Mixto multiplicativo 14d,97,19,80,0
+evaluacion,False,C1 Mixto sin correccion,69,5,14,0
+evaluacion,False,C3 Mixto multiplicativo 14d,69,3,8,0
+extension,False,C1 Mixto sin correccion,112,0,0,0
+extension,False,C3 Mixto multiplicativo 14d,112,0,0,0

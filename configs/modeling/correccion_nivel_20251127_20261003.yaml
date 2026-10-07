@@ -1,0 +1,48 @@
+# Correccion de nivel del predictor mixto, segun docs/preregistro_correccion_nivel.md.
+#
+# Corrida continua del sistema congelado (XGBoost, Prophet y referencias de 26 y
+# 52 semanas) del 2025-11-27 al 2026-10-03 sobre el dataset de la actualizacion.
+# Solo declara lo que cambia respecto del contrato comparativo; el resto
+# (rutas, objetivo, ventanas, parada temprana, min_franjas, paso de muestreo,
+# tipos de baja frecuencia) sale sin cambios de
+# configs/modeling/evaluacion_comparativa.yaml, y los hiperparametros, de la
+# seleccion de la busqueda. Nada se reajusta ni recalibra.
+sufijo: correccion_nivel_20251127_20261003
+preregistro: docs/preregistro_correccion_nivel.md
+
+# Corrida continua; las jornadas anteriores a validacion.inicio son solo arranque.
+corrida:
+  inicio: 2025-11-27
+  fin: 2026-10-03
+  extremos_inclusivos: true
+
+periodos:
+  validacion: {inicio: 2025-12-25, fin: 2026-04-01}
+  evaluacion: {inicio: 2026-04-02, fin: 2026-06-10}
+  extension: {inicio: 2026-06-11, fin: 2026-10-03}
+
+metodos: [XGBoost, Prophet]
+semanas_referencia_larga: 52
+
+correccion:
+  ventanas_dias: [7, 14, 28]
+
+seleccion:
+  umbral_relativo_mae: 0.01
+
+dataset: data/actualizacion_20261004/processed/modeling/modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet
+seleccion_hiperparametros: analisis/salidas/busqueda_hiperparametros
+
+controles:
+  # Salidas comprometidas del mismo dataset y protocolo (scripts 41 y 42).
+  sufijo_extension: extension_20260611_20261003
+  tolerancia: 1.0e-4
+
+recomendacion:
+  parametros: reports/tables/dispatch/parametros__recomendacion_despacho__freeze_20260922_203820.csv
+  manifiesto: reports/tables/dispatch/manifiesto__recomendacion_despacho__freeze_20260922_203820.json
+  model_ready: data/actualizacion_20261004/processed/model_ready/despachos_model_ready_freeze_20261005_011520.parquet
+  usar_tope: false
+
+salidas:
+  directorio: analisis/salidas

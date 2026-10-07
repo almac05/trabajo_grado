@@ -1,0 +1,139 @@
+{
+  "script": "analisis/44_evaluacion_correccion_nivel.py",
+  "generado": "2026-10-06T19:43:51",
+  "configuracion": "configs/modeling/correccion_nivel_20251127_20261003.yaml",
+  "preregistro": "docs/preregistro_correccion_nivel.md",
+  "sufijo": "correccion_nivel_20251127_20261003",
+  "soporte": {
+    "jornadas_xgboost": 606,
+    "jornadas_prophet": 606,
+    "jornadas_comunes": 606,
+    "solo_xgboost": [],
+    "solo_prophet": [],
+    "franjas": 14074,
+    "jornadas_evaluadas": 550,
+    "por_periodo": {
+      "validacion": {
+        "jornadas": 192,
+        "franjas": 4637,
+        "jornadas_raras": 6
+      },
+      "evaluacion": {
+        "jornadas": 137,
+        "franjas": 3131,
+        "jornadas_raras": 10
+      },
+      "extension": {
+        "jornadas": 221,
+        "franjas": 4948,
+        "jornadas_raras": 8
+      }
+    }
+  },
+  "controles": {
+    "predicciones_script_43": {
+      "XGBoost": {
+        "franjas_previo": 4948,
+        "franjas_nuevo_en_jornadas_previo": 4948,
+        "solo_en_uno": 0,
+        "max_dif_pred_xgboost": 1.1279296870725375e-05,
+        "max_dif_real": 0.0,
+        "max_dif_pred_media": 5.684341886080802e-14
+      },
+      "Prophet": {
+        "franjas_previo": 4948,
+        "franjas_nuevo_en_jornadas_previo": 4948,
+        "solo_en_uno": 0,
+        "max_dif_pred_prophet": 5.684341886080802e-14,
+        "max_dif_real": 0.0
+      },
+      "referencia_52s_vs_gru": {
+        "franjas_gru": 4729,
+        "sin_par": 0,
+        "max_dif": 5.684341886080802e-14
+      }
+    },
+    "candidato_1_vs_mixto_script_42": {
+      "franjas_previo": 4729,
+      "sin_par": 0,
+      "max_dif": 3.552713678800501e-15
+    },
+    "causalidad": "verificada por asercion en cada ventana"
+  },
+  "recomendacion": {
+    "validacion": {
+      "despachos_fuera_de_bloque_excluidos": 0,
+      "union_operacion_real": {
+        "C1 Mixto sin correccion": {
+          "franjas": 4637,
+          "franjas_sin_despachos_reales": 0,
+          "max_dif_demanda_real_vs_artefacto": 0.0,
+          "franjas_reales_fuera_de_la_prediccion": 7,
+          "despachos_reales_fuera_de_la_prediccion": 7
+        },
+        "C3 Mixto multiplicativo 14d": {
+          "franjas": 4637,
+          "franjas_sin_despachos_reales": 0,
+          "max_dif_demanda_real_vs_artefacto": 0.0,
+          "franjas_reales_fuera_de_la_prediccion": 7,
+          "despachos_reales_fuera_de_la_prediccion": 7
+        }
+      }
+    },
+    "evaluacion": {
+      "despachos_fuera_de_bloque_excluidos": 0,
+      "union_operacion_real": {
+        "C1 Mixto sin correccion": {
+          "franjas": 3131,
+          "franjas_sin_despachos_reales": 0,
+          "max_dif_demanda_real_vs_artefacto": 0.0,
+          "franjas_reales_fuera_de_la_prediccion": 10,
+          "despachos_reales_fuera_de_la_prediccion": 10
+        },
+        "C3 Mixto multiplicativo 14d": {
+          "franjas": 3131,
+          "franjas_sin_despachos_reales": 0,
+          "max_dif_demanda_real_vs_artefacto": 0.0,
+          "franjas_reales_fuera_de_la_prediccion": 10,
+          "despachos_reales_fuera_de_la_prediccion": 10
+        }
+      }
+    },
+    "extension": {
+      "despachos_fuera_de_bloque_excluidos": 1,
+      "union_operacion_real": {
+        "C1 Mixto sin correccion": {
+          "franjas": 4948,
+          "franjas_sin_despachos_reales": 0,
+          "max_dif_demanda_real_vs_artefacto": 0.0,
+          "franjas_reales_fuera_de_la_prediccion": 26,
+          "despachos_reales_fuera_de_la_prediccion": 26
+        },
+        "C3 Mixto multiplicativo 14d": {
+          "franjas": 4948,
+          "franjas_sin_despachos_reales": 0,
+          "max_dif_demanda_real_vs_artefacto": 0.0,
+          "franjas_reales_fuera_de_la_prediccion": 26,
+          "despachos_reales_fuera_de_la_prediccion": 26
+        }
+      }
+    },
+    "capacidad": 153,
+    "politica_festivos": "divisor_propio",
+    "servicio_minimo": 1,
+    "usar_tope": false
+  },
+  "salidas": [
+    "analisis/salidas/observaciones__correccion_nivel_20251127_20261003.csv",
+    "analisis/salidas/metricas__correccion_nivel_20251127_20261003.csv",
+    "analisis/salidas/seleccion__correccion_nivel_20251127_20261003.json",
+    "analisis/salidas/conteos__correccion_nivel_20251127_20261003.csv",
+    "analisis/salidas/serie_correccion__correccion_nivel_20251127_20261003.csv",
+    "analisis/salidas/resumen_serie_correccion__correccion_nivel_20251127_20261003.csv",
+    "analisis/salidas/figura_factor_14d__correccion_nivel_20251127_20261003.png",
+    "analisis/salidas/clasificacion_recomendacion__correccion_nivel_20251127_20261003.csv",
+    "analisis/salidas/proporciones_recomendacion__correccion_nivel_20251127_20261003.csv",
+    "analisis/salidas/ajuste_factibilidad__correccion_nivel_20251127_20261003.csv",
+    "analisis/salidas/manifiesto__correccion_nivel_20251127_20261003.json"
+  ]
+}

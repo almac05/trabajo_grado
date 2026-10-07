@@ -1,0 +1,57 @@
+{
+  "candidatos": {
+    "1": "C1 Mixto sin correccion",
+    "2": "C2 Mixto multiplicativo 7d",
+    "3": "C3 Mixto multiplicativo 14d",
+    "4": "C4 Mixto multiplicativo 28d",
+    "5": "C5 Mixto aditivo 7d",
+    "6": "C6 Mixto aditivo 14d",
+    "7": "C7 Mixto aditivo 28d",
+    "8": "C8 Prophet ordinario",
+    "9": "C9 Promedio XGBoost-Prophet ordinario"
+  },
+  "seleccion": {
+    "mae_minimo": 28.31117110512024,
+    "limite_finalistas": 28.594282816171443,
+    "finalistas": {
+      "C2 Mixto multiplicativo 7d": {
+        "mae": 28.31117110512024,
+        "sesgo": -0.09679877662918167
+      },
+      "C3 Mixto multiplicativo 14d": {
+        "mae": 28.347362161339916,
+        "sesgo": -0.007278979693023225
+      },
+      "C4 Mixto multiplicativo 28d": {
+        "mae": 28.506759134263124,
+        "sesgo": 0.18338273285028436
+      },
+      "C5 Mixto aditivo 7d": {
+        "mae": 28.408183331168562,
+        "sesgo": -0.12482289056768504
+      },
+      "C6 Mixto aditivo 14d": {
+        "mae": 28.414142194124636,
+        "sesgo": -0.04365673445358585
+      },
+      "C7 Mixto aditivo 28d": {
+        "mae": 28.52428727859252,
+        "sesgo": 0.15106928426769559
+      }
+    },
+    "elegido": "C3 Mixto multiplicativo 14d"
+  },
+  "confirmacion": {
+    "elegido": {
+      "mae": 28.009976225990897,
+      "sesgo": 0.005954991682105478
+    },
+    "candidato_1": {
+      "mae": 28.007523957993033,
+      "sesgo": 1.9000447602824795
+    },
+    "mae_no_mayor": false,
+    "abs_sesgo_menor": true,
+    "resultado": "no confirmado"
+  }
+}
