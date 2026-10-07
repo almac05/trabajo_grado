@@ -1,0 +1,87 @@
+{
+  "script": "analisis/42_evaluacion_extension.py",
+  "generado": "2026-10-05T20:55:17",
+  "configuracion": "configs/modeling/evaluacion_extension_20260611_20261003.yaml",
+  "sufijo": "extension_20260611_20261003",
+  "freeze_evaluacion": "freeze_20260922_203820",
+  "soporte": {
+    "jornadas": 212,
+    "franjas": 4729,
+    "franjas_por_metodo_en_soporte": {
+      "SARIMA": 4729,
+      "Prophet": 4729,
+      "XGBoost": 4729,
+      "LSTM": 4729,
+      "GRU": 4729,
+      "CNN-LSTM": 4729
+    },
+    "evaluacion_jornadas": 134,
+    "evaluacion_franjas": 3038
+  },
+  "recomendacion": {
+    "capacidad": 153,
+    "politica_festivos": "divisor_propio",
+    "servicio_minimo": 1,
+    "union_operacion_real": {
+      "mixta|tope=False": {
+        "franjas": 4729,
+        "franjas_sin_despachos_reales": 0,
+        "max_dif_demanda_real_vs_artefacto": 0.0,
+        "franjas_reales_fuera_de_la_prediccion": 24,
+        "despachos_reales_fuera_de_la_prediccion": 24
+      },
+      "real|tope=False": {
+        "franjas": 4729,
+        "franjas_sin_despachos_reales": 0,
+        "max_dif_demanda_real_vs_artefacto": 0.0,
+        "franjas_reales_fuera_de_la_prediccion": 24,
+        "despachos_reales_fuera_de_la_prediccion": 24
+      },
+      "ref26|tope=False": {
+        "franjas": 4729,
+        "franjas_sin_despachos_reales": 0,
+        "max_dif_demanda_real_vs_artefacto": 0.0,
+        "franjas_reales_fuera_de_la_prediccion": 24,
+        "despachos_reales_fuera_de_la_prediccion": 24
+      },
+      "mixta|tope=True": {
+        "franjas": 4729,
+        "franjas_sin_despachos_reales": 0,
+        "max_dif_demanda_real_vs_artefacto": 0.0,
+        "franjas_reales_fuera_de_la_prediccion": 24,
+        "despachos_reales_fuera_de_la_prediccion": 24
+      },
+      "real|tope=True": {
+        "franjas": 4729,
+        "franjas_sin_despachos_reales": 0,
+        "max_dif_demanda_real_vs_artefacto": 0.0,
+        "franjas_reales_fuera_de_la_prediccion": 24,
+        "despachos_reales_fuera_de_la_prediccion": 24
+      },
+      "ref26|tope=True": {
+        "franjas": 4729,
+        "franjas_sin_despachos_reales": 0,
+        "max_dif_demanda_real_vs_artefacto": 0.0,
+        "franjas_reales_fuera_de_la_prediccion": 24,
+        "despachos_reales_fuera_de_la_prediccion": 24
+      }
+    },
+    "despachos_fuera_de_bloque_excluidos": [
+      {
+        "route": "3",
+        "dia_op": "2026-06-24",
+        "hora": "03:30"
+      }
+    ]
+  },
+  "salidas": [
+    "analisis/salidas/metricas__extension_20260611_20261003.csv",
+    "analisis/salidas/contraste__extension_20260611_20261003.json",
+    "analisis/salidas/jornadas_tipo_dia__extension_20260611_20261003.csv",
+    "analisis/salidas/observaciones__extension_20260611_20261003.csv",
+    "analisis/salidas/clasificacion_recomendacion__extension_20260611_20261003.csv",
+    "analisis/salidas/proporciones_recomendacion__extension_20260611_20261003.csv",
+    "analisis/salidas/ajuste_factibilidad__extension_20260611_20261003.csv",
+    "analisis/salidas/manifiesto__extension_20260611_20261003.json"
+  ]
+}

@@ -1,0 +1,35 @@
+# Evaluacion fuera de muestra del sistema congelado sobre un periodo que no
+# intervino en ninguna decision: jornadas del 2026-06-11 al 2026-10-03.
+#
+# Solo declara lo que cambia respecto del contrato comparativo. Todo lo demas
+# (rutas, objetivo, ventanas de entrenamiento, parada temprana, min_franjas,
+# paso de muestreo, tipos de baja frecuencia, umbral MAPE) se toma sin cambios de
+# configs/modeling/evaluacion_comparativa.yaml; los hiperparametros, de la
+# seleccion de la busqueda; y los parametros de la recomendacion, de su
+# calibracion persistida. Nada se reajusta ni recalibra.
+sufijo: extension_20260611_20261003
+
+periodo:
+  inicio: 2026-06-11
+  fin: 2026-10-03
+  extremos_inclusivos: true
+
+# Dataset de modelado de 30 min de la actualizacion del ETL (escenario sin_oferta).
+dataset: data/actualizacion_20261004/processed/modeling/modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet
+
+# Configuraciones seleccionadas por la busqueda de hiperparametros.
+seleccion_hiperparametros: analisis/salidas/busqueda_hiperparametros
+
+# Freeze del periodo de evaluacion, para contrastar las conclusiones.
+freeze_evaluacion: freeze_20260922_203820
+
+recomendacion:
+  # Parametros calibrados originales (2025-12-25 a 2026-04-01) y su manifiesto,
+  # de donde se toma la capacidad conjunta.
+  parametros: reports/tables/dispatch/parametros__recomendacion_despacho__freeze_20260922_203820.csv
+  manifiesto: reports/tables/dispatch/manifiesto__recomendacion_despacho__freeze_20260922_203820.json
+  # Despachos reales del periodo (conjunto apto de la actualizacion).
+  model_ready: data/actualizacion_20261004/processed/model_ready/despachos_model_ready_freeze_20261005_011520.parquet
+
+salidas:
+  directorio: analisis/salidas

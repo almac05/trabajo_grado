@@ -1,0 +1,117 @@
+{
+  "evaluacion": {
+    "1_equivalencia_mae": {
+      "xgboost": 28.344185865371955,
+      "referencia_26s": 28.35796745198288,
+      "dif_relativa": -0.0004859864034423714,
+      "se_mantiene": true
+    },
+    "2_sesgo_xgboost": {
+      "abs_sesgo": {
+        "SARIMA": 2.148592610027592,
+        "Prophet": 0.6902384662980721,
+        "XGBoost": 2.342338142527979,
+        "LSTM": 3.968702050023827,
+        "GRU": 3.7029557749519006,
+        "CNN-LSTM": 3.9740656056332733,
+        "Referencia (26s)": 6.259657190658787,
+        "Referencia (52s)": 12.503934213630362
+      },
+      "se_mantiene": true
+    },
+    "3_mixto_raro": {
+      "metricas": {
+        "Mixto (XGBoost ordinario / 52s raro)": {
+          "mae": 12.54771901126863,
+          "medae": 10.2,
+          "wape": 42.750356059198715,
+          "sesgo": 1.7356446140797277
+        },
+        "XGBoost": {
+          "mae": 13.049679564885498,
+          "medae": 12.523014,
+          "wape": 44.46054676202861,
+          "sesgo": 5.033689427480916
+        }
+      },
+      "se_mantiene": true,
+      "medae_menor": true,
+      "wape_menor": true,
+      "abs_sesgo_menor": true
+    },
+    "4_sesgo_referencias": {
+      "Referencia (26s)|todos": 6.259657190658787,
+      "Referencia (26s)|ordinario": 6.044873676344799,
+      "Referencia (26s)|raro": 11.025883725855449,
+      "Referencia (52s)|todos": 12.503934213630362,
+      "Referencia (52s)|ordinario": 12.989192534077949,
+      "Referencia (52s)|raro": 1.7356446140797277,
+      "Combinada (26s/52s)|todos": 5.859057676622375,
+      "Combinada (26s/52s)|ordinario": 6.044873676344799,
+      "Combinada (26s/52s)|raro": 1.7356446140797277
+    }
+  },
+  "extension": {
+    "1_equivalencia_mae": {
+      "xgboost": 29.8271088877141,
+      "referencia_26s": 31.843616115960355,
+      "dif_relativa": -0.06332532149938712,
+      "se_mantiene": false
+    },
+    "2_sesgo_xgboost": {
+      "abs_sesgo": {
+        "SARIMA": 0.010213287592754113,
+        "Prophet": 0.010349010342719324,
+        "XGBoost": 14.410139211249733,
+        "LSTM": 10.954951843184194,
+        "GRU": 9.843590774972501,
+        "CNN-LSTM": 10.243137312564958,
+        "Referencia (26s)": 20.188671412296706,
+        "Referencia (52s)": 29.740927456568095
+      },
+      "se_mantiene": false
+    },
+    "3_mixto_raro": {
+      "metricas": {
+        "Mixto (XGBoost ordinario / 52s raro)": {
+          "mae": 8.326997325168056,
+          "medae": 6.988888888888891,
+          "wape": 31.52418193276919,
+          "sesgo": 2.349880336465702
+        },
+        "XGBoost": {
+          "mae": 14.477921853658536,
+          "medae": 14.105522,
+          "wape": 54.81023047091413,
+          "sesgo": 10.820502414634147
+        }
+      },
+      "se_mantiene": true,
+      "medae_menor": true,
+      "wape_menor": true,
+      "abs_sesgo_menor": true
+    },
+    "4_sesgo_referencias": {
+      "Referencia (26s)|todos": 20.188671412296706,
+      "Referencia (26s)|ordinario": 20.526242985252196,
+      "Referencia (26s)|raro": 1.0582433693189388,
+      "Referencia (52s)|todos": 29.740927456568095,
+      "Referencia (52s)|ordinario": 30.22426420368416,
+      "Referencia (52s)|raro": 2.349880336465702,
+      "Combinada (26s/52s)|todos": 20.211068162414282,
+      "Combinada (26s/52s)|ordinario": 20.526242985252196,
+      "Combinada (26s/52s)|raro": 2.349880336465702
+    }
+  },
+  "4_sesgo_referencias_mayor_en_extension": {
+    "Referencia (26s)|todos": true,
+    "Referencia (26s)|ordinario": true,
+    "Referencia (26s)|raro": false,
+    "Referencia (52s)|todos": true,
+    "Referencia (52s)|ordinario": true,
+    "Referencia (52s)|raro": true,
+    "Combinada (26s/52s)|todos": true,
+    "Combinada (26s/52s)|ordinario": true,
+    "Combinada (26s/52s)|raro": true
+  }
+}

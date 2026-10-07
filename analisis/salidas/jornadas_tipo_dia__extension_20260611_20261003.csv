@@ -1,0 +1,6 @@
+tipo_dia,dias_calendario,jornadas_ruta_en_dataset,jornadas_ruta_soporte_comun
+DOMINGO,16,32,25
+FESTIVO,1,2,0
+FESTIVO_PUENTE,4,8,8
+LABORAL,77,154,147
+SABADO,17,34,32

@@ -1,0 +1,124 @@
+{
+  "metodos": {
+    "SARIMA": {
+      "parametros": {
+        "p": 0,
+        "q": 0,
+        "P": 1,
+        "Q": 1
+      },
+      "columna": "pred_sarima",
+      "semanas_entrenamiento": 26,
+      "semanas_parada_temprana": null,
+      "jornadas": 221,
+      "franjas": 4948,
+      "minutos": 12.1
+    },
+    "Prophet": {
+      "parametros": {
+        "changepoint_prior_scale": 0.17129776945584144,
+        "seasonality_prior_scale": 0.7852233350555969,
+        "holidays_prior_scale": 1.8804561916113502,
+        "seasonality_mode": "multiplicative",
+        "changepoint_range": 0.9456047036592354
+      },
+      "columna": "pred_prophet",
+      "semanas_entrenamiento": 26,
+      "semanas_parada_temprana": null,
+      "jornadas": 221,
+      "franjas": 4948,
+      "minutos": 3.2
+    },
+    "XGBoost": {
+      "parametros": {
+        "max_depth": 4,
+        "min_child_weight": 7,
+        "learning_rate": 0.016085381438354866,
+        "subsample": 0.6799632809900433,
+        "colsample_bytree": 0.6029449079004022,
+        "reg_lambda": 3.748424389563135,
+        "reg_alpha": 0.09875351660720856
+      },
+      "columna": "pred_xgboost",
+      "semanas_entrenamiento": 26,
+      "semanas_parada_temprana": 2,
+      "jornadas": 221,
+      "franjas": 4948,
+      "minutos": 2.1
+    },
+    "LSTM": {
+      "parametros": {
+        "unidades": 64,
+        "lr": 0.007137234690401974,
+        "paciencia": 30
+      },
+      "columna": "pred_lstm",
+      "semanas_entrenamiento": 52,
+      "semanas_parada_temprana": 2,
+      "jornadas": 212,
+      "franjas": 4729,
+      "minutos": 5.5
+    },
+    "GRU": {
+      "parametros": {
+        "unidades": 128,
+        "lr": 0.004421027603802802,
+        "paciencia": 30
+      },
+      "columna": "pred_gru",
+      "semanas_entrenamiento": 52,
+      "semanas_parada_temprana": 2,
+      "jornadas": 212,
+      "franjas": 4729,
+      "minutos": 7.2
+    },
+    "CNN-LSTM": {
+      "parametros": {
+        "unidades": 128,
+        "lr": 0.004421027603802802,
+        "paciencia": 30,
+        "filtros": 32,
+        "nucleo": 3
+      },
+      "columna": "pred_cnn_lstm",
+      "semanas_entrenamiento": 52,
+      "semanas_parada_temprana": 2,
+      "jornadas": 212,
+      "franjas": 4729,
+      "minutos": 8.8
+    }
+  },
+  "verificacion_reproduccion": {
+    "franjas_freeze": 3117,
+    "franjas_reejecucion": 3117,
+    "solo_en_uno": 0,
+    "max_dif_pred_xgboost": 1.5185546885732037e-05,
+    "max_dif_pred_media": 5.684341886080802e-14,
+    "max_dif_real": 0.0
+  },
+  "script": "analisis/41_predicciones_extension.py",
+  "configuracion": "configs/modeling/evaluacion_extension_20260611_20261003.yaml",
+  "actualizado": "2026-10-05T20:54:47",
+  "periodo": [
+    "2026-06-11",
+    "2026-10-03"
+  ],
+  "dataset": {
+    "ruta": "data/actualizacion_20261004/processed/modeling/modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet",
+    "sha256": "1dd488219afecfe534c7c2695ff9eae29c1579d969f31f2d146b0c61f6f65057"
+  },
+  "contrato_base": {
+    "rutas": [
+      1,
+      3
+    ],
+    "objetivo": "pasajeros_total",
+    "min_franjas": 8,
+    "paso_muestreo": 1,
+    "tipos_baja_frecuencia": [
+      "FESTIVO",
+      "FESTIVO_PUENTE"
+    ]
+  },
+  "jornadas_comunes": 212
+}
