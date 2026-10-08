@@ -1,0 +1,58 @@
+# Configuracion del modulo de recomendacion de despacho para la prueba piloto.
+# Copia de configs/dispatch/recomendacion.yaml con dos cambios en `reglas`:
+#   - usar_tope_carga: false (sin tope de carga);
+#   - disponibilidad_habitual: meta 0 en las franjas con al menos un despacho en
+#     menos del 50 % de las jornadas del mismo tipo de dia en las 8 semanas
+#     anteriores al corte (reglas.disponibilidad_habitual).
+# El resto de parametros es identico a recomendacion.yaml.
+# Todas las rutas son relativas a la raiz del proyecto. El periodo de evaluacion
+# no se declara aqui: se toma de configs/modeling/evaluacion_comparativa.yaml.
+freeze: freeze_20260922_203820
+
+entradas:
+  # Un registro por despacho; pasajeros en PASAJEROS_REALES.
+  model_ready: data/processed/model_ready/despachos_model_ready_freeze_20260823_203700.parquet
+  # Fuente del tipo de dia por franja (no se redefine la regla de festivos).
+  dataset_modelado: data/processed/modeling/modeling_dataset_pasajeros_total_sin_oferta_g30min.parquet
+  predicciones_xgboost: analisis/salidas/predicciones__xgboost__freeze_20260922_203820.csv
+  # pred_media del artefacto de GRU = referencia historica de 52 semanas.
+  predicciones_referencia: analisis/salidas/predicciones__gru__freeze_20260922_203820.csv
+  jornadas_comunes: analisis/salidas/jornadas_comunes__freeze_20260922_203820.csv
+  observaciones_combinada: analisis/salidas/observaciones__referencia_combinada_regimen__freeze_20260922_203820.csv
+  distribucion_script_36: analisis/salidas/distribucion__pasajeros_por_despacho.csv
+
+columnas:
+  pasajeros: PASAJEROS_REALES
+  prediccion_ordinaria: pred_xgboost
+  prediccion_rara: pred_media
+
+calibracion:
+  periodo:
+    inicio: 2025-12-25
+    fin: 2026-04-01
+    extremos_inclusivos: true
+
+# Bloques por hora de inicio del despacho; cada bloque termina donde empieza el
+# siguiente y el ultimo queda abierto.
+bloques_horarios:
+  - {nombre: madrugada, hora_inicio: 4}
+  - {nombre: pico_manana, hora_inicio: 5}
+  - {nombre: manana, hora_inicio: 7}
+  - {nombre: valle, hora_inicio: 10}
+  - {nombre: pico_tarde, hora_inicio: 14}
+  - {nombre: cierre, hora_inicio: 16}
+
+reglas:
+  # divisor_propio: mediana del regimen raro de la ruta.
+  # divisor_ordinario: mediana ordinaria de la ruta y el bloque.
+  politica_festivos: divisor_propio
+  usar_tope_carga: false
+  servicio_minimo: 1
+  # Franja en disponibilidad habitual si tuvo al menos un despacho en una proporcion
+  # >= umbral de las jornadas del mismo tipo de dia en las ventana_semanas previas.
+  disponibilidad_habitual:
+    umbral: 0.5
+    ventana_semanas: 8
+
+salidas:
+  directorio: reports/tables/dispatch

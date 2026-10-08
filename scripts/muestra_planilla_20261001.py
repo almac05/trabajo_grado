@@ -23,17 +23,23 @@ datos ni modifica ningun archivo existente.
    14 dias (las 14 jornadas anteriores, cerradas), y la referencia de 52 semanas
    en regimen raro. Las predicciones de la ventana se recalculan con el mismo
    protocolo, cada una con datos anteriores a su jornada.
-4. Modulo de recomendacion con las reglas de configs/dispatch/recomendacion.yaml
-   (incluido el tope de carga que alli figura) y los parametros calibrados del
-   freeze de esa configuracion.
+4. Modulo de recomendacion con las reglas de la configuracion indicada en
+   --config (por defecto configs/dispatch/recomendacion.yaml, con tope de carga)
+   y los parametros calibrados del freeze de esa configuracion. Si la
+   configuracion declara disponibilidad_habitual (configs/dispatch/
+   recomendacion_piloto.yaml), las franjas fuera de ella tienen meta 0; la
+   regla se calcula con reglas.disponibilidad_habitual sobre los despachos por
+   franja del dataset anteriores al corte.
 5. Comparacion con la operacion real de la jornada (solo despues de predecir).
 
 Salidas en data/muestra_planilla/ (con su propio .gitignore): planilla,
-comparacion, verificaciones en JSON y detalle por franja en CSV. Nunca
-sobrescribe.
+comparacion, verificaciones en JSON y detalle por franja en CSV, con el sufijo
+__<nombre de la configuracion> si no es la predeterminada. Nunca sobrescribe.
 
 Uso:
     python scripts/muestra_planilla_20261001.py --fecha 2026-10-01
+    python scripts/muestra_planilla_20261001.py --fecha 2026-10-01 \
+        --config configs/dispatch/recomendacion_piloto.yaml
 """
 
 from __future__ import annotations
@@ -48,7 +54,10 @@ import holidays
 import numpy as np
 import pandas as pd
 
-from proyecto_grado.dispatch.config import cargar_configuracion_recomendacion
+from proyecto_grado.dispatch.config import (
+    RUTA_CONFIG_PREDETERMINADA,
+    cargar_configuracion_recomendacion,
+)
 from proyecto_grado.dispatch.evaluacion import construir_franjas_evaluacion, franjas_reales
 from proyecto_grado.dispatch.parametros import (
     REGIMEN_RARO,
@@ -56,7 +65,12 @@ from proyecto_grado.dispatch.parametros import (
     filtrar_periodo,
     preparar_despachos,
 )
-from proyecto_grado.dispatch.reglas import generar_recomendacion, redondeo_aritmetico
+from proyecto_grado.dispatch.reglas import (
+    disponibilidad_habitual,
+    generar_recomendacion,
+    intervalo_sugerido,
+    redondeo_aritmetico,
+)
 from proyecto_grado.modeling.config import PROJECT_ROOT
 from proyecto_grado.modeling.evaluation_config import cargar_configuracion_evaluacion
 from proyecto_grado.modeling.experimentos import seleccionar_features
@@ -89,6 +103,7 @@ CLASE = {"subutilizada": "baja", "normal": "normal", "sobrecargada": "alta"}
 NOTA_PLANILLA = (
     "Si no hay conductores disponibles para cumplir la meta de una franja, registrar SIN CONDUCTOR"
 )
+MARCA_FUERA = "Fuera de disponibilidad habitual"
 LAGS = ("_lag_48", "_lag_96", "_lag_336")
 TOL = 1e-4
 
@@ -337,6 +352,10 @@ def divisor_usado(rec, usar_tope, minimo):
     divisor = np.where(~raro & (por_tope > por_mediana), rec["q3_ordinario"], rec["divisor"])
     base = np.where(~raro & (por_tope > por_mediana), por_tope, por_mediana)
     criterio = np.where(base < minimo, "servicio minimo", criterio)
+    if "en_disponibilidad" in rec:
+        fuera = ~rec["en_disponibilidad"].astype(bool).to_numpy()
+        criterio = np.where(fuera, MARCA_FUERA, criterio)
+        divisor = np.where(fuera, np.nan, divisor)
     return divisor, criterio
 
 
@@ -348,18 +367,28 @@ def main():
     parser.add_argument(
         "--fecha", required=True, type=date.fromisoformat, help="Jornada objetivo, AAAA-MM-DD."
     )
-    dia = parser.parse_args().fecha
+    parser.add_argument(
+        "--config", default=None, help="Configuracion del modulo (por defecto recomendacion.yaml)."
+    )
+    args = parser.parse_args()
+    dia = args.fecha
     corte = pd.Timestamp(dia) + pd.Timedelta(hours=4)
+    ruta_config = PROJECT_ROOT / args.config if args.config else RUTA_CONFIG_PREDETERMINADA
+    sufijo = (
+        ""
+        if ruta_config.resolve() == RUTA_CONFIG_PREDETERMINADA.resolve()
+        else f"__{ruta_config.stem}"
+    )
 
     SALIDA.mkdir(parents=True, exist_ok=True)
     ignorar = SALIDA / ".gitignore"
     if not ignorar.exists():
         ignorar.write_text("*\n", encoding="utf-8")
     rutas_out = {
-        "planilla": SALIDA / f"planilla_{dia}.xlsx",
-        "comparacion": SALIDA / f"comparacion_{dia}.xlsx",
-        "verificaciones": SALIDA / f"verificaciones_{dia}.json",
-        "detalle": SALIDA / f"detalle_{dia}.csv",
+        "planilla": SALIDA / f"planilla_{dia}{sufijo}.xlsx",
+        "comparacion": SALIDA / f"comparacion_{dia}{sufijo}.xlsx",
+        "verificaciones": SALIDA / f"verificaciones_{dia}{sufijo}.json",
+        "detalle": SALIDA / f"detalle_{dia}{sufijo}.csv",
     }
     existentes = [str(r) for r in rutas_out.values() if r.exists()]
     assert not existentes, f"no se sobrescribe: {existentes}"
@@ -367,7 +396,7 @@ def main():
     config = cargar_configuracion_evaluacion()
     tipos_raros = config.tipos_baja_frecuencia
     params = cargar_configuraciones_seleccionadas(RUTA_HIPERPARAMETROS)["XGBoost"]
-    cfg_rec = cargar_configuracion_recomendacion()
+    cfg_rec = cargar_configuracion_recomendacion(ruta_config)
 
     ds = pd.read_parquet(RUTA_DATASET)
     ds["timestamp"] = pd.to_datetime(ds["timestamp"])
@@ -487,6 +516,20 @@ def main():
     base = pred[["route", "dia_op", "hora", "tipo_dia", "regimen"]].assign(
         demanda_predicha=pred["pred_c3"].to_numpy()
     )
+    columna_disponibilidad = None
+    if cfg_rec.disponibilidad_habitual is not None:
+        # Despachos por franja de las jornadas anteriores al corte (hist ya excluye el corte).
+        historial = hist.rename(columns={"FK_RUTA": "route"}).assign(
+            despachos=hist["despachos_count_real"].fillna(0).to_numpy()
+        )[["route", "dia_op", "tipo_dia", "hora", "despachos"]]
+        assert historial["dia_op"].max() < dia
+        base = disponibilidad_habitual(
+            base,
+            historial,
+            cfg_rec.disponibilidad_habitual.umbral,
+            cfg_rec.disponibilidad_habitual.ventana_semanas,
+        )
+        columna_disponibilidad = "en_disponibilidad"
     rec, ajuste = generar_recomendacion(
         base,
         parametros,
@@ -494,11 +537,23 @@ def main():
         cfg_rec.politica_festivos,
         cfg_rec.usar_tope_carga,
         cfg_rec.servicio_minimo,
+        columna_disponibilidad=columna_disponibilidad,
     )
     rec["divisor_usado"], rec["criterio"] = divisor_usado(
         rec, cfg_rec.usar_tope_carga, cfg_rec.servicio_minimo
     )
     verif["recomendacion"] = {
+        "configuracion": str(ruta_config.relative_to(PROJECT_ROOT).as_posix()),
+        "disponibilidad_habitual": (
+            None
+            if cfg_rec.disponibilidad_habitual is None
+            else {
+                "umbral": cfg_rec.disponibilidad_habitual.umbral,
+                "ventana_semanas": cfg_rec.disponibilidad_habitual.ventana_semanas,
+                "franjas_fuera": int((~rec["en_disponibilidad"]).sum()),
+                "franjas_sin_historial": int((rec["jornadas_previas"] == 0).sum()),
+            }
+        ),
         "freeze_parametros": raw_freeze,
         "capacidad": parametros.capacidad,
         "politica_festivos": cfg_rec.politica_festivos,
@@ -511,9 +566,8 @@ def main():
     with pd.ExcelWriter(rutas_out["planilla"], engine="openpyxl") as xw:
         for ruta in (1, 3):
             r = rec[rec["route"] == ruta].sort_values("hora")
-            n = r["despachos_recomendados"].to_numpy(dtype=float)
-            # Intervalo sugerido: 30 / despachos, redondeo aritmetico (0,5 sube); vacio si 0.
-            intervalo = np.where(n > 0, redondeo_aritmetico(30.0 / np.where(n > 0, n, 1.0)), np.nan)
+            # Intervalo sugerido: 30 / despachos, parte entera; vacio si 0.
+            intervalo = intervalo_sugerido(r["despachos_recomendados"])
             tabla_r = pd.DataFrame(
                 {
                     "Franja": r["hora"],

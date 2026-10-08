@@ -1,5 +1,6 @@
 """Pruebas del modulo de recomendacion de despacho con datos sinteticos."""
 
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
@@ -10,6 +11,7 @@ import yaml
 
 from proyecto_grado.dispatch.config import (
     BloqueHorario,
+    DisponibilidadHabitual,
     ErrorConfiguracionRecomendacion,
     cargar_configuracion_recomendacion,
 )
@@ -20,6 +22,7 @@ from proyecto_grado.dispatch.evaluacion import (
     tabla_comparacion_despachos,
 )
 from proyecto_grado.dispatch.parametros import (
+    ParametrosCalibracion,
     asignar_bloque,
     calcular_capacidad,
     calcular_tabla_parametros,
@@ -35,6 +38,9 @@ from proyecto_grado.dispatch.reglas import (
     aplicar_factibilidad,
     despachos_ordinario,
     despachos_raro,
+    disponibilidad_habitual,
+    generar_recomendacion,
+    intervalo_sugerido,
     recomendar_despachos,
     redondeo_aritmetico,
 )
@@ -333,3 +339,177 @@ def test_rechaza_reglas_invalidas(tmp_path: Path, campo: str, valor: object, men
     ruta.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
     with pytest.raises(ErrorConfiguracionRecomendacion, match=mensaje):
         cargar_configuracion_recomendacion(ruta)
+
+
+# ---------------------------------------------------------- configuracion piloto
+
+RUTA_PILOTO = Path("configs/dispatch/recomendacion_piloto.yaml")
+
+
+def _historial(dias: int, con_servicio: dict[str, int], inicio: date) -> pd.DataFrame:
+    """`dias` jornadas consecutivas de la ruta 1, todas LABORAL; la franja h tiene
+    un despacho en sus primeras `con_servicio[h]` jornadas y 0 en las demas."""
+    filas = []
+    for i in range(dias):
+        dia = inicio + pd.Timedelta(days=i)
+        for hora, n in con_servicio.items():
+            filas.append((1, dia, "LABORAL", hora, 1 if i < n else 0))
+    return pd.DataFrame(filas, columns=["route", "dia_op", "tipo_dia", "hora", "despachos"])
+
+
+def _objetivo(dia: str, horas: list[str]) -> pd.DataFrame:
+    return pd.DataFrame({"route": 1, "dia_op": dia, "tipo_dia": "LABORAL", "hora": horas})
+
+
+@pytest.mark.unit
+def test_disponibilidad_habitual_umbral_50_con_49_y_50_por_ciento() -> None:
+    # 100 jornadas previas al corte (2026-04-11): 06:00 con servicio en 50, 06:30 en 49.
+    historial = _historial(100, {"06:00": 50, "06:30": 49}, date(2026, 1, 1))
+    marcadas = disponibilidad_habitual(
+        _objetivo("2026-04-11", ["06:00", "06:30"]), historial, umbral=0.5, ventana_semanas=15
+    )
+    assert marcadas["jornadas_previas"].tolist() == [100, 100]
+    assert marcadas["frac_servicio"].tolist() == [0.50, 0.49]
+    assert marcadas["en_disponibilidad"].tolist() == [True, False]
+
+
+@pytest.mark.unit
+def test_disponibilidad_habitual_no_usa_datos_desde_el_corte() -> None:
+    corte = date(2026, 4, 11)
+    inicio_ventana = corte - pd.Timedelta(weeks=8)
+    previo = _historial(56, {"06:00": 20}, inicio_ventana)  # 20 de 56 jornadas: 36 %
+    # Jornadas desde el corte (incluida la objetivo), todas con servicio: si entraran,
+    # la fraccion pasaria del 50 % y la franja quedaria en disponibilidad.
+    posterior = _historial(60, {"06:00": 60}, corte)
+    # Jornadas anteriores a la ventana, todas con servicio: tampoco deben entrar.
+    antiguo = _historial(60, {"06:00": 60}, inicio_ventana - pd.Timedelta(days=60))
+    objetivo = _objetivo(str(corte), ["06:00"])
+
+    solo_previo = disponibilidad_habitual(objetivo, previo, umbral=0.5, ventana_semanas=8)
+    con_todo = disponibilidad_habitual(
+        objetivo, pd.concat([antiguo, previo, posterior]), umbral=0.5, ventana_semanas=8
+    )
+    assert solo_previo["jornadas_previas"].iloc[0] == 56
+    assert solo_previo["frac_servicio"].iloc[0] == pytest.approx(20 / 56)
+    pd.testing.assert_frame_equal(solo_previo, con_todo)
+    assert not con_todo["en_disponibilidad"].iloc[0]
+
+
+@pytest.mark.unit
+def test_fuera_de_disponibilidad_la_meta_es_0_y_no_entra_al_ajuste() -> None:
+    franjas = _franjas([100.0, 300.0, 200.0]).assign(en_disponibilidad=[True, True, False])
+    recomendadas = recomendar_despachos(
+        franjas, "divisor_propio", False, 1, columna_disponibilidad="en_disponibilidad"
+    )
+    assert recomendadas["despachos_sin_ajuste"].tolist() == [2, 6, 0]
+    ajustadas, jornadas = aplicar_factibilidad(
+        recomendadas, capacidad=3, minimo=1, columna_disponibilidad="en_disponibilidad"
+    )
+    # Se retira solo de las franjas en disponibilidad, sin bajar de 1; la de fuera sigue en 0.
+    assert ajustadas["despachos_recomendados"].tolist() == [1, 2, 0]
+    assert jornadas["total_recomendado"].iloc[0] == 3
+
+
+@pytest.mark.unit
+def test_configuracion_piloto_no_aplica_el_tope_de_carga() -> None:
+    piloto = cargar_configuracion_recomendacion(RUTA_PILOTO)
+    base = cargar_configuracion_recomendacion()
+    assert piloto.usar_tope_carga is False
+    assert piloto.disponibilidad_habitual == DisponibilidadHabitual(umbral=0.5, ventana_semanas=8)
+    assert base.disponibilidad_habitual is None
+    # El resto de parametros es identico a recomendacion.yaml.
+    assert replace(piloto, usar_tope_carga=True, disponibilidad_habitual=None) == base
+
+    # 70 pasajeros, mediana 54 y Q3 65: con tope serian 2; con la piloto, 1.
+    franjas = _franjas([70.0])
+    con_piloto = recomendar_despachos(
+        franjas, piloto.politica_festivos, piloto.usar_tope_carga, piloto.servicio_minimo
+    )
+    con_base = recomendar_despachos(
+        franjas, base.politica_festivos, base.usar_tope_carga, base.servicio_minimo
+    )
+    assert con_piloto["despachos_sin_ajuste"].tolist() == [1]
+    assert con_base["despachos_sin_ajuste"].tolist() == [2]
+
+
+@pytest.mark.unit
+def test_intervalo_sugerido_parte_entera() -> None:
+    assert intervalo_sugerido([4])[0] == 7  # 30 / 4 = 7,5
+    resultado = intervalo_sugerido([1, 2, 3, 4, 5, 7, 0])
+    np.testing.assert_array_equal(resultado[:-1], [30, 15, 10, 7, 6, 4])
+    assert np.isnan(resultado[-1])
+
+
+def _entrada_sintetica() -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Parametros y prediccion sinteticos y deterministas: dos rutas, una jornada
+    rara y dos ordinarias, 29 franjas por ruta y jornada, con bordes de redondeo."""
+    bloques = [b.nombre for b in BLOQUES]
+    filas = []
+    for ruta, desplazamiento in ((1, 0.0), (3, 4.0)):
+        for i, bloque in enumerate(bloques):
+            mediana = 37.0 + 3 * i + desplazamiento
+            filas.append((ruta, bloque, "ordinario", mediana - 9, mediana, mediana + 10))
+        filas.append((ruta, "todos", "raro", 12.0, 22.0 + desplazamiento, 35.0))
+    tabla = pd.DataFrame(filas, columns=["route", "bloque", "regimen", "q1", "mediana", "q3"])
+    rng = np.random.default_rng(20261008)
+    horas = [f"{4 + i // 2:02d}:{30 * (i % 2):02d}" for i in range(29)]
+    prediccion = []
+    for dia, tipo, regimen in (
+        ("2026-04-06", "FESTIVO_PUENTE", "raro"),
+        ("2026-04-07", "LABORAL", "ordinario"),
+        ("2026-04-11", "SABADO", "ordinario"),
+    ):
+        for ruta in (1, 3):
+            demanda = rng.uniform(0, 180, len(horas))
+            demanda[:4] = [0.0, -3.0, 2.5 * 37.0, 0.5 * 37.0]  # cero, negativa, medios exactos
+            prediccion.append(
+                pd.DataFrame(
+                    {
+                        "route": ruta,
+                        "dia_op": dia,
+                        "hora": horas,
+                        "tipo_dia": tipo,
+                        "regimen": regimen,
+                        "demanda_predicha": demanda,
+                    }
+                )
+            )
+    return tabla, pd.concat(prediccion, ignore_index=True)
+
+
+# Despachos por franja (orden jornada, ruta, hora) que producia recomendacion.yaml con
+# el codigo anterior a la regla de disponibilidad habitual (commit d53e5dc).
+_ANTES_SIN_AJUSTE = (
+    "114161318684313241554712412681141157545454144524725113263111214213224121131121431312211"
+    "112111332133223232113113122321121214234211114333322121221211213212324331331312213112213"
+)
+_ANTES_CAPACIDAD_150 = (
+    "113141215453212231433411312451131145434343133423524112242111214213224121131121431312211"
+    "112111332133223232113113122321121214234211114333322121221211213212324331331312213112213"
+)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("capacidad", "esperado", "retirados"),
+    [(500, _ANTES_SIN_AJUSTE, [0, 0, 0]), (150, _ANTES_CAPACIDAD_150, [51, 0, 0])],
+)
+def test_recomendacion_yaml_produce_lo_mismo_que_antes_del_cambio(
+    capacidad: int, esperado: str, retirados: list[int]
+) -> None:
+    config = cargar_configuracion_recomendacion()
+    tabla, prediccion = _entrada_sintetica()
+    parametros = ParametrosCalibracion(
+        tabla=tabla, capacidad=capacidad, jornada_capacidad=date(2026, 1, 5)
+    )
+    recomendacion, jornadas = generar_recomendacion(
+        prediccion,
+        parametros,
+        config.bloques,
+        config.politica_festivos,
+        config.usar_tope_carga,
+        config.servicio_minimo,
+    )
+    assert recomendacion["despachos_sin_ajuste"].tolist() == [int(c) for c in _ANTES_SIN_AJUSTE]
+    assert recomendacion["despachos_recomendados"].tolist() == [int(c) for c in esperado]
+    assert jornadas["retirados"].tolist() == retirados

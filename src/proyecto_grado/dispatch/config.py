@@ -48,6 +48,24 @@ class BloqueHorario:
 
 
 @dataclass(frozen=True)
+class DisponibilidadHabitual:
+    """Regla de disponibilidad habitual (ver reglas.disponibilidad_habitual)."""
+
+    umbral: float
+    ventana_semanas: int
+
+    def __post_init__(self) -> None:
+        if not 0 < self.umbral <= 1:
+            raise ErrorConfiguracionRecomendacion(
+                f"disponibilidad_habitual.umbral debe estar en (0, 1]: {self.umbral}."
+            )
+        if self.ventana_semanas < 1:
+            raise ErrorConfiguracionRecomendacion(
+                "disponibilidad_habitual.ventana_semanas debe ser al menos 1."
+            )
+
+
+@dataclass(frozen=True)
 class ConfiguracionRecomendacion:
     """Contrato inmutable de la calibracion, recomendacion y evaluacion."""
 
@@ -64,6 +82,7 @@ class ConfiguracionRecomendacion:
     usar_tope_carga: bool
     servicio_minimo: int
     directorio_salida: Path
+    disponibilidad_habitual: DisponibilidadHabitual | None = None
 
     def __post_init__(self) -> None:
         if self.inicio_calibracion > self.fin_calibracion:
@@ -164,11 +183,26 @@ def _bloques(raw: Any) -> tuple[BloqueHorario, ...]:
     return tuple(bloques)
 
 
+def _disponibilidad(raw: Any) -> DisponibilidadHabitual | None:
+    if raw is None:
+        return None
+    entrada = _mapa(raw, "reglas.disponibilidad_habitual")
+    umbral = entrada.get("umbral")
+    ventana = entrada.get("ventana_semanas")
+    if isinstance(umbral, bool) or not isinstance(umbral, int | float):
+        raise ErrorConfiguracionRecomendacion("disponibilidad_habitual.umbral debe ser numerico.")
+    if isinstance(ventana, bool) or not isinstance(ventana, int):
+        raise ErrorConfiguracionRecomendacion(
+            "disponibilidad_habitual.ventana_semanas debe ser un entero."
+        )
+    return DisponibilidadHabitual(umbral=float(umbral), ventana_semanas=ventana)
+
+
 def cargar_configuracion_recomendacion(
     ruta: str | Path | None = None,
     ruta_evaluacion: str | Path | None = None,
 ) -> ConfiguracionRecomendacion:
-    """Carga configs/dispatch/recomendacion.yaml y valida el contrato."""
+    """Carga configs/dispatch/recomendacion.yaml (u otra ruta) y valida el contrato."""
     ruta_config = Path(ruta) if ruta is not None else RUTA_CONFIG_PREDETERMINADA
     if not ruta_config.is_absolute():
         ruta_config = PROJECT_ROOT / ruta_config
@@ -223,4 +257,5 @@ def cargar_configuracion_recomendacion(
         usar_tope_carga=usar_tope,
         servicio_minimo=minimo,
         directorio_salida=_ruta_proyecto(salidas.get("directorio"), "salidas.directorio"),
+        disponibilidad_habitual=_disponibilidad(reglas.get("disponibilidad_habitual")),
     )
