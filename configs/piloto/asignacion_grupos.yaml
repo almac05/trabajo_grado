@@ -1,0 +1,15 @@
+# Grupo de cada jornada de la prueba piloto (fecha de la jornada -> grupo).
+#
+#   MODULO  : el despachador recibe y ve la recomendacion del modulo.
+#   CONTROL : la recomendacion se calcula y se guarda, pero el despachador opera
+#             como de costumbre (no se le muestra).
+#   SOMBRA  : ejecucion de ensayo; nadie la ve.
+#
+# Una jornada que no aparece aqui es SOMBRA (valor seguro: nadie la ve).
+# La fecha es la de la jornada operativa (empieza a las 04:00, hora Colombia).
+# Formato, una linea por jornada:
+#   2026-10-20: MODULO
+#   2026-10-21: CONTROL
+#
+# El grupo se registra en el manifiesto, en la planilla (hoja Resumen y nombre
+# del archivo) y en cada fila de bd_montebello_recomendaciones.recomendaciones.

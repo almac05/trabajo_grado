@@ -1,0 +1,107 @@
+# Configuracion del orquestador nocturno de la prueba piloto
+# (src/proyecto_grado/piloto, diseno en docs/diseno_piloto_proceso_nocturno.md).
+#
+# Todas las rutas son relativas a la raiz del proyecto. Ningun valor de este
+# archivo es una credencial: la base se configura con REGISTEL_DB_HOST/PORT/
+# USER/PASSWORD, el entorno con PILOTO_ENTORNO y S3 con PILOTO_S3_BUCKET y
+# PILOTO_S3_PREFIJO.
+
+candidato:
+  nombre: C3
+  descripcion: >-
+    XGBoost en regimen ordinario con correccion multiplicativa de 14 dias;
+    referencia de 52 semanas en regimen raro (docs/preregistro_correccion_nivel.md).
+  # Constancia exigida por el diseno: C3 fue el elegido en validacion, pero no
+  # supero la confirmacion preregistrada.
+  nota: >-
+    C3 no supero la confirmacion preregistrada (su MAE en evaluacion quedo
+    0,0025 por encima del candidato 1); se usa en la piloto por decision explicita.
+
+# Hora de Colombia para todo calculo de fechas (nunca la del sistema operativo).
+horario:
+  zona: America/Bogota
+  inicio_jornada: "04:00"
+  # Antes de esta hora la jornada objetivo es la del dia; desde esta hora, la del
+  # dia siguiente (corrida anticipada, con D incompleto).
+  corte_objetivo: "12:00"
+  # Con --fuente bd no se consulta la base en [sin_bd_desde, sin_bd_hasta),
+  # salvo --forzar-horario.
+  sin_bd_desde: "04:00"
+  sin_bd_hasta: "21:00"
+
+extraccion:
+  ventana_dias: 7
+  ventana_dias_domingo: 35
+  margen_pk: 5000
+  # Desde esta fecha la piloto guarda sus propios despachos; antes se usa la
+  # semilla (seccion 1.2 del diseno).
+  inicio_almacen: 2026-09-27
+
+correccion:
+  ventana_dias: 14
+  # Franjas observadas minimas para que una jornada entre en el factor.
+  min_franjas_jornada: 8
+  # Rango observado del factor en el backtesting; fuera de el solo se avisa.
+  rango_factor: [0.68, 1.08]
+  # Ultima jornada del historial de arranque (predicciones del script 43).
+  fin_backtest: 2026-10-03
+
+prediccion:
+  semanas_referencia_larga: 52
+
+grupos:
+  asignacion: configs/piloto/asignacion_grupos.yaml
+
+salidas:
+  directorio: data/piloto
+  esquema_bd: bd_montebello_recomendaciones
+
+# Entradas congeladas con su SHA-256 esperado. Si alguna falta o no coincide, la
+# ejecucion termina en ERROR. En los archivos de texto (.yaml, .json, .csv, .md,
+# .txt) el SHA-256 se calcula con finales de linea normalizados a LF, para que
+# coincida en Windows y en Ubuntu. `solo_fuente_local: true` marca las entradas
+# que solo usa --fuente local.
+entradas:
+  semilla_crudo:
+    ruta: data/actualizacion_20261004/raw/despachos_raw_historico.csv
+    sha256: 6e7536c4997464acac0c6420aacd1ebbaaa623d77d9fb1966d3fd08113b34e68
+  semilla_conjunto_apto:
+    ruta: data/actualizacion_20261004/processed/model_ready/despachos_model_ready_freeze_20261005_011520.parquet
+    sha256: d3192409b4b6478432272ef1c77cc04bca0d24b1e5b68358c97b6de2f95eeb82
+  semilla_fin_viaje:
+    ruta: data/actualizacion_20261004/interim/gps/despachos_end.parquet
+    sha256: bd4edd270cdff580c8c8277996095b15acbd7622d5b09167a9d77153063ad362
+    solo_fuente_local: true
+  objetivos:
+    ruta: data/actualizacion_20261004/targets.yaml
+    sha256: 88a3d7e6b552c426db5fa59c8de001a2ebe69fdd92c33a9f9034c3317c668dca
+  horario_operativo:
+    ruta: data/processed/operational_hours.parquet
+    sha256: f57f48a311b009ab49f4ebc484d97c86df34df2965fa70cd5ebccacd16c4d078
+  configuracion_etl:
+    ruta: configs/etl.yaml
+    sha256: 93a207b7a7a89fb016de2a479d0b1670f64dc83f5c5a56df6413deb464c69071
+  configuracion_serie:
+    ruta: configs/features.yaml
+    sha256: 3d35857c89d7513e5988363cab52535c8bef4b7297f8271be0b3935a283a2fb2
+  configuracion_evaluacion:
+    ruta: configs/modeling/evaluacion_comparativa.yaml
+    sha256: 75131659bfe5ee2dc4814ce363875625c1248d99136dc629956a38c821f2bbf0
+  configuracion_recomendacion:
+    ruta: configs/dispatch/recomendacion_piloto.yaml
+    sha256: ba534a5bc779d26a6d1f7d9e853e849ac70c0885dfd13afc59c1aed5236944fd
+  hiperparametros_xgboost:
+    ruta: analisis/salidas/busqueda_hiperparametros/seleccion__xgboost.json
+    sha256: 9e4c0671dc928a09e886232c34c8f46d0b0f97d4da8ada832ad29b565859b24b
+  parametros_recomendacion:
+    ruta: reports/tables/dispatch/parametros__recomendacion_despacho__freeze_20260922_203820.csv
+    sha256: 950232ba1774a57b82dcd7ae1f6b7202b3f49d3fc3a40c10b9bc17f72ffed4db
+  manifiesto_recomendacion:
+    ruta: reports/tables/dispatch/manifiesto__recomendacion_despacho__freeze_20260922_203820.json
+    sha256: 9a96b1e205d03955604d8cb52d354b8af2aa7b28df0088cd491bbf611fcdbe28
+  backtest_xgboost:
+    ruta: analisis/salidas/predicciones__xgboost__correccion_nivel_20251127_20261003.csv
+    sha256: 5e7ff4fef46b225e1150bead6c3193b12b308fc259c088d9a048e8d4913a7b36
+  backtest_referencia_52s:
+    ruta: analisis/salidas/referencia_52s__correccion_nivel_20251127_20261003.csv
+    sha256: bd0fe6ec56a9d292a594be1269833bf0fa5f65b0c3c11eaac86cc197d38c2d8b
