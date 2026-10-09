@@ -15,3 +15,12 @@ repos:
       - id: ruff
         args: [--fix]
       - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: bloquear-env
+        name: Bloquear archivos .env (credenciales)
+        entry: Los archivos .env no se versionan; contienen credenciales.
+        language: fail
+        files: '(^|/)\.env(\..*)?$'
+        exclude: '(^|/)\.env\.example$'
