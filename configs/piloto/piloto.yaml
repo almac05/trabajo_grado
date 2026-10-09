@@ -64,7 +64,7 @@ salidas:
 entradas:
   semilla_crudo:
     ruta: data/actualizacion_20261004/raw/despachos_raw_historico.csv
-    sha256: 6e7536c4997464acac0c6420aacd1ebbaaa623d77d9fb1966d3fd08113b34e68
+    sha256: 035c37a3f14734a5b77f53507ecedb82e55c23c5544ac90d83be7190a7d8347c
   semilla_conjunto_apto:
     ruta: data/actualizacion_20261004/processed/model_ready/despachos_model_ready_freeze_20261005_011520.parquet
     sha256: d3192409b4b6478432272ef1c77cc04bca0d24b1e5b68358c97b6de2f95eeb82
@@ -74,7 +74,7 @@ entradas:
     solo_fuente_local: true
   objetivos:
     ruta: data/actualizacion_20261004/targets.yaml
-    sha256: 88a3d7e6b552c426db5fa59c8de001a2ebe69fdd92c33a9f9034c3317c668dca
+    sha256: a5ad43ae89a142b55e86868c80494132cdd761987908096292123f67eac52a09
   horario_operativo:
     ruta: data/processed/operational_hours.parquet
     sha256: f57f48a311b009ab49f4ebc484d97c86df34df2965fa70cd5ebccacd16c4d078
@@ -83,7 +83,7 @@ entradas:
     sha256: 93a207b7a7a89fb016de2a479d0b1670f64dc83f5c5a56df6413deb464c69071
   configuracion_serie:
     ruta: configs/features.yaml
-    sha256: 3d35857c89d7513e5988363cab52535c8bef4b7297f8271be0b3935a283a2fb2
+    sha256: 8b89dabea239119b6c9285f8098e9e5694d7caeee1b4b394b63490b614b5bc0f
   configuracion_escenarios:
     ruta: configs/modeling/models.yaml
     sha256: b9a00abf8ba518502b465c8aab76a7b8c2fd1347def7d205607fc00a6707f638
@@ -95,16 +95,16 @@ entradas:
     sha256: ba534a5bc779d26a6d1f7d9e853e849ac70c0885dfd13afc59c1aed5236944fd
   hiperparametros_xgboost:
     ruta: analisis/salidas/busqueda_hiperparametros/seleccion__xgboost.json
-    sha256: 9e4c0671dc928a09e886232c34c8f46d0b0f97d4da8ada832ad29b565859b24b
+    sha256: 797303837579c34d47631a09e283734b66c73ab1ece6571c2b4adf65e790ebad
   parametros_recomendacion:
     ruta: reports/tables/dispatch/parametros__recomendacion_despacho__freeze_20260922_203820.csv
-    sha256: 950232ba1774a57b82dcd7ae1f6b7202b3f49d3fc3a40c10b9bc17f72ffed4db
+    sha256: 341a9ca723d5aba40170a93ee74f0ce115e3a5faf05fd5ab5af09d75c1256e02
   manifiesto_recomendacion:
     ruta: reports/tables/dispatch/manifiesto__recomendacion_despacho__freeze_20260922_203820.json
-    sha256: 9a96b1e205d03955604d8cb52d354b8af2aa7b28df0088cd491bbf611fcdbe28
+    sha256: 9fd53542174e37297f64418c2275c7fd4efd47c7583a07dc5dc69b0269bde461
   backtest_xgboost:
     ruta: analisis/salidas/predicciones__xgboost__correccion_nivel_20251127_20261003.csv
-    sha256: 5e7ff4fef46b225e1150bead6c3193b12b308fc259c088d9a048e8d4913a7b36
+    sha256: fdabe372a92e54e821e8af557edf77a55eaed3a4970df53bde47b9b3aeeecab4
   backtest_referencia_52s:
     ruta: analisis/salidas/referencia_52s__correccion_nivel_20251127_20261003.csv
-    sha256: bd0fe6ec56a9d292a594be1269833bf0fa5f65b0c3c11eaac86cc197d38c2d8b
+    sha256: 3f08079aa599e0c561f804ecc65a8656ba8feea9a50a700fc48290ee9f565609

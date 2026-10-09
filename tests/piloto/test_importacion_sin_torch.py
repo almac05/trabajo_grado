@@ -5,12 +5,30 @@ import sys
 
 import pytest
 
-# Modulos que deben importarse sin torch ni prophet. El orquestador se agrega
-# cuando existe; la prueba falla si deja de poder importarse.
+# Modulos que deben importarse sin torch ni prophet: el camino de XGBoost y todo
+# el paquete de la piloto.
 MODULOS = [
     "proyecto_grado.modeling.hparam_search.fits",
     "proyecto_grado.modeling.hparam_search.runner",
     "proyecto_grado.modeling.hparam_search.reevaluacion",
+    "proyecto_grado.etl.pipeline",
+    *(
+        f"proyecto_grado.piloto.{m}"
+        for m in (
+            "config",
+            "fechas",
+            "registro",
+            "extraccion",
+            "serie",
+            "prediccion",
+            "correccion",
+            "recomendacion",
+            "planilla",
+            "salida_bd",
+            "salida_s3",
+            "nocturno",
+        )
+    ),
 ]
 
 _BLOQUEO = """
