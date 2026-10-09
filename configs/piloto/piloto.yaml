@@ -84,6 +84,9 @@ entradas:
   configuracion_serie:
     ruta: configs/features.yaml
     sha256: 3d35857c89d7513e5988363cab52535c8bef4b7297f8271be0b3935a283a2fb2
+  configuracion_escenarios:
+    ruta: configs/modeling/models.yaml
+    sha256: b9a00abf8ba518502b465c8aab76a7b8c2fd1347def7d205607fc00a6707f638
   configuracion_evaluacion:
     ruta: configs/modeling/evaluacion_comparativa.yaml
     sha256: 75131659bfe5ee2dc4814ce363875625c1248d99136dc629956a38c821f2bbf0
