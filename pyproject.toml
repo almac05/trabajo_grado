@@ -29,18 +29,25 @@ dependencies = [
     "scikit-learn>=1.4",
     "statsmodels>=0.14",
     "xgboost>=2.0",
-    "prophet>=1.1",
     # Utilidades
     "pyyaml>=6.0",
     "tqdm>=4.66",
     # Calendario festivos Colombia (serie temporal)
     "holidays>=0.46",
+    # Prueba piloto: planilla Excel y subida a S3 (cadena de credenciales por defecto)
+    "openpyxl>=3.1",
+    "boto3>=1.34",
 ]
 
 [project.scripts]
 dashboard = "proyecto_grado.dashboard.app:main"
 
 [project.optional-dependencies]
+# Prophet solo lo usan los scripts de evaluacion comparativa y la busqueda de
+# hiperparametros; el orquestador de la piloto no lo requiere.
+prophet = [
+    "prophet>=1.1",
+]
 dl = [
     "torch>=2.2",
 ]

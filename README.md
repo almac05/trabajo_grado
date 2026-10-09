@@ -124,6 +124,22 @@ make dev
 make help
 ```
 
+**Dependencias opcionales.** Prophet y torch no forman parte de la instalación
+base, para que el orquestador de la prueba piloto se instale sin ellos:
+
+```powershell
+# Scripts de evaluación comparativa y búsqueda de hiperparámetros (Prophet)
+uv sync --extra prophet
+# Redes neuronales (LSTM, GRU, CNN-LSTM)
+uv sync --extra dl
+# Ambas
+uv sync --extra prophet --extra dl
+```
+
+`uv sync` deja el entorno exactamente como lo declara el lockfile: sin
+`--extra prophet` desinstala Prophet si estaba instalado. Con pip (`make dev`),
+el equivalente es `pip install -e ".[dev,prophet]"`.
+
 ## Flujo de trabajo
 
 ```powershell
