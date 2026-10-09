@@ -160,7 +160,8 @@ def recomendar_despachos(
     ``franjas`` debe traer ``regimen``, la demanda y las columnas de
     ``asociar_parametros``: ``mediana`` (la del regimen), ``mediana_ordinaria`` y
     ``q3_ordinario``. Con ``columna_disponibilidad``, las franjas con ``False`` en
-    esa columna reciben 0 despachos.
+    esa columna reciben 0 despachos, y ``despachos_regla_normal`` guarda, solo como
+    informacion, lo que habria dado la regla (divisor, redondeo y minimo).
     """
     if politica_festivos not in POLITICAS_FESTIVOS:
         raise ErrorDatosRecomendacion(f"Politica de festivos desconocida: {politica_festivos!r}.")
@@ -181,6 +182,7 @@ def recomendar_despachos(
     despachos = np.where(es_raro, raro, ordinario)
     if columna_disponibilidad is not None:
         disponible = salida[columna_disponibilidad].astype(bool).to_numpy()
+        salida["despachos_regla_normal"] = despachos.astype(int)
         despachos = np.where(disponible, despachos, 0)
     salida["despachos_sin_ajuste"] = despachos.astype(int)
     return salida

@@ -5,6 +5,7 @@ from datetime import date
 from pathlib import Path
 
 import numpy as np
+import openpyxl
 import pandas as pd
 import pytest
 import yaml
@@ -27,6 +28,13 @@ from proyecto_grado.dispatch.parametros import (
     calcular_capacidad,
     calcular_tabla_parametros,
     preparar_despachos,
+)
+from proyecto_grado.dispatch.planilla import (
+    NOTA_SIN_CONDUCTOR,
+    NOTA_SIN_META,
+    SIN_META,
+    escribir_hoja,
+    tabla_planilla,
 )
 from proyecto_grado.dispatch.predictor_mixto import (
     FUENTE_REFERENCIA,
@@ -513,3 +521,119 @@ def test_recomendacion_yaml_produce_lo_mismo_que_antes_del_cambio(
     assert recomendacion["despachos_sin_ajuste"].tolist() == [int(c) for c in _ANTES_SIN_AJUSTE]
     assert recomendacion["despachos_recomendados"].tolist() == [int(c) for c in esperado]
     assert jornadas["retirados"].tolist() == retirados
+
+
+# ----------------------------------------------------------------- planilla piloto
+
+
+def _tabla_parametros_ruta_3() -> pd.DataFrame:
+    """Parametros calibrados de la ruta 3 (freeze_20260922_203820) en madrugada y cierre."""
+    filas = [(3, b.nombre, "ordinario", 28.0, 48.0, 58.0) for b in BLOQUES]
+    filas[0] = (3, "madrugada", "ordinario", 28.0, 37.0, 46.0)
+    filas.append((3, "todos", "raro", 12.0, 22.0, 35.0))
+    return pd.DataFrame(filas, columns=["route", "bloque", "regimen", "q1", "mediana", "q3"])
+
+
+@pytest.mark.unit
+def test_meta_de_evaluacion_sigue_en_0_fuera_de_disponibilidad() -> None:
+    piloto = cargar_configuracion_recomendacion(RUTA_PILOTO)
+    tabla, prediccion = _entrada_sintetica()
+    prediccion = prediccion.assign(en_disponibilidad=prediccion["hora"] < "17:00")
+    parametros = ParametrosCalibracion(
+        tabla=tabla, capacidad=500, jornada_capacidad=date(2026, 1, 5)
+    )
+    rec, _ = generar_recomendacion(
+        prediccion,
+        parametros,
+        piloto.bloques,
+        piloto.politica_festivos,
+        piloto.usar_tope_carga,
+        piloto.servicio_minimo,
+        columna_disponibilidad="en_disponibilidad",
+    )
+    fuera = ~rec["en_disponibilidad"]
+    assert fuera.sum() == 18  # 17:00, 17:30 y 18:00 en 2 rutas y 3 jornadas
+    assert (rec.loc[fuera, "despachos_recomendados"] == 0).all()
+    assert (rec.loc[fuera, "despachos_regla_normal"] >= 1).all()
+    dentro = rec.loc[~fuera]
+    assert (dentro["despachos_recomendados"] == dentro["despachos_regla_normal"]).all()
+
+    antes = rec.copy()
+    hoja = tabla_planilla(rec[rec["route"] == 1], piloto.usar_tope_carga, piloto.servicio_minimo)
+    pd.testing.assert_frame_equal(rec, antes)  # la planilla no altera la meta evaluada
+    assert (hoja.loc[hoja["Franja"] >= "17:00", "Meta de despachos"] == "Sin meta").all()
+    assert (hoja.loc[hoja["Franja"] < "17:00", "Si hay conductor disponible"] == "").all()
+
+
+@pytest.mark.unit
+def test_si_hay_conductor_ruta_3_a_las_0400_del_1_de_octubre() -> None:
+    # Franja de la muestra del 2026-10-01: demanda C3 37,24 y mediana de la madrugada 37;
+    # su servicio en las 8 semanas previas fue del 31,6 %, fuera de la disponibilidad.
+    piloto = cargar_configuracion_recomendacion(RUTA_PILOTO)
+    prediccion = pd.DataFrame(
+        {
+            "route": [3],
+            "dia_op": ["2026-10-01"],
+            "hora": ["04:00"],
+            "tipo_dia": ["LABORAL"],
+            "regimen": ["ordinario"],
+            "demanda_predicha": [37.23979743465772],
+            "en_disponibilidad": [False],
+        }
+    )
+    parametros = ParametrosCalibracion(
+        tabla=_tabla_parametros_ruta_3(), capacidad=153, jornada_capacidad=date(2026, 1, 5)
+    )
+    rec, _ = generar_recomendacion(
+        prediccion,
+        parametros,
+        piloto.bloques,
+        piloto.politica_festivos,
+        piloto.usar_tope_carga,
+        piloto.servicio_minimo,
+        columna_disponibilidad="en_disponibilidad",
+    )
+    assert rec["despachos_recomendados"].tolist() == [0]
+    assert rec["despachos_regla_normal"].tolist() == [1]
+
+    fila = tabla_planilla(rec, piloto.usar_tope_carga, piloto.servicio_minimo).iloc[0]
+    assert fila["Meta de despachos"] == SIN_META
+    assert fila["Si hay conductor disponible"] == "1 (30 min)"
+    assert fila["Divisor usado"] == 37.0
+    assert fila["Criterio del divisor"] == "Fuera de disponibilidad habitual, mediana del bloque"
+    assert pd.isna(fila["Intervalo sugerido (min)"])
+
+
+@pytest.mark.unit
+def test_planilla_con_recomendacion_yaml_no_cambia_de_columnas() -> None:
+    config = cargar_configuracion_recomendacion()
+    tabla, prediccion = _entrada_sintetica()
+    parametros = ParametrosCalibracion(
+        tabla=tabla, capacidad=500, jornada_capacidad=date(2026, 1, 5)
+    )
+    rec, _ = generar_recomendacion(
+        prediccion,
+        parametros,
+        config.bloques,
+        config.politica_festivos,
+        config.usar_tope_carga,
+        config.servicio_minimo,
+    )
+    assert "despachos_regla_normal" not in rec.columns
+    hoja = tabla_planilla(rec[rec["route"] == 1], config.usar_tope_carga, config.servicio_minimo)
+    assert "Si hay conductor disponible" not in hoja.columns
+    esperado = rec.loc[rec["route"] == 1].sort_values("hora")["despachos_recomendados"].tolist()
+    assert hoja["Meta de despachos"].tolist() == esperado
+
+
+@pytest.mark.unit
+def test_hoja_con_encabezado_fijo_ancho_y_notas(tmp_path: Path) -> None:
+    hoja = pd.DataFrame({"Franja": ["04:00"], "Si hay conductor disponible": ["1 (30 min)"]})
+    ruta = tmp_path / "planilla.xlsx"
+    with pd.ExcelWriter(ruta, engine="openpyxl") as xw:
+        escribir_hoja(xw, "Ruta 3", hoja, [NOTA_SIN_META, NOTA_SIN_CONDUCTOR])
+    ws = openpyxl.load_workbook(ruta)["Ruta 3"]
+    assert ws.freeze_panes == "A2"
+    assert ws.column_dimensions["B"].width == len("Si hay conductor disponible") + 2
+    assert ws.cell(row=4, column=1).value == NOTA_SIN_META
+    assert ws.cell(row=5, column=1).value == NOTA_SIN_CONDUCTOR

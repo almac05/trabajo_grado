@@ -60,17 +60,18 @@ from proyecto_grado.dispatch.config import (
 )
 from proyecto_grado.dispatch.evaluacion import construir_franjas_evaluacion, franjas_reales
 from proyecto_grado.dispatch.parametros import (
-    REGIMEN_RARO,
     ParametrosCalibracion,
     filtrar_periodo,
     preparar_despachos,
 )
-from proyecto_grado.dispatch.reglas import (
-    disponibilidad_habitual,
-    generar_recomendacion,
-    intervalo_sugerido,
-    redondeo_aritmetico,
+from proyecto_grado.dispatch.planilla import (
+    NOTA_SIN_CONDUCTOR,
+    NOTA_SIN_META,
+    divisor_y_criterio,
+    escribir_hoja,
+    tabla_planilla,
 )
+from proyecto_grado.dispatch.reglas import disponibilidad_habitual, generar_recomendacion
 from proyecto_grado.modeling.config import PROJECT_ROOT
 from proyecto_grado.modeling.evaluation_config import cargar_configuracion_evaluacion
 from proyecto_grado.modeling.experimentos import seleccionar_features
@@ -100,10 +101,6 @@ RUTA_43_XGB = PROJECT_ROOT / "analisis" / "salidas" / f"predicciones__xgboost__{
 RUTA_44_SERIE = PROJECT_ROOT / "analisis" / "salidas" / f"serie_correccion__{SUF_CN}.csv"
 
 CLASE = {"subutilizada": "baja", "normal": "normal", "sobrecargada": "alta"}
-NOTA_PLANILLA = (
-    "Si no hay conductores disponibles para cumplir la meta de una franja, registrar SIN CONDUCTOR"
-)
-MARCA_FUERA = "Fuera de disponibilidad habitual"
 LAGS = ("_lag_48", "_lag_96", "_lag_336")
 TOL = 1e-4
 
@@ -339,26 +336,6 @@ def factor_c3(hist, config, params, tipos_raros, dia):
     return res, pred
 
 
-def divisor_usado(rec, usar_tope, minimo):
-    d = np.clip(rec["demanda_predicha"].to_numpy(float), 0, None)
-    raro = (rec["regimen"] == REGIMEN_RARO).to_numpy()
-    por_mediana = redondeo_aritmetico(d / rec["divisor"].to_numpy(float))
-    por_tope = np.ceil(d / rec["q3_ordinario"].to_numpy(float)) if usar_tope else np.zeros_like(d)
-    criterio = np.where(
-        raro,
-        "mediana del regimen raro",
-        np.where(por_tope > por_mediana, "Q3 (tope de carga)", "mediana del bloque"),
-    )
-    divisor = np.where(~raro & (por_tope > por_mediana), rec["q3_ordinario"], rec["divisor"])
-    base = np.where(~raro & (por_tope > por_mediana), por_tope, por_mediana)
-    criterio = np.where(base < minimo, "servicio minimo", criterio)
-    if "en_disponibilidad" in rec:
-        fuera = ~rec["en_disponibilidad"].astype(bool).to_numpy()
-        criterio = np.where(fuera, MARCA_FUERA, criterio)
-        divisor = np.where(fuera, np.nan, divisor)
-    return divisor, criterio
-
-
 # ------------------------------------------------------------------- main
 
 
@@ -539,7 +516,7 @@ def main():
         cfg_rec.servicio_minimo,
         columna_disponibilidad=columna_disponibilidad,
     )
-    rec["divisor_usado"], rec["criterio"] = divisor_usado(
+    rec["divisor_usado"], rec["criterio"] = divisor_y_criterio(
         rec, cfg_rec.usar_tope_carga, cfg_rec.servicio_minimo
     )
     verif["recomendacion"] = {
@@ -562,26 +539,16 @@ def main():
         "ajuste_factibilidad": ajuste.to_dict("records"),
     }
 
-    # --- Planilla ---
+    # --- Planilla (solo presentacion; la meta evaluada es despachos_recomendados) ---
+    notas = [NOTA_SIN_CONDUCTOR]
+    if columna_disponibilidad is not None:
+        notas = [NOTA_SIN_META, NOTA_SIN_CONDUCTOR]
     with pd.ExcelWriter(rutas_out["planilla"], engine="openpyxl") as xw:
         for ruta in (1, 3):
-            r = rec[rec["route"] == ruta].sort_values("hora")
-            # Intervalo sugerido: 30 / despachos, parte entera; vacio si 0.
-            intervalo = intervalo_sugerido(r["despachos_recomendados"])
-            tabla_r = pd.DataFrame(
-                {
-                    "Franja": r["hora"],
-                    "Pasajeros predichos": r["demanda_predicha"].round(1),
-                    "Divisor usado": r["divisor_usado"].round(2),
-                    "Criterio del divisor": r["criterio"],
-                    "Despachos recomendados": r["despachos_recomendados"],
-                    "Intervalo sugerido (min)": pd.array(intervalo, dtype="Int64"),
-                    "Régimen": r["regimen"],
-                }
+            tabla_r = tabla_planilla(
+                rec[rec["route"] == ruta], cfg_rec.usar_tope_carga, cfg_rec.servicio_minimo
             )
-            hoja = f"Ruta {ruta}"
-            tabla_r.to_excel(xw, sheet_name=hoja, index=False)
-            xw.sheets[hoja].cell(row=len(tabla_r) + 3, column=1, value=NOTA_PLANILLA)
+            escribir_hoja(xw, f"Ruta {ruta}", tabla_r, notas)
 
     # --- Comparacion con la operacion real (despues de predecir) ---
     td = ds[["FK_RUTA", "timestamp", "tipo_dia"]]
