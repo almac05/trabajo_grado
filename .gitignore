@@ -86,3 +86,6 @@ logs/
 
 # === Docker ===
 docker-compose.override.yml
+
+# === Prueba piloto (salidas de cada ejecucion; nunca se versionan) ===
+data/piloto/
