@@ -1,6 +1,6 @@
 # Diseño del proceso nocturno de la prueba piloto
 
-**Estado:** borrador para revisión, 2026-10-07. No hay código escrito. Ningún dato, freeze ni artefacto existente se modifica: todo lo nuevo vive en `data/piloto/`, `configs/piloto/` y un paquete nuevo `src/proyecto_grado/piloto/`.
+**Estado:** borrador para revisión, 2026-10-07. Actualizado el 2026-10-09 con las decisiones tomadas y la entrega mínima implementada (sección 13). Las secciones 0 a 12 conservan el texto original; donde una decisión lo cambió, se indica. Ningún dato, freeze ni artefacto existente se modifica: todo lo nuevo vive en `data/piloto/`, `configs/piloto/` y un paquete nuevo `src/proyecto_grado/piloto/`.
 
 **Objetivo:** cada noche, generar la recomendación de despachos de la jornada siguiente (D+1) para las rutas 1 y 3. Se usa el candidato C3 del preregistro (XGBoost en régimen ordinario con corrección multiplicativa de 14 días; referencia de 52 semanas en régimen raro) y el módulo de recomendación con los parámetros calibrados, sin tope.
 
@@ -127,6 +127,8 @@ En cada ejecución:
 
 **Ubicación:** `data/piloto/planillas/planilla_<AAAA-MM-DD>_<estado>.xlsx`, una por jornada. Una nueva emisión crea otro archivo con sufijo `_v2`, con el motivo en el registro; nunca sobrescribe.
 
+> **Cambiado (2026-10-09, sección 13):** el despachador sí ve los pasajeros predichos; la planilla no tiene columnas para el despachador (la adherencia se mide después contra los despachos reales de `bd_montebello_rdw`), y el nombre incluye el grupo: `planilla_<AAAA-MM-DD>_<estado>_<grupo>.xlsx`. La tabla siguiente es la propuesta original.
+
 | Hoja | Contenido |
 |---|---|
 | Resumen | jornada, tipo de día y régimen; estado (OK / ADVERTENCIA / CONTINGENCIA / PRELIMINAR); advertencias en lenguaje llano; factor por ruta; fecha de los datos usados; identificador de la ejecución |
@@ -172,7 +174,7 @@ Cada ejecución avanza por pasos con comprobaciones. **Ninguna planilla sale sin
   - **Completitud:** las métricas de la sección 7.
   - **Factor por ruta:** valor, Σ real, Σ pred, franjas y jornadas de la ventana.
   - **Salidas:** archivos generados y su SHA-256.
-- `ejecucion.log`: el registro completo. Los secretos de `.env` se ocultan, como ya hace el ETL.
+- `ejecucion.log`: el registro completo. Los secretos de `.env` se ocultan. (Corrección: el ETL no lo hacía; la piloto lo implementa en `piloto/registro.py`.)
 - **Predicciones y recomendación** de la jornada, franja a franja.
 
 Las instantáneas de extracción y la serie versionada se conservan. Un script `reconstruir --ejecucion <id>`, desde el mismo commit, vuelve a calcular la recomendación y comprueba que coincide byte a byte.
@@ -227,3 +229,60 @@ data/piloto/{extracciones, etl, serie, historial, ejecuciones, planillas}/
 4. **Entrega:** cómo llega la planilla al despachador (carpeta compartida, correo, impresión) y a qué hora empieza su turno.
 5. **Equipo:** si queda encendido por la noche y si la base necesita VPN.
 6. **Primer día de la piloto**, que fija el tramo de relleno del historial.
+
+## 13. Decisiones tomadas y entrega mínima (2026-10-09)
+
+### 13.1 Decisiones
+
+| Tema | Decisión |
+|---|---|
+| Hora de ejecución (sección 0) | **Opción B**: una sola corrida a las 00:30 que predice D+1 con D completa. No hay versión preliminar. |
+| "Hoy" y jornada objetivo | Siempre con `ZoneInfo("America/Bogota")`, nunca con la hora del sistema operativo (EC2 está en UTC). Una corrida que empieza antes de las 12:00 del día X predice X (desde las 04:00 es **tardía**); desde las 12:00 predice X+1 y es **anticipada** (D incompleto). Ambas marcas quedan en el manifiesto y en la planilla. |
+| Horario sin base | Con `--fuente bd` o `--escribir-bd`, el orquestador no se conecta a la base entre las 04:00 y las 21:00 (hora de Colombia) y termina en ERROR, salvo `--forzar-horario`, que queda en el manifiesto y en el log. |
+| Canal al despachador (sección 12.4) | Regisdata lee `bd_montebello_recomendaciones`; además se genera la planilla Excel con los mismos datos. |
+| Demanda predicha (sección 6) | El despachador **sí** ve los pasajeros predichos. |
+| Adherencia (sección 6) | No se captura en la planilla ni en la base. Se medirá comparando la recomendación con los despachos reales de `bd_montebello_rdw`. Se quitan las columnas del despachador. |
+| Grupo por jornada | MODULO, CONTROL o SOMBRA, de `configs/piloto/asignacion_grupos.yaml` (fecha → grupo). Una fecha sin asignar es SOMBRA. El grupo va en la hoja Resumen, en el nombre de la planilla y en cada fila de la base. |
+| Entorno | `PILOTO_ENTORNO` = EC2 (principal, base por túnel SSH) o LOCAL (plan B); obligatorio. |
+| Formato de la planilla (sección 12.3) | Excel (`openpyxl`). |
+| Programador (sección 10) | La entrega mínima no incluye la tarea de Windows ni systemd; quedan para la fase 2. |
+
+### 13.2 Entrega mínima (fase 1)
+
+Paquete `src/proyecto_grado/piloto/`, configuración en `configs/piloto/` y salidas en `data/piloto/` (no versionado):
+
+- `extraccion.py`: ventana [D − 6, D] (35 días si la jornada objetivo es domingo), ampliada hasta el primer día que el almacén aún no cubre desde el 2026-09-27; `pk_ancla` con margen de 5.000. La consulta es `etl.extract.obtener_despachos` sin cambios (con `max_pk = pk_ancla − 1`) en una sesión `READ ONLY`. Deduplicado determinista por `PK_INFORMACION_REGISTRADORA`, instantánea inmutable y diferencias por día y campo.
+- `serie.py`: bloques 4 a 8 del ETL sin cambios en una raíz alternativa por ejecución, y reconstrucción completa de la serie con las franjas de D+1.
+- `prediccion.py`, `correccion.py` y `recomendacion.py`: secciones 3 a 5. El historial arranca con el backtest del script 43 hasta el 2026-10-03; del 2026-10-04 a la víspera de la piloto se rellena con `--relleno DESDE HASTA`.
+- `planilla.py`, `salida_bd.py` (contrato de `bd_montebello_recomendaciones`, activable con `--escribir-bd`) y `salida_s3.py` (cadena de credenciales por defecto, activable con `--subir-s3`).
+- `nocturno.py`: bloqueo, commit limpio, manifiesto, log con enmascaramiento, `ESTADO_ULTIMA_EJECUCION.txt` y códigos de salida (0 OK, 1 ERROR, 2 otra ejecución en curso). En la fase 1 solo hay estados OK y ERROR; las advertencias se informan sin cambiar el estado.
+
+**Commit limpio.** Cuenta como sucio cualquier archivo versionado con cambios y cualquier archivo nuevo dentro de `src/`, `configs/` o `scripts/`. La salida completa de `git status --porcelain` queda en el manifiesto.
+
+**Entradas congeladas.** Cada una lleva su SHA-256 en `configs/piloto/piloto.yaml`. En los archivos de texto se calcula con finales de línea normalizados a LF, para que coincida en Windows y en Ubuntu. Si alguna falta o no coincide, la ejecución es ERROR.
+
+### 13.3 Controles ejecutados sin base de datos
+
+Con la semilla como extracción (`--fuente local`):
+
+- **8.2 (procesamiento por ventana):** los 305 despachos del 27 al 30 de septiembre procesados por ventana coinciden campo a campo con el conjunto apto de la actualización.
+- **8.3 (serie y variables):** la serie reconstruida coincide con el dataset de la actualización, incluidas las 15 variables de XGBoost de las 57 franjas del 1 de octubre.
+- **8.4 (predicción y factor), para el 1 y el 3 de octubre:**
+  - XGBoost frente al script 43: diferencia máxima 6·10⁻⁶;
+  - referencia de 52 semanas: 10⁻¹⁴;
+  - factor frente a `serie_correccion` del script 44: 10⁻¹⁶, con las mismas franjas y jornadas;
+  - C3: 5·10⁻⁶.
+- **Recomendación del 1 de octubre:** idéntica a la de la muestra de planilla.
+- **Relleno:** el del 1 y 2 de octubre reproduce los factores del script 44.
+
+**Pendientes con la base real:** el control 8.1 (reextracción frente a la semilla), la comprobación de los 44 duplicados y el modo sombra (8.5).
+
+### 13.4 Fase 2
+
+Queda para la fase 2:
+- los estados ADVERTENCIA y CONTINGENCIA con sus reglas (sección 7);
+- los reintentos;
+- `reconstruir.py`;
+- los scripts de los controles 8.1 a 8.4;
+- el envoltorio `.ps1` y la tarea de Windows;
+- los archivos de systemd para EC2.
