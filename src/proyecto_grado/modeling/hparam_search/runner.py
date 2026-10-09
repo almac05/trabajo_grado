@@ -11,9 +11,9 @@ evaluacion. No lee ni escribe ningun artefacto de la evaluacion comparativa.
 from __future__ import annotations
 
 import time
+from functools import cache
 
 import pandas as pd
-import torch
 
 from proyecto_grado.modeling.experimentos import seleccionar_features
 from proyecto_grado.modeling.hparam_search.fits import (
@@ -30,7 +30,21 @@ from proyecto_grado.modeling.hparam_search.search_config import (
     ConfiguracionBusquedaHiperparametros,
 )
 
-DISPOSITIVO = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+@cache
+def dispositivo():
+    """Dispositivo de torch para las redes; torch se importa solo al usarlas."""
+    import torch
+
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
+def __getattr__(nombre: str):
+    # Compatibilidad: ``DISPOSITIVO`` se resuelve al primer acceso (PEP 562).
+    if nombre == "DISPOSITIVO":
+        return dispositivo()
+    raise AttributeError(f"module {__name__!r} has no attribute {nombre!r}")
+
 
 _TIPO_ID_RED = {"LSTM": "lstm", "GRU": "gru", "CNN-LSTM": "cnn_lstm"}
 
@@ -168,7 +182,7 @@ def evaluar_configuracion(
                     cal,
                     len(CALENDARIO),
                     params,
-                    DISPOSITIVO,
+                    dispositivo(),
                 )
                 n = min(len(test), PASOS)
                 real = test[target].to_numpy()[:n]

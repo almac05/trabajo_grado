@@ -41,10 +41,10 @@ from proyecto_grado.modeling.hparam_search.fits import (
 )
 from proyecto_grado.modeling.hparam_search.runner import (
     _TIPO_ID_RED,
-    DISPOSITIVO,
     _calendario_festivos,
     _dias_candidatos,
     _preparar_ruta,
+    dispositivo,
 )
 
 SALIDA = PROJECT_ROOT / "analisis" / "salidas"
@@ -221,7 +221,7 @@ def ejecutar_metodo(
                     cal,
                     len(CALENDARIO),
                     params,
-                    DISPOSITIVO,
+                    dispositivo(),
                 )
                 segundos = time.perf_counter() - t0
                 n = min(len(test), PASOS)

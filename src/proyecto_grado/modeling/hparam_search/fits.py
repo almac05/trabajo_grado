@@ -6,19 +6,20 @@ de evaluacion comparativa correspondiente (scripts/run_<metodo>_comparative_
 evaluation.py), sustituyendo los valores fijos por los del diccionario
 ``params`` que entrega la busqueda. No se modifica ningun script de
 evaluacion; estas funciones son la unica pieza compartida.
+
+``torch`` y ``prophet`` se importan dentro de las funciones que los usan, para
+que XGBoost y SARIMA (y el orquestador de la piloto) no los requieran.
 """
 
 from __future__ import annotations
 
 import itertools
+from functools import cache
 
 import numpy as np
 import pandas as pd
-import torch
 import xgboost as xgb
-from prophet import Prophet
 from statsmodels.tsa.statespace.sarimax import SARIMAX
-from torch import nn
 
 from proyecto_grado.modeling.hparam_search.spaces import (
     RED_FIJOS,
@@ -68,6 +69,8 @@ def ajustar_predecir_prophet(
     target: str,
     params: dict,
 ) -> np.ndarray:
+    from prophet import Prophet
+
     modelo = Prophet(
         holidays=festivos,
         daily_seasonality=True,
@@ -157,56 +160,71 @@ def construir_ejemplos(datos: pd.DataFrame, target: str, min_franjas: int) -> tu
     )
 
 
-class RedGenerica(nn.Module):
-    """LSTM, GRU o CNN-LSTM segun ``tipo``; misma arquitectura que los tres
-    scripts de evaluacion comparativa, con unidades/filtros/nucleo
-    parametrizables."""
+@cache
+def _clase_red():
+    """Clase ``RedGenerica``, definida al primer uso para importar torch solo entonces."""
+    import torch
+    from torch import nn
 
-    def __init__(
-        self,
-        tipo: str,
-        n_calendario: int,
-        unidades: int,
-        filtros: int | None = None,
-        nucleo: int | None = None,
-    ):
-        super().__init__()
-        self.tipo = tipo
-        if tipo == "cnn_lstm":
-            self.conv = nn.Sequential(
-                nn.Conv1d(
-                    in_channels=2, out_channels=filtros, kernel_size=nucleo, padding=nucleo // 2
-                ),
+    class RedGenerica(nn.Module):
+        """LSTM, GRU o CNN-LSTM segun ``tipo``; misma arquitectura que los tres
+        scripts de evaluacion comparativa, con unidades/filtros/nucleo
+        parametrizables."""
+
+        def __init__(
+            self,
+            tipo: str,
+            n_calendario: int,
+            unidades: int,
+            filtros: int | None = None,
+            nucleo: int | None = None,
+        ):
+            super().__init__()
+            self.tipo = tipo
+            if tipo == "cnn_lstm":
+                self.conv = nn.Sequential(
+                    nn.Conv1d(
+                        in_channels=2, out_channels=filtros, kernel_size=nucleo, padding=nucleo // 2
+                    ),
+                    nn.ReLU(),
+                )
+                entrada_rnn = filtros
+            else:
+                entrada_rnn = 2
+            rnn_cls = nn.GRU if tipo == "gru" else nn.LSTM
+            self.rnn = rnn_cls(input_size=entrada_rnn, hidden_size=unidades, batch_first=True)
+            self.salida = nn.Sequential(
+                nn.Linear(unidades + n_calendario, unidades),
                 nn.ReLU(),
+                nn.Linear(unidades, PASOS),
             )
-            entrada_rnn = filtros
-        else:
-            entrada_rnn = 2
-        rnn_cls = nn.GRU if tipo == "gru" else nn.LSTM
-        self.rnn = rnn_cls(input_size=entrada_rnn, hidden_size=unidades, batch_first=True)
-        self.salida = nn.Sequential(
-            nn.Linear(unidades + n_calendario, unidades),
-            nn.ReLU(),
-            nn.Linear(unidades, PASOS),
-        )
 
-    def forward(self, seq, msk, cal):
-        if self.tipo == "cnn_lstm":
-            entrada = torch.stack([seq, msk], dim=1)
-            rasgos = self.conv(entrada).transpose(1, 2)
-            salida_rnn = self.rnn(rasgos)
-        else:
-            entrada = torch.stack([seq, msk], dim=-1)
-            salida_rnn = self.rnn(entrada)
+        def forward(self, seq, msk, cal):
+            if self.tipo == "cnn_lstm":
+                entrada = torch.stack([seq, msk], dim=1)
+                rasgos = self.conv(entrada).transpose(1, 2)
+                salida_rnn = self.rnn(rasgos)
+            else:
+                entrada = torch.stack([seq, msk], dim=-1)
+                salida_rnn = self.rnn(entrada)
 
-        if self.tipo == "gru":
-            _, estado = salida_rnn
-        else:
-            _, (estado, _) = salida_rnn
-        return self.salida(torch.cat([estado[-1], cal], dim=1))
+            if self.tipo == "gru":
+                _, estado = salida_rnn
+            else:
+                _, (estado, _) = salida_rnn
+            return self.salida(torch.cat([estado[-1], cal], dim=1))
+
+    return RedGenerica
+
+
+def RedGenerica(*args, **kwargs):  # noqa: N802 - conserva el nombre de la clase
+    """Instancia de la red; ver ``_clase_red``."""
+    return _clase_red()(*args, **kwargs)
 
 
 def perdida_enmascarada(pred, real, mascara):
+    import torch
+
     return (torch.abs(pred - real) * mascara).sum() / mascara.sum()
 
 
@@ -219,8 +237,10 @@ def entrenar_predecir_red(
     cal_test: np.ndarray,
     n_calendario: int,
     params: dict,
-    dispositivo: torch.device,
+    dispositivo,
 ) -> tuple[np.ndarray, int]:
+    import torch
+
     xs_a, xm_a, xc_a, y_a, ym_a = ajuste_arrays
     xs_p, xm_p, xc_p, y_p, ym_p = parada_arrays
 
