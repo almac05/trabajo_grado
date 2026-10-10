@@ -73,3 +73,15 @@ def test_valores_cargados_despues_de_configurar(tmp_path, monkeypatch):
     finally:
         cerrar_registro(manejadores)
     assert "cargada-despues" not in archivo.read_text(encoding="utf-8")
+
+
+@pytest.mark.unit
+def test_usuario_corto_no_se_oculta_dentro_de_otras_palabras():
+    entorno = {"USERNAME": "regis", "REGISTEL_DB_PASSWORD": "Clave-Larga-2026!"}
+    r = ocultar(
+        "C:/Users/regis/x tbl_informacion_registradora c--Users-regis-p pwdClave-Larga-2026!x",
+        entorno,
+    )
+    assert r == (
+        f"C:/Users/{OCULTO}/x tbl_informacion_registradora c--Users-{OCULTO}-p pwd{OCULTO}x"
+    )

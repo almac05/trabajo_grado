@@ -17,9 +17,11 @@ from pathlib import Path
 
 OCULTO = "[OCULTO]"
 PALABRAS_SENSIBLES = ("PASSWORD", "SECRET", "TOKEN", "KEY", "USER")
-# Los valores mas cortos se ocultan solo como palabra completa, para no
-# destrozar el texto (p. ej. un valor "1" no reemplaza cada digito 1).
-LARGO_MINIMO_SUBCADENA = 4
+# Los valores de menos de LARGO_MINIMO_SUBCADENA caracteres se ocultan solo
+# cuando no estan pegados a letras o digitos, para no destrozar el texto: el
+# usuario "regis" se oculta en C:/Users/regis/ pero no en "registradora". Los
+# largos (claves, contrasenas) se ocultan en cualquier posicion.
+LARGO_MINIMO_SUBCADENA = 12
 
 FORMATO = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 FORMATO_FECHA = "%Y-%m-%d %H:%M:%S"
@@ -45,7 +47,7 @@ def ocultar(texto: str, entorno: Mapping[str, str] | None = None) -> str:
         if len(valor) >= LARGO_MINIMO_SUBCADENA:
             texto = texto.replace(valor, OCULTO)
         else:
-            texto = re.sub(rf"(?<!\w){re.escape(valor)}(?!\w)", OCULTO, texto)
+            texto = re.sub(rf"(?<![A-Za-z0-9]){re.escape(valor)}(?![A-Za-z0-9])", OCULTO, texto)
     return texto
 
 
