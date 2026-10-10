@@ -751,6 +751,7 @@ def ejecutar(args: argparse.Namespace, d: Dependencias) -> int:
     d.cargar_env()
     ruta_config = PROJECT_ROOT / args.config if args.config else cfg_mod.RUTA_CONFIG_PREDETERMINADA
     cfg = cfg_mod.cargar_configuracion(ruta_config)
+    registro.registrar_variables_sensibles(cfg.variables_sensibles)
     salidas = (
         PROJECT_ROOT / args.directorio_salidas
         if args.directorio_salidas

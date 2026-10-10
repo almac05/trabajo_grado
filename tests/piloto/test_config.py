@@ -124,3 +124,17 @@ def test_entorno_obligatorio(monkeypatch):
     monkeypatch.setenv("PILOTO_ENTORNO", "AZURE")
     with pytest.raises(ErrorConfiguracionPiloto, match="EC2 o LOCAL"):
         entorno()
+
+
+@pytest.mark.unit
+def test_variables_sensibles_de_la_configuracion(tmp_path):
+    assert cargar_configuracion().variables_sensibles == ()
+    raw = yaml.safe_load(RUTA_CONFIG_PREDETERMINADA.read_text(encoding="utf-8"))
+    raw["registro"] = {"variables_sensibles": ["clave_externa", "OTRA_CLAVE"]}
+    ruta = tmp_path / "piloto.yaml"
+    ruta.write_text(yaml.safe_dump(raw), encoding="utf-8")
+    assert cargar_configuracion(ruta).variables_sensibles == ("CLAVE_EXTERNA", "OTRA_CLAVE")
+    raw["registro"] = {"variables_sensibles": "CLAVE"}
+    ruta.write_text(yaml.safe_dump(raw), encoding="utf-8")
+    with pytest.raises(ErrorConfiguracionPiloto, match="lista"):
+        cargar_configuracion(ruta)

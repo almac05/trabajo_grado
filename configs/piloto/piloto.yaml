@@ -49,6 +49,12 @@ correccion:
 prediccion:
   semanas_referencia_larga: 52
 
+# Enmascaramiento: ademas de las credenciales del proyecto (variables que empiezan
+# por REGISTEL_, PILOTO_ o AWS_ y contienen PASSWORD, SECRET, TOKEN, KEY o USER),
+# se ocultan en todo texto de salida los valores de las variables listadas aqui.
+registro:
+  variables_sensibles: []
+
 grupos:
   asignacion: configs/piloto/asignacion_grupos.yaml
 

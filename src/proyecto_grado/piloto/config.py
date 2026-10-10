@@ -69,6 +69,9 @@ class ConfigPiloto:
     esquema_bd: str
     entradas: dict[str, EntradaCongelada] = field(default_factory=dict)
     ruta_config: Path | None = None
+    # Nombres de variables de entorno que siempre se ocultan (ademas de las
+    # credenciales REGISTEL_/PILOTO_/AWS_; ver piloto.registro).
+    variables_sensibles: tuple[str, ...] = ()
 
     def entrada(self, nombre: str) -> Path:
         try:
@@ -160,7 +163,22 @@ def cargar_configuracion(
         esquema_bd=str(_campo(sal, "esquema_bd", "salidas")),
         entradas=entradas,
         ruta_config=Path(ruta),
+        variables_sensibles=_variables_sensibles(raw.get("registro")),
     )
+
+
+def _variables_sensibles(seccion: Any) -> tuple[str, ...]:
+    """registro.variables_sensibles (opcional): lista de nombres de variables."""
+    if seccion is None:
+        return ()
+    if not isinstance(seccion, dict):
+        raise ErrorConfiguracionPiloto("La seccion 'registro' debe ser un mapa.")
+    nombres = seccion.get("variables_sensibles") or []
+    if not isinstance(nombres, list) or not all(isinstance(n, str) for n in nombres):
+        raise ErrorConfiguracionPiloto(
+            "registro.variables_sensibles debe ser una lista de nombres."
+        )
+    return tuple(n.strip().upper() for n in nombres if n.strip())
 
 
 # --------------------------------------------------------------- SHA-256

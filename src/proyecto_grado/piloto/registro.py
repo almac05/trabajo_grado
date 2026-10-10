@@ -1,53 +1,65 @@
 """Registro de la ejecucion con enmascaramiento de secretos.
 
 Todo texto que sale de la piloto (log, manifiesto, mensaje de error en la base,
-estado de la ultima ejecucion) pasa por ``ocultar``: el valor de cualquier
-variable de entorno cuyo nombre contenga PASSWORD, SECRET, TOKEN, KEY o USER se
-reemplaza por ``[OCULTO]``. Los valores se leen en cada llamada, asi que tambien
-cubren las variables que se cargan de .env despues de configurar el registro.
+estado de la ultima ejecucion, avisos) pasa por ``ocultar``: el valor de cada
+credencial del proyecto se reemplaza por ``[OCULTO]`` en cualquier posicion,
+aunque este pegado a otras letras.
+
+Son credenciales del proyecto:
+- las variables cuyo nombre empieza por REGISTEL_, PILOTO_ o AWS_ y contiene
+  PASSWORD, SECRET, TOKEN, KEY o USER (p. ej. REGISTEL_DB_PASSWORD,
+  REGISTEL_DB_USER, AWS_SECRET_ACCESS_KEY);
+- las que se declaran en ``registro.variables_sensibles`` de piloto.yaml.
+
+Las variables del sistema operativo (USERNAME, USERPROFILE, HOME, USER,
+LOGNAME...) no son credenciales y no se ocultan. Los valores se leen en cada
+llamada, asi que tambien cubren las variables cargadas de .env despues de
+configurar el registro.
 """
 
 from __future__ import annotations
 
 import logging
 import os
-import re
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from pathlib import Path
 
 OCULTO = "[OCULTO]"
+PREFIJOS_PROYECTO = ("REGISTEL_", "PILOTO_", "AWS_")
 PALABRAS_SENSIBLES = ("PASSWORD", "SECRET", "TOKEN", "KEY", "USER")
-# Los valores de menos de LARGO_MINIMO_SUBCADENA caracteres se ocultan solo
-# cuando no estan pegados a letras o digitos, para no destrozar el texto: el
-# usuario "regis" se oculta en C:/Users/regis/ pero no en "registradora". Los
-# largos (claves, contrasenas) se ocultan en cualquier posicion.
-LARGO_MINIMO_SUBCADENA = 12
 
 FORMATO = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 FORMATO_FECHA = "%Y-%m-%d %H:%M:%S"
 
+# Nombres declarados en piloto.yaml (registro.variables_sensibles).
+_ADICIONALES: set[str] = set()
+
+
+def registrar_variables_sensibles(nombres: Iterable[str]) -> None:
+    """Agrega nombres de variables cuyo valor siempre se oculta."""
+    _ADICIONALES.update(str(n).strip().upper() for n in nombres if str(n).strip())
+
 
 def es_sensible(nombre: str) -> bool:
     nombre = nombre.upper()
-    return any(p in nombre for p in PALABRAS_SENSIBLES)
+    if nombre in _ADICIONALES:
+        return True
+    return nombre.startswith(PREFIJOS_PROYECTO) and any(p in nombre for p in PALABRAS_SENSIBLES)
 
 
 def valores_sensibles(entorno: Mapping[str, str] | None = None) -> list[str]:
-    """Valores no vacios de las variables sensibles, de mayor a menor largo."""
+    """Valores no vacios de las credenciales del proyecto, de mayor a menor largo."""
     entorno = os.environ if entorno is None else entorno
     valores = {v for k, v in entorno.items() if es_sensible(k) and v and v.strip()}
     return sorted(valores, key=len, reverse=True)
 
 
 def ocultar(texto: str, entorno: Mapping[str, str] | None = None) -> str:
-    """El texto con los valores sensibles del entorno reemplazados por [OCULTO]."""
+    """El texto con cada credencial del proyecto reemplazada por [OCULTO], en cualquier posicion."""
     if not texto:
         return texto
     for valor in valores_sensibles(entorno):
-        if len(valor) >= LARGO_MINIMO_SUBCADENA:
-            texto = texto.replace(valor, OCULTO)
-        else:
-            texto = re.sub(rf"(?<![A-Za-z0-9]){re.escape(valor)}(?![A-Za-z0-9])", OCULTO, texto)
+        texto = texto.replace(valor, OCULTO)
     return texto
 
 
