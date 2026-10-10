@@ -119,13 +119,23 @@ def test_abrir_y_cerrar_en_orden_y_una_sola_transaccion_final():
     inicio = datetime(2026, 10, 13, 0, 30, tzinfo=ZONA)
     e.abrir_corrida("20261013_003000", date(2026, 10, 13), inicio, "LOCAL", "a" * 40)
     e.cerrar_corrida("20261013_003000", cierre())
-    assert [o[0] for o in con.log] == ["execute", "commit", "executemany", "execute", "commit"]
+    # Una conexion por operacion, cerrada al terminar; el cierre en una sola transaccion.
+    assert [o[0] for o in con.log] == [
+        "execute",
+        "commit",
+        "close",
+        "executemany",
+        "execute",
+        "commit",
+        "close",
+    ]
     assert con.log[0][1] == SQL_ABRIR and con.log[0][2][2] == datetime(2026, 10, 13, 0, 30)
-    assert con.log[2][1] == SQL_RECOMENDACION and len(con.log[2][2]) == 3
-    assert con.log[3][1] == SQL_CERRAR
-    params = con.log[3][2]
+    assert "version_dataset" in SQL_ABRIR and SQL_ABRIR.endswith("NULL)")
+    assert con.log[3][1] == SQL_RECOMENDACION and len(con.log[3][2]) == 3
+    assert con.log[4][1] == SQL_CERRAR
+    params = con.log[4][2]
     assert params[0] == datetime(2026, 10, 13, 0, 45)  # 05:45 UTC = 00:45 Colombia
-    assert params[1:4] == ("OK", "a | b", "f" * 64)
+    assert params[1:4] == ("OK", "a; b", "f" * 64)
     assert params[4:7] == (0.86999, 0.91162, 3)
     assert params[-1] == "20261013_003000"
 
@@ -141,11 +151,11 @@ def test_fallo_al_cerrar_hace_rollback_y_marca_error(fallar_en):
     with pytest.raises(ErrorSalidaBD):
         e.cerrar_corrida("id", cierre())
     tipos = [o[0] for o in con.log]
-    assert "rollback" in tipos
-    assert tipos.index("rollback") < len(tipos) - 2
-    assert con.log[-2][1] == SQL_ERROR and con.log[-1] == ("commit",)
+    i = tipos.index("rollback")
     # Ningun commit antes del rollback: las recomendaciones no quedan a medias.
-    assert "commit" not in tipos[: tipos.index("rollback")]
+    assert "commit" not in tipos[:i] and tipos[i + 1] == "close"
+    # Luego, en otra conexion, la corrida queda en ERROR.
+    assert con.log[-3][1] == SQL_ERROR and tipos[-2:] == ["commit", "close"]
 
 
 @pytest.mark.unit
@@ -163,7 +173,7 @@ def test_mensaje_de_error_sin_credenciales(monkeypatch):
     EscritorBD(conectar=lambda: con).cerrar_corrida(
         "id", cierre(estado="ERROR", mensaje_error="fallo con clave-secreta-123", filas=[])
     )
-    assert [o[0] for o in con.log] == ["execute", "commit"]
+    assert [o[0] for o in con.log] == ["execute", "commit", "close"]
     assert "clave-secreta-123" not in str(con.log)
 
 

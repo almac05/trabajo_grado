@@ -360,13 +360,21 @@ def guardar_almacen(
         ),
     }
     if mover_puntero:
-        meta = {
-            "id_ejecucion": id_ejecucion,
-            "crudo": rutas["crudo"].name,
-            "conjunto_apto": rutas["conjunto_apto"].name,
-            "cubierto_hasta": cubierto_hasta.isoformat(),
-        }
-        temporal = directorio / "ACTUAL.json.tmp"
-        temporal.write_text(json.dumps(meta, indent=2), encoding="utf-8")
-        os.replace(temporal, directorio / "ACTUAL.json")
+        mover_puntero_almacen(directorio, id_ejecucion, rutas, cubierto_hasta)
     return rutas
+
+
+def mover_puntero_almacen(
+    directorio: Path, id_ejecucion: str, rutas: dict[str, Path], cubierto_hasta: date
+) -> None:
+    """Hace vigente la version ``id_ejecucion`` del almacen (escritura atomica)."""
+    directorio = Path(directorio)
+    meta = {
+        "id_ejecucion": id_ejecucion,
+        "crudo": Path(rutas["crudo"]).name,
+        "conjunto_apto": Path(rutas["conjunto_apto"]).name,
+        "cubierto_hasta": cubierto_hasta.isoformat(),
+    }
+    temporal = directorio / "ACTUAL.json.tmp"
+    temporal.write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    os.replace(temporal, directorio / "ACTUAL.json")

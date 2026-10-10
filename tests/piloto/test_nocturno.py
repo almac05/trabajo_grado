@@ -50,14 +50,18 @@ class FuenteQueFalla:
 
 
 class EscritorFalso:
-    def __init__(self):
+    def __init__(self, fallar_al_cerrar=False):
         self.log = []
+        self.fallar_al_cerrar = fallar_al_cerrar
 
     def abrir_corrida(self, *a):
         self.log.append(("abrir", a))
 
     def cerrar_corrida(self, id_corrida, cierre):
         self.log.append(("cerrar", id_corrida, cierre))
+        if self.fallar_al_cerrar:
+            self.log.append(("error", (id_corrida,)))
+            raise RuntimeError("la base no respondio al cerrar")
 
     def marcar_error(self, *a):
         self.log.append(("error", a))
@@ -359,11 +363,15 @@ def test_corrida_completa_sin_base_de_datos(tmp_path, entorno):
     assert cierre.estado == "OK" and len(cierre.filas) == 57
     assert cierre.ruta_s3 == f"s3://bucket-prueba/ejecuciones/{m['id_ejecucion']}/"
     assert cierre.version_dataset == m["serie"]["sha256"]
-    assert any(k.startswith("planillas/planilla_2026-10-01_OK_SOMBRA") for k in s3.claves)
-    assert s3.claves[-2:] == [
+    # La planilla sube solo al final, despues del cierre en la base, con el manifiesto final.
+    assert s3.claves[-3:] == [
+        "planillas/planilla_2026-10-01_OK_SOMBRA.xlsx",
         f"ejecuciones/{m['id_ejecucion']}/manifiesto.json",
         f"ejecuciones/{m['id_ejecucion']}/ejecucion.log",
     ]
+    assert sum(k.startswith("planillas/") for k in s3.claves) == 1
+    pasos = list(m["pasos"])
+    assert pasos.index("s3") < pasos.index("bd_cerrar") < pasos.index("planilla")
 
     pred = pd.read_csv(carpeta / "predicciones.csv")
     x43 = pd.read_csv(
@@ -371,6 +379,104 @@ def test_corrida_completa_sin_base_de_datos(tmp_path, entorno):
     )
     u = pred.merge(x43[x43["dia_op"] == "2026-10-01"], on=["route", "hora"], suffixes=("", "_43"))
     assert len(u) == 51 and (u["pred_xgboost"] - u["pred_xgboost_43"]).abs().max() < 1e-4
+
+
+@requiere_semilla
+@pytest.mark.integration
+@pytest.mark.slow
+def test_fallo_al_cerrar_en_la_base_emite_solo_planilla_error(tmp_path, entorno, monkeypatch):
+    """Ninguna planilla (local ni en S3) puede tener un estado distinto al de la corrida."""
+    escritor, s3 = EscritorFalso(fallar_al_cerrar=True), S3Falso()
+    d = Dependencias(
+        reloj=reloj(0, 30, dia=13),
+        git=git_falso(),
+        cargar_env=lambda: None,
+        escritor_bd=lambda: escritor,
+        cliente_s3=lambda: s3,
+    )
+    monkeypatch.setenv("PILOTO_S3_BUCKET", "bucket-prueba")
+    salidas = tmp_path / "salidas"
+    codigo = main(
+        [
+            "--fecha-objetivo",
+            "2026-10-01",
+            "--fuente",
+            "local",
+            "--escribir-bd",
+            "--subir-s3",
+            "--directorio-salidas",
+            str(salidas),
+        ],
+        d,
+    )
+    assert codigo == CODIGO_ERROR
+    planillas = sorted(p.name for p in (salidas / "planillas").glob("*.xlsx"))
+    assert planillas == ["planilla_2026-10-01_ERROR_SOMBRA.xlsx"]
+    resumen = pd.read_excel(salidas / "planillas" / planillas[0], sheet_name="Resumen")
+    resumen = resumen.set_index("Campo")["Valor"]
+    assert resumen["Estado"] == "ERROR"
+    assert any("no respondio" in str(v) for v in resumen[resumen.index == "Advertencia"])
+    assert [k for k in s3.claves if k.startswith("planillas/")] == [
+        "planillas/planilla_2026-10-01_ERROR_SOMBRA.xlsx"
+    ]
+    m = json.loads(next(salidas.glob("ejecuciones/*/manifiesto.json")).read_text("utf-8"))
+    assert m["estado"] == "ERROR" and m["salidas"]["planilla"]["ruta"].endswith(
+        "_ERROR_SOMBRA.xlsx"
+    )
+    assert "historial" not in m and not (salidas / "historial").exists()
+
+
+@pytest.mark.unit
+def test_consolidar_estado_solo_con_ok(tmp_path):
+    from proyecto_grado.piloto.nocturno import Datos, Ejecucion, Estado, consolidar_estado
+
+    alm = tmp_path / "almacen"
+    alm.mkdir()
+    (alm / "crudo_x.parquet").write_bytes(b"c")
+    (alm / "conjunto_apto_x.parquet").write_bytes(b"a")
+    datos = Datos(
+        conjunto_apto=pd.DataFrame(),
+        instantanea=tmp_path / "i.parquet",
+        almacen_dir=alm,
+        almacen_rutas={
+            "crudo": alm / "crudo_x.parquet",
+            "conjunto_apto": alm / "conjunto_apto_x.parquet",
+        },
+        almacen_cubierto=date(2026, 10, 12),
+        almacen_oficial=True,
+    )
+    filas = pd.DataFrame(
+        {
+            "id_ejecucion": ["x"],
+            "origen": ["piloto"],
+            "version": ["definitiva"],
+            "emitido": [""],
+            "route": [1],
+            "dia_op": ["2026-10-13"],
+            "hora": ["05:00"],
+            "tipo_dia": ["LABORAL"],
+            "regimen": ["ordinario"],
+            "pred_xgboost": [1.0],
+            "ref52": [1.0],
+            "factor": [1.0],
+            "pred_final": [1.0],
+        }
+    )
+    e = Ejecucion(
+        id="x",
+        inicio=datetime(2026, 10, 13, tzinfo=ZONA),
+        carpeta=tmp_path,
+        salidas=tmp_path,
+        manifiesto={"almacen": {}},
+    )
+    e.estado = Estado.ERROR
+    consolidar_estado(e, datos, filas)
+    assert not (alm / "ACTUAL.json").exists() and not (tmp_path / "historial").exists()
+    e.estado = Estado.OK
+    consolidar_estado(e, datos, filas)
+    assert json.loads((alm / "ACTUAL.json").read_text())["cubierto_hasta"] == "2026-10-12"
+    assert (tmp_path / "historial" / "ACTUAL.json").exists()
+    assert e.manifiesto["almacen"]["puntero_actualizado"] is True
 
 
 @requiere_semilla

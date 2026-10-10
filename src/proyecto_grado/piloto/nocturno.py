@@ -368,6 +368,12 @@ class Datos:
     conjunto_apto: pd.DataFrame
     instantanea: Path
     version_dataset: str | None = None
+    # Version del almacen escrita por esta ejecucion; el puntero se mueve al final,
+    # solo si la ejecucion termina OK y la fuente es la base real.
+    almacen_dir: Path | None = None
+    almacen_rutas: dict = field(default_factory=dict)
+    almacen_cubierto: date | None = None
+    almacen_oficial: bool = False
 
 
 def extraer_y_procesar(e: Ejecucion, cfg, objetivo, fuente, d: Dependencias) -> Datos:
@@ -417,20 +423,43 @@ def extraer_y_procesar(e: Ejecucion, cfg, objetivo, fuente, d: Dependencias) -> 
         apto_alm = ext.reemplazar_ventana(almacen.conjunto_apto, apto_ventana, ventana)
         cubierto = max(ventana.fin, almacen.cubierto_hasta or ventana.fin)
         rutas_alm = ext.guardar_almacen(
-            alm_dir, e.id, crudo_alm, apto_alm, cubierto, mover_puntero=fuente.nombre == "bd"
+            alm_dir, e.id, crudo_alm, apto_alm, cubierto, mover_puntero=False
         )
         semilla_apto = pd.read_parquet(cfg.entrada("semilla_conjunto_apto"))
         conjunto = serie_mod.conjunto_apto_piloto(semilla_apto, apto_alm, cfg.inicio_almacen)
         m["procesamiento_ventana"] = info
         m["almacen"] = {
-            "puntero_actualizado": fuente.nombre == "bd",
+            "puntero_actualizado": False,
             "cubierto_hasta": str(cubierto),
             "archivos": {k: _sha_relativo(v) for k, v in rutas_alm.items()},
             "conjunto_apto_filas": len(conjunto),
         }
         if gps is not None and any(gps.consultas.values()):
             e.advertir(f"Modo local: consultas GPS sin resolver {gps.consultas}.")
-    return Datos(conjunto_apto=conjunto, instantanea=instantanea)
+    return Datos(
+        conjunto_apto=conjunto,
+        instantanea=instantanea,
+        almacen_dir=alm_dir,
+        almacen_rutas=rutas_alm,
+        almacen_cubierto=cubierto,
+        almacen_oficial=fuente.nombre == "bd",
+    )
+
+
+def consolidar_estado(e: Ejecucion, datos: Datos, filas_historial: pd.DataFrame | None) -> None:
+    """Solo con la ejecucion en OK: agrega al historial y hace vigente el almacen."""
+    if e.estado != Estado.OK:
+        logger.warning("Estado %s: no se actualizan el historial ni el almacen.", e.estado)
+        return
+    if filas_historial is not None:
+        e.manifiesto["historial"] = corr.agregar_al_historial(
+            e.salidas / "historial", e.id, filas_historial
+        )
+    if datos.almacen_oficial:
+        ext.mover_puntero_almacen(
+            datos.almacen_dir, e.id, datos.almacen_rutas, datos.almacen_cubierto
+        )
+        e.manifiesto["almacen"]["puntero_actualizado"] = True
 
 
 def serie_hasta(datos: Datos, dia: date, cfg, e: Ejecucion, guardar: bool) -> pd.DataFrame:
@@ -551,42 +580,19 @@ def corrida(e: Ejecucion, args, cfg, d: Dependencias, ctx: dict) -> None:
         }
 
     e.estado = evaluar_estado(e)
-    tipos = sorted(set(final["tipo_dia"]))
-    regimenes = sorted(set(final["regimen"]))
     with e.paso("salidas", d.reloj):
-        cfg_rec = modulo.config
-        datos_planilla = DatosPlanilla(
-            fecha=dia.isoformat(),
-            estado=str(e.estado),
-            grupo=str(ctx["grupo"]),
-            id_ejecucion=e.id,
-            tipo_dia=", ".join(tipos),
-            regimen=", ".join(regimenes),
-            factores={r: f.valor for r, f in factores.items()},
-            ultimo_dato=m["serie"]["ultimo_dato"],
-            anticipada=objetivo.anticipada,
-            tardia=objetivo.tardia,
-            advertencias=tuple(e.advertencias),
-        )
-        planilla = escribir_planilla(
-            e.salidas / "planillas",
-            datos_planilla,
-            rec,
-            cfg_rec.bloques,
-            cfg_rec.usar_tope_carga,
-            cfg_rec.servicio_minimo,
-        )
-        salidas = {"planilla": planilla}
+        salidas = {}
         for nombre, df in (("predicciones", final), ("recomendacion", rec), ("ajuste", ajuste)):
             ruta = e.carpeta / f"{nombre}.csv"
             df.to_csv(ruta, index=False)
             salidas[nombre] = ruta
-        if oficial:
-            filas = corr.filas_emitidas(final, e.id, "piloto", e.inicio)
-            m["historial"] = corr.agregar_al_historial(e.salidas / "historial", e.id, filas)
         m["salidas"] = {k: _sha_relativo(v) for k, v in salidas.items()}
-        ctx.update(planilla=planilla, rec=rec, factores=factores, datos=datos)
+        ctx.update(rec=rec, factores=factores, datos=datos)
 
+    # Orden de cierre (la planilla nunca contradice el estado de la corrida):
+    # 1) S3 de la carpeta y la instantanea, para que ruta_s3 exista al cerrar;
+    # 2) cierre en la base; 3) planilla con el estado final; 4) historial y
+    # almacen solo si OK; 5) planilla, manifiesto y log a S3 al final de la ejecucion.
     if args.subir_s3:
         with e.paso("s3", d.reloj):
             # Un fallo de S3 no invalida la recomendacion: se avisa y se sigue.
@@ -596,24 +602,65 @@ def corrida(e: Ejecucion, args, cfg, d: Dependencias, ctx: dict) -> None:
                 m["s3"] = {"ruta": None, "error": registro.ocultar(str(exc))}
                 e.advertir(f"No se pudo subir la ejecucion a S3: {exc}")
 
+    error_bd = None
     if args.escribir_bd:
         with e.paso("bd_cerrar", d.reloj):
             from proyecto_grado.piloto.salida_bd import CierreCorrida, filas_recomendaciones
 
             filas = filas_recomendaciones(rec, e.id, str(ctx["grupo"]))
-            ctx["escritor"].cerrar_corrida(
-                e.id,
-                CierreCorrida(
-                    fin=d.reloj(),
-                    estado=str(e.estado),
-                    advertencias=e.advertencias,
-                    version_dataset=datos.version_dataset,
-                    factores={r: f.valor for r, f in factores.items()},
-                    filas=filas,
-                    ruta_s3=m.get("s3", {}).get("ruta"),
-                ),
-            )
-            m["bd"] = {"corrida_abierta": True, "cerrada": True, "filas": len(filas)}
+            try:
+                ctx["escritor"].cerrar_corrida(
+                    e.id,
+                    CierreCorrida(
+                        fin=d.reloj(),
+                        estado=str(e.estado),
+                        advertencias=e.advertencias,
+                        version_dataset=datos.version_dataset,
+                        factores={r: f.valor for r, f in factores.items()},
+                        filas=filas,
+                        ruta_s3=m.get("s3", {}).get("ruta"),
+                    ),
+                )
+                m["bd"] = {"corrida_abierta": True, "cerrada": True, "filas": len(filas)}
+            except Exception as exc:
+                # La corrida queda en ERROR en la base; la planilla se emite con ese estado.
+                error_bd = exc
+                e.estado = Estado.ERROR
+                m["bd"] = {"corrida_abierta": True, "cerrada": False, "filas": 0}
+
+    with e.paso("planilla", d.reloj):
+        avisos = list(e.advertencias)
+        if error_bd is not None:
+            avisos.append(f"Error al escribir en la base: {registro.ocultar(str(error_bd))}")
+        cfg_rec = modulo.config
+        datos_planilla = DatosPlanilla(
+            fecha=dia.isoformat(),
+            estado=str(e.estado),
+            grupo=str(ctx["grupo"]),
+            id_ejecucion=e.id,
+            tipo_dia=", ".join(sorted(set(final["tipo_dia"]))),
+            regimen=", ".join(sorted(set(final["regimen"]))),
+            factores={r: f.valor for r, f in factores.items()},
+            ultimo_dato=m["serie"]["ultimo_dato"],
+            anticipada=objetivo.anticipada,
+            tardia=objetivo.tardia,
+            advertencias=tuple(avisos),
+        )
+        planilla = escribir_planilla(
+            e.salidas / "planillas",
+            datos_planilla,
+            rec,
+            cfg_rec.bloques,
+            cfg_rec.usar_tope_carga,
+            cfg_rec.servicio_minimo,
+        )
+        ctx["planilla"] = planilla
+        m["salidas"]["planilla"] = _sha_relativo(planilla)
+
+    filas_hist = corr.filas_emitidas(final, e.id, "piloto", e.inicio) if oficial else None
+    consolidar_estado(e, datos, filas_hist)
+    if error_bd is not None:
+        raise error_bd
 
 
 def relleno(e: Ejecucion, args, cfg, d: Dependencias, ctx: dict) -> None:
@@ -663,9 +710,9 @@ def relleno(e: Ejecucion, args, cfg, d: Dependencias, ctx: dict) -> None:
         "archivo": _sha_relativo(ruta),
         "escrito_en_historial": oficial,
     }
-    if oficial:
-        m["historial"] = corr.agregar_al_historial(e.salidas / "historial", e.id, todas)
     e.estado = evaluar_estado(e)
+    ctx["datos"] = datos
+    consolidar_estado(e, datos, todas if oficial else None)
 
 
 def subir_s3(e: Ejecucion, ctx: dict, d: Dependencias, solo_cierre: bool = False) -> None:
@@ -674,16 +721,18 @@ def subir_s3(e: Ejecucion, ctx: dict, d: Dependencias, solo_cierre: bool = False
     destino = salida_s3.destino_desde_entorno()
     cliente = (d.cliente_s3 or salida_s3.cliente_s3)()
     if solo_cierre:
-        archivos = [
+        # Al final: planilla (ya con su estado definitivo), manifiesto final y log.
+        archivos = []
+        if ctx.get("planilla") is not None:
+            archivos.append((ctx["planilla"], ("planillas", ctx["planilla"].name)))
+        archivos += [
             (e.carpeta / n, ("ejecuciones", e.id, n))
             for n in ("manifiesto.json", "ejecucion.log")
             if (e.carpeta / n).exists()
         ]
     else:
         escribir_json(e.carpeta / "manifiesto.json", e.manifiesto)  # version previa
-        archivos = salida_s3.archivos_a_subir(
-            e.carpeta, ctx.get("planilla"), ctx["datos"].instantanea, e.id
-        )
+        archivos = salida_s3.archivos_a_subir(e.carpeta, None, ctx["datos"].instantanea, e.id)
     uris = salida_s3.subir(archivos, destino, cliente)
     if not solo_cierre:
         e.manifiesto["s3"] = {"ruta": destino.uri("ejecuciones", e.id) + "/", "archivos": uris}

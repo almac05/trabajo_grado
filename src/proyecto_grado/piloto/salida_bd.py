@@ -22,6 +22,7 @@ from __future__ import annotations
 import logging
 import os
 from collections.abc import Callable, Sequence
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 
@@ -36,12 +37,14 @@ logger = logging.getLogger(__name__)
 
 ESQUEMA = "bd_montebello_recomendaciones"
 LARGO_ADVERTENCIAS = 2000
+SEPARADOR_ADVERTENCIAS = "; "  # comentario de corridas.advertencias en el esquema
 LARGO_MENSAJE = 1000
 
+# version_dataset queda NULL hasta el cierre (la serie aun no existe).
 SQL_ABRIR = (
     "INSERT INTO bd_montebello_recomendaciones.corridas "
-    "(id_corrida, fecha_operacion, inicio, estado, entorno, commit_hash) "
-    "VALUES (%s, %s, %s, 'EN_CURSO', %s, %s)"
+    "(id_corrida, fecha_operacion, inicio, estado, entorno, commit_hash, version_dataset) "
+    "VALUES (%s, %s, %s, 'EN_CURSO', %s, %s, NULL)"
 )
 SQL_RECOMENDACION = (
     "INSERT INTO bd_montebello_recomendaciones.recomendaciones "
@@ -156,85 +159,86 @@ def conectar_recomendaciones():
 
 
 class EscritorBD:
-    """Escritura de una corrida; ``conectar`` es inyectable para las pruebas."""
+    """Escritura de una corrida; ``conectar`` es inyectable para las pruebas.
+
+    Cada operacion abre su propia conexion y la cierra al terminar: no se
+    mantiene una conexion inactiva durante la corrida (``wait_timeout``) ni se
+    acumulan conexiones del usuario (``MAX_USER_CONNECTIONS``).
+    """
 
     def __init__(self, conectar: Callable | None = None, esquema: str = ESQUEMA):
         if esquema != ESQUEMA:
             raise ErrorSalidaBD(f"La piloto solo escribe en {ESQUEMA}, no en {esquema}.")
         self._conectar = conectar or conectar_recomendaciones
-        self._conexion = None
 
-    def _con(self):
-        if self._conexion is None:
-            self._conexion = self._conectar()
-        return self._conexion
+    @contextmanager
+    def _transaccion(self):
+        """Conexion y cursor de una operacion; ROLLBACK si falla, siempre se cierra."""
+        con = self._conectar()
+        try:
+            cursor = con.cursor()
+            try:
+                yield con, cursor
+            except Exception:
+                con.rollback()
+                raise
+            finally:
+                cursor.close()
+        finally:
+            con.close()
 
     def abrir_corrida(
         self, id_corrida: str, fecha: date, inicio: datetime, entorno: str, commit: str
     ) -> None:
-        con = self._con()
-        cursor = con.cursor()
         try:
-            cursor.execute(SQL_ABRIR, (id_corrida, fecha, hora_local(inicio), entorno, commit))
-            con.commit()
+            with self._transaccion() as (con, cursor):
+                cursor.execute(SQL_ABRIR, (id_corrida, fecha, hora_local(inicio), entorno, commit))
+                con.commit()
         except Exception as exc:
-            con.rollback()
             raise ErrorSalidaBD(ocultar(f"No se pudo abrir la corrida: {exc}")) from exc
-        finally:
-            cursor.close()
 
     def cerrar_corrida(self, id_corrida: str, c: CierreCorrida) -> None:
-        con = self._con()
-        cursor = con.cursor()
         try:
-            if c.filas:
-                cursor.executemany(SQL_RECOMENDACION, c.filas)
-            cursor.execute(
-                SQL_CERRAR,
-                (
-                    hora_local(c.fin),
-                    c.estado,
-                    _recortar(" | ".join(c.advertencias), LARGO_ADVERTENCIAS),
-                    c.version_dataset,
-                    _o_nulo(c.factores.get(1), 5),
-                    _o_nulo(c.factores.get(3), 5),
-                    len(c.filas),
-                    c.ruta_s3,
-                    _recortar(c.mensaje_error, LARGO_MENSAJE),
-                    id_corrida,
-                ),
-            )
-            if cursor.rowcount != 1:
-                raise ErrorSalidaBD(f"La corrida {id_corrida} no estaba EN_CURSO.")
-            con.commit()
+            with self._transaccion() as (con, cursor):
+                if c.filas:
+                    cursor.executemany(SQL_RECOMENDACION, c.filas)
+                cursor.execute(
+                    SQL_CERRAR,
+                    (
+                        hora_local(c.fin),
+                        c.estado,
+                        _recortar(SEPARADOR_ADVERTENCIAS.join(c.advertencias), LARGO_ADVERTENCIAS),
+                        c.version_dataset,
+                        _o_nulo(c.factores.get(1), 5),
+                        _o_nulo(c.factores.get(3), 5),
+                        len(c.filas),
+                        c.ruta_s3,
+                        _recortar(c.mensaje_error, LARGO_MENSAJE),
+                        id_corrida,
+                    ),
+                )
+                if cursor.rowcount != 1:
+                    raise ErrorSalidaBD(f"La corrida {id_corrida} no estaba EN_CURSO.")
+                con.commit()
         except Exception as exc:
-            con.rollback()
             mensaje = ocultar(f"Fallo al cerrar la corrida: {exc}")
             self.marcar_error(id_corrida, c.fin, mensaje)
             raise ErrorSalidaBD(mensaje) from exc
-        finally:
-            cursor.close()
 
     def marcar_error(self, id_corrida: str, fin: datetime, mensaje: str) -> bool:
-        """Deja la corrida en ERROR; no lanza excepciones (se usa al fallar)."""
+        """Deja la corrida en ERROR si sigue EN_CURSO; no lanza excepciones."""
         try:
-            con = self._con()
-            cursor = con.cursor()
-            try:
+            with self._transaccion() as (con, cursor):
                 cursor.execute(
                     SQL_ERROR, (hora_local(fin), _recortar(mensaje, LARGO_MENSAJE), id_corrida)
                 )
                 con.commit()
-            finally:
-                cursor.close()
             return True
         except Exception as exc:  # pragma: no cover - solo registro
-            logger.error("No se pudo marcar la corrida %s en ERROR: %s", id_corrida, exc)
+            logger.error(
+                "No se pudo marcar la corrida %s en ERROR: %s", id_corrida, ocultar(str(exc))
+            )
             return False
 
     def cerrar(self) -> None:
-        if self._conexion is not None:
-            try:
-                self._conexion.close()
-            finally:
-                self._conexion = None
+        """Compatibilidad: no hay conexion persistente que cerrar."""
