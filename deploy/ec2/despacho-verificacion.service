@@ -1,0 +1,20 @@
+# Vigilante ("dead man's switch"): a las 05:00 comprueba que exista una corrida
+# nocturna OK cuya jornada objetivo sea hoy; si no, alerta por SNS. Detecta tambien
+# que el temporizador nocturno no se haya disparado.
+# Codigos: 0 hay corrida; 1 no la hay y se alerto; 2 no la hay y no se pudo alertar.
+
+[Unit]
+Description=Piloto: verificacion de la corrida nocturna
+
+[Service]
+Type=oneshot
+User=despacho
+Group=despacho
+WorkingDirectory=/opt/despacho/proyecto_grado
+EnvironmentFile=/opt/despacho/.env
+Environment=TZ=America/Bogota PILOTO_ENTORNO=EC2 PYTHONIOENCODING=utf-8 LANG=C.UTF-8
+ExecStart=/opt/despacho/.local/bin/uv run --frozen python -m proyecto_grado.piloto.verificacion
+TimeoutStartSec=10min
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=full

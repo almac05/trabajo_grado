@@ -1,0 +1,19 @@
+# Alerta por SNS del fallo de una unidad (OnFailure=despacho-alerta@%n.service).
+# %i es el nombre de la unidad que fallo. Lee el journal de esa unidad con el
+# grupo systemd-journal.
+
+[Unit]
+Description=Piloto: alerta por SNS del fallo de %i
+
+[Service]
+Type=oneshot
+User=despacho
+Group=despacho
+SupplementaryGroups=systemd-journal
+WorkingDirectory=/opt/despacho/proyecto_grado
+EnvironmentFile=/opt/despacho/.env
+Environment=TZ=America/Bogota PYTHONIOENCODING=utf-8 LANG=C.UTF-8
+ExecStart=/bin/bash /opt/despacho/proyecto_grado/scripts/piloto/alerta.sh %i
+TimeoutStartSec=5min
+NoNewPrivileges=yes
+PrivateTmp=yes

@@ -1,0 +1,16 @@
+# Todos los dias a las 00:30 hora de Colombia. Persistent=true: si la instancia
+# estaba apagada a esa hora, corre al arrancar (el orquestador la marca tardia y,
+# despues de las 04:00, no consulta la base y termina en ERROR con alerta).
+
+[Unit]
+Description=Piloto: corrida nocturna a las 00:30 (America/Bogota)
+
+[Timer]
+OnCalendar=*-*-* 00:30:00 America/Bogota
+Persistent=true
+RandomizedDelaySec=0
+AccuracySec=1s
+Unit=despacho-nocturno.service
+
+[Install]
+WantedBy=timers.target
