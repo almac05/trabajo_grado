@@ -154,8 +154,8 @@ def test_plantillas_de_entorno_sin_valores_secretos():
 
 @pytest.mark.unit
 def test_sin_ip_ni_usuario_del_vps_en_archivos_versionados():
-    archivos = [*DEPLOY.iterdir(), *SCRIPTS.iterdir()]
-    for ruta in archivos:
+    archivos = [p for p in [*DEPLOY.iterdir(), *SCRIPTS.iterdir()] if p.is_file()]
+    for ruta in (p for p in archivos if p.suffix != ".pyc"):
         texto = ruta.read_text(encoding="utf-8")
         ips = set(re.findall(r"\b\d{1,3}(?:\.\d{1,3}){3}\b", texto)) - {"127.0.0.1"}
         assert not ips, (ruta.name, ips)
