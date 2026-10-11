@@ -17,6 +17,8 @@ Modulos:
 - ``salida_bd``: escritura en bd_montebello_recomendaciones.
 - ``salida_s3``: subida de la ejecucion a S3.
 - ``estado_s3``: estado entre corridas (almacen e historial) e insumos congelados en S3.
+- ``avisos``, ``alerta`` y ``verificacion``: avisos por SNS (exito, fallo de una unidad
+  de systemd y vigilante de las 05:00).
 - ``nocturno``: orquestador.
 
 Nunca escribe en bd_montebello_rdw ni en bd_montebello_rdw_gps.

@@ -26,6 +26,9 @@ MODULOS = [
             "planilla",
             "salida_bd",
             "salida_s3",
+            "avisos",
+            "alerta",
+            "verificacion",
             "estado_s3",
             "nocturno",
         )

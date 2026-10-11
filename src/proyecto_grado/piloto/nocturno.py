@@ -102,6 +102,7 @@ class Dependencias:
     fuente: Callable[[cfg_mod.ConfigPiloto, str], ext.Fuente] | None = None
     escritor_bd: Callable[[], Any] | None = None
     cliente_s3: Callable[[], Any] | None = None
+    cliente_sns: Callable[[], Any] | None = None
 
 
 def fuente_predeterminada(cfg: cfg_mod.ConfigPiloto, nombre: str) -> ext.Fuente:
@@ -1010,10 +1011,30 @@ def _ejecutar_con_bloqueo(args, cfg, d, salidas, inicio, id_ejecucion, ruta_conf
                 subir_s3(e, ctx, d, solo_cierre=True)
             except Exception as exc:  # el manifiesto local ya esta completo
                 logger.error("No se pudo subir el manifiesto final a S3: %s", exc)
+        if e.estado == Estado.OK and m["modo"] in MODOS_CON_AVISO:
+            avisar_ok(m, d)
         if ctx.get("escritor") is not None:
             ctx["escritor"].cerrar()
         registro.cerrar_registro(manejadores)
     return codigo
+
+
+MODOS_CON_AVISO = ("nocturno", "relleno", "ensayo")
+
+
+def avisar_ok(m: dict, d: Dependencias) -> None:
+    """Aviso corto por SNS si PILOTO_AVISAR_OK=1; un fallo solo se registra."""
+    from proyecto_grado.piloto import avisos
+
+    if not avisos.avisar_ok_activado():
+        return
+    try:
+        asunto, cuerpo = avisos.mensaje_ok(m)
+        cliente = d.cliente_sns() if d.cliente_sns else None
+        avisos.publicar(asunto, cuerpo, cliente=cliente)
+        logger.info("Aviso de exito enviado por SNS.")
+    except Exception as exc:
+        logger.error("No se pudo enviar el aviso de exito: %s", exc)
 
 
 def modo_de(args: argparse.Namespace) -> str:
