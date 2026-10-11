@@ -149,6 +149,100 @@ def test_vigilante_sin_poder_alertar_sale_con_2(tmp_path, entorno):
     assert codigo == 2
 
 
+# ------------------------------------------------------------------ JornadaCubierta
+
+
+class CWFalso:
+    def __init__(self, fallar=False, orden=None):
+        self.datos = []
+        self.fallar = fallar
+        self.orden = orden
+
+    def put_metric_data(self, Namespace, MetricData):  # noqa: N803 - firma de boto3
+        if self.orden is not None:
+            self.orden.append("cloudwatch")
+        if self.fallar:
+            raise RuntimeError("AccessDenied")
+        self.datos += [(Namespace, d) for d in MetricData]
+        return {}
+
+
+class SNSOrdenado(SNSFalso):
+    def __init__(self, orden, fallar=False):
+        super().__init__(fallar)
+        self.orden = orden
+
+    def publish(self, **k):
+        self.orden.append("sns")
+        return super().publish(**k)
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    ("existentes", "codigo", "valor"),
+    [
+        ([("20261013_003000", "nocturno", "OK", "2026-10-13")], 0, 1),
+        ([("20261013_003000", "nocturno", "ERROR", "2026-10-13")], 1, 0),
+        ([], 1, 0),
+    ],
+)
+def test_vigilante_publica_jornada_cubierta_despues_de_la_alerta(
+    tmp_path, entorno, monkeypatch, existentes, codigo, valor
+):
+    monkeypatch.setenv("PILOTO_METRICAS", "1")
+    for ident, modo, estado, jornada in existentes:
+        manifiesto(tmp_path, ident, modo, estado, jornada)
+    orden = []
+    cw = CWFalso(orden=orden)
+    ahora = datetime(2026, 10, 13, 5, 0, tzinfo=ZONA)
+    r = verificacion.main(
+        ["--directorio-salidas", str(tmp_path)],
+        cliente=SNSOrdenado(orden),
+        ahora=ahora,
+        cliente_cw=lambda: cw,
+    )
+    assert r == codigo
+    assert cw.datos == [
+        (
+            "Montebello/Despacho",
+            {
+                "MetricName": "JornadaCubierta",
+                "Value": valor,
+                "Unit": "Count",
+                "Timestamp": ahora,
+            },
+        )
+    ]
+    assert orden == (["cloudwatch"] if valor else ["sns", "cloudwatch"])
+
+
+@pytest.mark.unit
+def test_vigilante_fallo_de_cloudwatch_no_cambia_el_codigo(tmp_path, entorno, monkeypatch):
+    monkeypatch.setenv("PILOTO_METRICAS", "1")
+    ahora = datetime(2026, 10, 13, 5, 0, tzinfo=ZONA)
+    args = ["--directorio-salidas", str(tmp_path)]
+    falla = lambda: CWFalso(fallar=True)  # noqa: E731
+    assert verificacion.main(args, cliente=SNSFalso(), ahora=ahora, cliente_cw=falla) == 1
+    sns = SNSFalso(fallar=True)
+    assert verificacion.main(args, cliente=sns, ahora=ahora, cliente_cw=falla) == 2
+    manifiesto(tmp_path, "20261013_003000")
+    assert verificacion.main(args, cliente=SNSFalso(), ahora=ahora, cliente_cw=falla) == 0
+
+
+@pytest.mark.unit
+def test_vigilante_sin_piloto_metricas_no_crea_cliente(tmp_path, entorno, monkeypatch):
+    monkeypatch.delenv("PILOTO_METRICAS", raising=False)
+    creados = []
+    ahora = datetime(2026, 10, 13, 5, 0, tzinfo=ZONA)
+    verificacion.main(
+        ["--directorio-salidas", str(tmp_path)],
+        cliente=SNSFalso(),
+        ahora=ahora,
+        cliente_cw=lambda: creados.append(1),
+    )
+    assert creados == []
+
+
 # ------------------------------------------------------------------ aviso de exito
 
 

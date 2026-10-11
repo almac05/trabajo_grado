@@ -91,9 +91,10 @@ systemctl disable tunel-ionos.service >/dev/null 2>&1 || true
 paso "Archivos de entorno"
 problemas=0
 revisar() {  # ruta modos_permitidos
-    local ruta="$1" permitidos="$2" modo dueno
+    local ruta="$1" permitidos="$2" modo dueno nombre
     if [[ ! -f "$ruta" ]]; then
-        echo "FALTA $ruta (ver deploy/ec2/$(basename "$ruta").ejemplo)"; problemas=1; return
+        nombre=$(basename "$ruta")
+        echo "FALTA $ruta (ver deploy/ec2/${nombre#.}.ejemplo)"; problemas=1; return
     fi
     modo=$(stat -c '%a' "$ruta"); dueno=$(stat -c '%U' "$ruta")
     if [[ " $permitidos " != *" $modo "* || "$dueno" != "$USUARIO" ]]; then

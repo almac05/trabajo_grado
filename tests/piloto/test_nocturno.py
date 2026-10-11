@@ -8,6 +8,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 import yaml
+from botocore.exceptions import ClientError, ReadTimeoutError
 from openpyxl import load_workbook
 
 from proyecto_grado.modeling.config import PROJECT_ROOT
@@ -69,6 +70,23 @@ class EscritorFalso:
 
     def cerrar(self):
         self.log.append(("fin",))
+
+
+class CWFalso:
+    """Cliente de CloudWatch: registra las llamadas o lanza el error indicado."""
+
+    def __init__(self, error=None):
+        self.llamadas = []
+        self.error = error
+
+    def put_metric_data(self, Namespace, MetricData):  # noqa: N803 - firma de boto3
+        if self.error is not None:
+            raise self.error
+        self.llamadas.append({"Namespace": Namespace, "MetricData": MetricData})
+        return {}
+
+    def nombres(self):
+        return [d["MetricName"] for ll in self.llamadas for d in ll["MetricData"]]
 
 
 class S3Falso:
@@ -288,6 +306,108 @@ def test_argumentos_excluyentes():
         main(["--relleno", "2026-10-05", "2026-10-04"])
     with pytest.raises(SystemExit):
         main(["--relleno", "2026-10-04", "2026-10-05", "--escribir-bd"])
+    for otra in (["--relleno", "2026-10-04", "2026-10-05"], ["--sincronizar-estado"]):
+        with pytest.raises(SystemExit):
+            main([*otra, "--publicar-metricas"])
+
+
+# ------------------------------------------------------------------ metricas de CloudWatch
+
+
+@pytest.fixture
+def metricas_activadas(monkeypatch):
+    monkeypatch.setenv("PILOTO_METRICAS", "1")
+
+
+def fabrica(cw, creados=None):
+    def crear():
+        if creados is not None:
+            creados.append(1)
+        return cw
+
+    return crear
+
+
+@pytest.mark.unit
+def test_ensayo_sin_publicar_metricas_no_publica(tmp_path, entorno, metricas_activadas):
+    creados = []
+    argv = ["--fecha-objetivo", "2026-10-01", "--fuente", "local"]
+    codigo, m, _ = correr(tmp_path, argv, deps(cliente_cw=fabrica(CWFalso(), creados)))
+    assert codigo == CODIGO_ERROR and creados == []
+    assert m["metricas"] == {
+        "metricas_publicadas": False,
+        "motivo": "no_aplica: ensayo sin --publicar-metricas",
+    }
+
+
+@pytest.mark.unit
+def test_ensayo_con_publicar_metricas_publica(tmp_path, entorno, metricas_activadas):
+    cw = CWFalso()
+    argv = ["--fecha-objetivo", "2026-10-01", "--fuente", "local", "--publicar-metricas"]
+    codigo, m, _ = correr(tmp_path, argv, deps(cliente_cw=fabrica(cw)))
+    assert codigo == CODIGO_ERROR  # la fuente simulada falla al extraer
+    assert m["metricas"]["metricas_publicadas"] is True
+    assert cw.llamadas[0]["Namespace"] == "Montebello/Despacho"
+    datos = {d["MetricName"]: d for d in cw.llamadas[0]["MetricData"]}
+    assert datos["EstadoCorrida"]["Value"] == 3  # ERROR
+    assert datos["DuracionTotal"]["Unit"] == "Seconds"
+    assert datos["DuracionExtraccion"]["Value"] >= 0  # el paso llego a empezar
+    assert "RegistrosExtraidos" not in datos and "FactorCorreccion" not in datos
+    assert datos["EstadoCorrida"]["Timestamp"].utcoffset().total_seconds() == 0
+    assert m["metricas"]["metricas"] == [d["MetricName"] for d in cw.llamadas[0]["MetricData"]]
+
+
+@pytest.mark.unit
+def test_corrida_nocturna_publica_tambien_en_error(tmp_path, entorno, metricas_activadas):
+    cw = CWFalso()
+    d = deps(cliente_cw=fabrica(cw), git=git_falso(" M src/a.py\n"))
+    codigo, m, _ = correr(tmp_path, [], d)
+    assert codigo == CODIGO_ERROR and m["modo"] == "nocturno"
+    assert cw.nombres()[:2] == ["EstadoCorrida", "DuracionTotal"]
+    assert "DuracionExtraccion" not in cw.nombres()  # error antes de la extraccion
+    assert m["metricas"]["metricas_publicadas"] is True
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize(
+    "error",
+    [
+        ClientError({"Error": {"Code": "AccessDenied", "Message": "x"}}, "PutMetricData"),
+        ReadTimeoutError(endpoint_url="https://monitoring.us-east-2.amazonaws.com"),
+    ],
+    ids=["client_error", "timeout"],
+)
+def test_fallo_de_cloudwatch_no_cambia_estado_ni_codigo(
+    tmp_path, entorno, metricas_activadas, error
+):
+    codigo, m, salidas = correr(tmp_path, [], deps(cliente_cw=fabrica(CWFalso(error))))
+    assert codigo == CODIGO_ERROR and m["estado"] == "ERROR"
+    assert "se llego a la extraccion" in m["error"]["mensaje"]  # el error es el de la corrida
+    assert m["metricas"]["metricas_publicadas"] is False
+    assert type(error).__name__ in m["metricas"]["motivo"]
+    assert "Estado: ERROR" in (salidas / "ESTADO_ULTIMA_EJECUCION.txt").read_text("utf-8")
+    log = next(salidas.glob("ejecuciones/*/ejecucion.log")).read_text(encoding="utf-8")
+    assert "No se pudieron publicar las metricas" in log
+
+
+@pytest.mark.unit
+def test_sin_piloto_metricas_no_se_crea_cliente(tmp_path, entorno, monkeypatch):
+    monkeypatch.delenv("PILOTO_METRICAS", raising=False)
+    creados = []
+    _, m, _ = correr(tmp_path, [], deps(cliente_cw=fabrica(CWFalso(), creados)))
+    assert creados == [] and m["metricas"]["motivo"].startswith("desactivadas")
+
+
+@pytest.mark.unit
+def test_codigo_2_no_publica(tmp_path, entorno, metricas_activadas):
+    salidas = tmp_path / "salidas"
+    salidas.mkdir()
+    (salidas / "nocturno.lock").write_text(
+        json.dumps({"pid": 1, "inicio": datetime(2026, 10, 13, 0, 29, tzinfo=ZONA).isoformat()})
+    )
+    creados = []
+    codigo, _, _ = correr(tmp_path, [], deps(cliente_cw=fabrica(CWFalso(), creados)))
+    assert codigo == CODIGO_OCUPADO and creados == []
 
 
 # ------------------------------------------------------------------ integracion
@@ -299,18 +419,21 @@ def test_argumentos_excluyentes():
 def test_corrida_completa_sin_base_de_datos(tmp_path, entorno):
     """Orquestador de punta a punta sobre el 1 de octubre con la semilla como extraccion."""
     escritor, s3 = EscritorFalso(), S3Falso()
+    cw = CWFalso(ClientError({"Error": {"Code": "AccessDenied", "Message": "x"}}, "PutMetricData"))
     d = Dependencias(
         reloj=reloj(0, 30, dia=13),
         git=git_falso(),
         cargar_env=lambda: None,
         escritor_bd=lambda: escritor,
         cliente_s3=lambda: s3,
+        cliente_cw=lambda: cw,
     )
     salidas = tmp_path / "salidas"
     t0 = time.perf_counter()
     import os
 
     os.environ["PILOTO_S3_BUCKET"] = "bucket-prueba"
+    os.environ["PILOTO_METRICAS"] = "1"
     try:
         codigo = main(
             [
@@ -320,6 +443,7 @@ def test_corrida_completa_sin_base_de_datos(tmp_path, entorno):
                 "local",
                 "--escribir-bd",
                 "--subir-s3",
+                "--publicar-metricas",
                 "--directorio-salidas",
                 str(salidas),
             ],
@@ -327,6 +451,7 @@ def test_corrida_completa_sin_base_de_datos(tmp_path, entorno):
         )
     finally:
         os.environ.pop("PILOTO_S3_BUCKET", None)
+        os.environ.pop("PILOTO_METRICAS", None)
     segundos = time.perf_counter() - t0
     print(f"\nCorrida de integracion: {segundos:.1f} s")
     assert codigo == CODIGO_OK
@@ -350,6 +475,13 @@ def test_corrida_completa_sin_base_de_datos(tmp_path, entorno):
     ):
         assert clave in m, clave
     assert m["estado"] == "OK" and m["modo"] == "ensayo" and m["grupo"] == "SOMBRA"
+    # CloudWatch caido no cambia el estado ni el codigo; el desempeno de D (30 sep) no
+    # tiene prediccion emitida por la piloto (el historial de un ensayo es el backtest).
+    assert m["metricas"]["metricas_publicadas"] is False
+    assert "AccessDenied" in m["metricas"]["motivo"]
+    assert m["desempeno"]["jornada"] == "2026-09-30"
+    assert "sin_prediccion_emitida" in m["desempeno"]["motivo"]
+    assert m["recomendacion"]["filas"] == 57
     assert m["extraccion"]["pk_ancla"] > 0 and m["serie"]["sha256"]
     assert set(m["factor"]) == {"1", "3"}
     assert all(len(v["sha256"]) == 64 for v in m["entradas"].values())
@@ -386,15 +518,17 @@ def test_corrida_completa_sin_base_de_datos(tmp_path, entorno):
 @pytest.mark.slow
 def test_fallo_al_cerrar_en_la_base_emite_solo_planilla_error(tmp_path, entorno, monkeypatch):
     """Ninguna planilla (local ni en S3) puede tener un estado distinto al de la corrida."""
-    escritor, s3 = EscritorFalso(fallar_al_cerrar=True), S3Falso()
+    escritor, s3, cw = EscritorFalso(fallar_al_cerrar=True), S3Falso(), CWFalso()
     d = Dependencias(
         reloj=reloj(0, 30, dia=13),
         git=git_falso(),
         cargar_env=lambda: None,
         escritor_bd=lambda: escritor,
         cliente_s3=lambda: s3,
+        cliente_cw=lambda: cw,
     )
     monkeypatch.setenv("PILOTO_S3_BUCKET", "bucket-prueba")
+    monkeypatch.setenv("PILOTO_METRICAS", "1")
     salidas = tmp_path / "salidas"
     codigo = main(
         [
@@ -404,12 +538,21 @@ def test_fallo_al_cerrar_en_la_base_emite_solo_planilla_error(tmp_path, entorno,
             "local",
             "--escribir-bd",
             "--subir-s3",
+            "--publicar-metricas",
             "--directorio-salidas",
             str(salidas),
         ],
         d,
     )
     assert codigo == CODIGO_ERROR
+    datos = {
+        (x["MetricName"], tuple(v["Value"] for v in x.get("Dimensions", []))): x["Value"]
+        for x in cw.llamadas[0]["MetricData"]
+    }
+    assert datos[("EstadoCorrida", ())] == 3
+    assert datos[("FilasRecomendaciones", ())] == 57  # generadas (la base no cerro)
+    assert {("FactorCorreccion", ("1",)), ("FactorCorreccion", ("3",))} <= set(datos)
+    assert datos[("RegistrosExtraidos", ())] > 0
     planillas = sorted(p.name for p in (salidas / "planillas").glob("*.xlsx"))
     assert planillas == ["planilla_2026-10-01_ERROR_SOMBRA.xlsx"]
     resumen = pd.read_excel(salidas / "planillas" / planillas[0], sheet_name="Resumen")

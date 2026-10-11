@@ -1,0 +1,215 @@
+{
+  "start": "-P30D",
+  "periodOverride": "inherit",
+  "widgets": [
+    {
+      "type": "text",
+      "x": 0,
+      "y": 0,
+      "width": 24,
+      "height": 4,
+      "properties": {
+        "markdown": "## Proceso nocturno Montebello: recomendación de despachos (piloto)\nCorrida diaria a las 00:30 (hora de Colombia) que predice la jornada siguiente para las rutas 1 y 3; el vigilante de las 05:00 publica **JornadaCubierta**. Namespace `Montebello/Despacho`, región us-east-2, un punto por día.\n\n**EstadoCorrida**: 0 = OK · 1 = ADVERTENCIA · 2 = CONTINGENCIA · 3 = ERROR (sin recomendación válida: operar como de costumbre). **JornadaCubierta**: 1 = hay recomendación válida para hoy, 0 = no."
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 4,
+      "width": 6,
+      "height": 6,
+      "properties": {
+        "title": "EstadoCorrida (última)",
+        "view": "singleValue",
+        "region": "us-east-2",
+        "period": 86400,
+        "stat": "Maximum",
+        "sparkline": false,
+        "metrics": [
+          ["Montebello/Despacho", "EstadoCorrida", {"label": "0 OK · 1 ADV · 2 CONT · 3 ERROR"}]
+        ]
+      }
+    },
+    {
+      "type": "metric",
+      "x": 6,
+      "y": 4,
+      "width": 9,
+      "height": 6,
+      "properties": {
+        "title": "EstadoCorrida",
+        "view": "timeSeries",
+        "region": "us-east-2",
+        "period": 86400,
+        "stat": "Maximum",
+        "metrics": [
+          ["Montebello/Despacho", "EstadoCorrida", {"label": "EstadoCorrida (máx. diario)"}]
+        ],
+        "yAxis": {"left": {"min": 0, "max": 3, "showUnits": false}}
+      }
+    },
+    {
+      "type": "metric",
+      "x": 15,
+      "y": 4,
+      "width": 9,
+      "height": 6,
+      "properties": {
+        "title": "JornadaCubierta (vigilante 05:00)",
+        "view": "timeSeries",
+        "region": "us-east-2",
+        "period": 86400,
+        "stat": "Minimum",
+        "metrics": [
+          ["Montebello/Despacho", "JornadaCubierta", {"label": "JornadaCubierta (mín. diario)"}]
+        ],
+        "yAxis": {"left": {"min": 0, "max": 1, "showUnits": false}}
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 10,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "Duración de la corrida (s)",
+        "view": "timeSeries",
+        "region": "us-east-2",
+        "period": 86400,
+        "stat": "Maximum",
+        "metrics": [
+          ["Montebello/Despacho", "DuracionTotal", {"label": "Total"}],
+          ["Montebello/Despacho", "DuracionExtraccion", {"label": "Extracción"}]
+        ],
+        "yAxis": {"left": {"min": 0}}
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 10,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "Registros extraídos y filas de recomendación",
+        "view": "timeSeries",
+        "region": "us-east-2",
+        "period": 86400,
+        "stat": "Maximum",
+        "metrics": [
+          ["Montebello/Despacho", "RegistrosExtraidos", {"label": "Registros extraídos (ventana)"}],
+          ["Montebello/Despacho", "FilasRecomendaciones", {"label": "Filas de recomendación"}]
+        ],
+        "yAxis": {"left": {"min": 0}}
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 16,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "Factor de corrección (14 días)",
+        "view": "timeSeries",
+        "region": "us-east-2",
+        "period": 86400,
+        "stat": "Average",
+        "metrics": [
+          ["Montebello/Despacho", "FactorCorreccion", "Ruta", "1", {"label": "Ruta 1"}],
+          ["Montebello/Despacho", "FactorCorreccion", "Ruta", "3", {"label": "Ruta 3"}]
+        ],
+        "annotations": {"horizontal": [{"label": "Sin corrección", "value": 1.0}]}
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 16,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "Memoria pico (MB) y CPU de la instancia (%)",
+        "view": "timeSeries",
+        "region": "us-east-2",
+        "period": 86400,
+        "stat": "Maximum",
+        "metrics": [
+          ["Montebello/Despacho", "MemoriaPico", {"label": "Memoria pico (MB)"}],
+          ["AWS/EC2", "CPUUtilization", "InstanceId", "REEMPLAZAR_INSTANCE_ID", {"label": "CPU máx. (5 min)", "period": 300, "yAxis": "right"}]
+        ],
+        "yAxis": {"left": {"min": 0}, "right": {"min": 0, "max": 100}}
+      }
+    },
+    {
+      "type": "text",
+      "x": 0,
+      "y": 22,
+      "width": 24,
+      "height": 2,
+      "properties": {
+        "markdown": "### Desempeño del modelo (jornada anterior)\nCada corrida compara los pasajeros reales de la jornada D con la predicción emitida para D la noche anterior, por ruta, en las franjas de 30 min del horario operativo. MAE y RMSE en pasajeros por franja; el sesgo positivo indica sobreestimación."
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 24,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "MAE y RMSE por ruta (pasajeros/franja)",
+        "view": "timeSeries",
+        "region": "us-east-2",
+        "period": 86400,
+        "stat": "Average",
+        "metrics": [
+          ["Montebello/Despacho", "ErrorMAE", "Ruta", "1", {"label": "MAE ruta 1"}],
+          ["Montebello/Despacho", "ErrorMAE", "Ruta", "3", {"label": "MAE ruta 3"}],
+          ["Montebello/Despacho", "ErrorRMSE", "Ruta", "1", {"label": "RMSE ruta 1"}],
+          ["Montebello/Despacho", "ErrorRMSE", "Ruta", "3", {"label": "RMSE ruta 3"}]
+        ],
+        "yAxis": {"left": {"min": 0}}
+      }
+    },
+    {
+      "type": "metric",
+      "x": 12,
+      "y": 24,
+      "width": 6,
+      "height": 6,
+      "properties": {
+        "title": "MAPE parcial (real ≥ 10) por ruta (%)",
+        "view": "timeSeries",
+        "region": "us-east-2",
+        "period": 86400,
+        "stat": "Average",
+        "metrics": [
+          ["Montebello/Despacho", "ErrorMAPE", "Ruta", "1", {"label": "Ruta 1"}],
+          ["Montebello/Despacho", "ErrorMAPE", "Ruta", "3", {"label": "Ruta 3"}]
+        ],
+        "yAxis": {"left": {"min": 0}}
+      }
+    },
+    {
+      "type": "metric",
+      "x": 18,
+      "y": 24,
+      "width": 6,
+      "height": 6,
+      "properties": {
+        "title": "SesgoPct por ruta (%)",
+        "view": "timeSeries",
+        "region": "us-east-2",
+        "period": 86400,
+        "stat": "Average",
+        "metrics": [
+          ["Montebello/Despacho", "SesgoPct", "Ruta", "1", {"label": "Ruta 1"}],
+          ["Montebello/Despacho", "SesgoPct", "Ruta", "3", {"label": "Ruta 3"}]
+        ],
+        "annotations": {"horizontal": [{"label": "Sin sesgo", "value": 0}]}
+      }
+    }
+  ]
+}

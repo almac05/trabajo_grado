@@ -3,7 +3,9 @@
 Comprueba que exista una corrida nocturna terminada con recomendacion valida
 (estado OK; en la fase 2 tambien ADVERTENCIA o CONTINGENCIA) cuya jornada
 objetivo sea hoy (hora de Colombia). Si no la hay, alerta por SNS: asi se
-detecta tambien que el temporizador ni siquiera se disparo.
+detecta tambien que el temporizador ni siquiera se disparo. Despues de la
+alerta publica JornadaCubierta (1 o 0) en CloudWatch si PILOTO_METRICAS=1; un
+fallo de CloudWatch no cambia el codigo de salida.
 
     python -m proyecto_grado.piloto.verificacion
 
@@ -20,7 +22,7 @@ from datetime import date
 from pathlib import Path
 
 from proyecto_grado.modeling.config import PROJECT_ROOT
-from proyecto_grado.piloto import avisos
+from proyecto_grado.piloto import avisos, metricas
 from proyecto_grado.piloto.config import cargar_configuracion
 from proyecto_grado.piloto.fechas import ahora_bogota
 from proyecto_grado.piloto.registro import ocultar, registrar_variables_sensibles
@@ -61,7 +63,19 @@ def resumen_ultima(salidas: Path) -> str:
     )
 
 
-def main(argv: list[str] | None = None, cliente=None, ahora=None) -> int:
+def publicar_jornada_cubierta(cubierta: bool, ahora, fabrica_cliente=None) -> dict:
+    """Publica JornadaCubierta; nunca lanza excepciones ni cambia el codigo de salida."""
+    r = metricas.publicar_metricas(
+        [metricas.dato_jornada_cubierta(cubierta)], ahora, fabrica_cliente
+    )
+    if r["metricas_publicadas"]:
+        print(f"JornadaCubierta={int(cubierta)} publicada en CloudWatch.")
+    else:
+        print(ocultar(f"JornadaCubierta no publicada: {r['motivo']}"), file=sys.stderr)
+    return r
+
+
+def main(argv: list[str] | None = None, cliente=None, ahora=None, cliente_cw=None) -> int:
     p = argparse.ArgumentParser(description="Vigilante de la corrida nocturna.")
     p.add_argument("--directorio-salidas", default=None)
     args = p.parse_args(argv)
@@ -77,6 +91,7 @@ def main(argv: list[str] | None = None, cliente=None, ahora=None) -> int:
     m = corrida_valida(salidas, hoy)
     if m is not None:
         print(f"Jornada {hoy}: corrida {m['id_ejecucion']} en estado {m['estado']}.")
+        publicar_jornada_cubierta(True, ahora, cliente_cw)
         return 0
     cuerpo = "\n".join(
         [
@@ -94,11 +109,13 @@ def main(argv: list[str] | None = None, cliente=None, ahora=None) -> int:
     )
     try:
         avisos.publicar(f"ALERTA piloto despacho: sin corrida para {hoy}", cuerpo, cliente=cliente)
+        print(f"Sin corrida valida para {hoy}: alerta enviada.", file=sys.stderr)
+        codigo = 1
     except avisos.ErrorAviso as exc:
         print(ocultar(f"Sin corrida valida y no se pudo alertar: {exc}"), file=sys.stderr)
-        return 2
-    print(f"Sin corrida valida para {hoy}: alerta enviada.", file=sys.stderr)
-    return 1
+        codigo = 2
+    publicar_jornada_cubierta(False, ahora, cliente_cw)
+    return codigo
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ Uso:
     python -m proyecto_grado.piloto.nocturno [--escribir-bd] [--subir-s3]
     python -m proyecto_grado.piloto.nocturno --fecha-objetivo 2026-10-01 --fuente local
     python -m proyecto_grado.piloto.nocturno --relleno 2026-10-04 2026-10-12
+    python -m proyecto_grado.piloto.nocturno --fecha-objetivo 2026-10-01 --publicar-metricas
 
 Codigos de salida: 0 = OK, 1 = ERROR, 2 = ya habia otra ejecucion en curso.
 
@@ -19,7 +20,10 @@ sin cambios y sin archivos nuevos en src/, configs/ ni scripts/), salvo
 Salidas en data/piloto/ (o --directorio-salidas):
     ejecuciones/<id>/       manifiesto.json, ejecucion.log, predicciones y recomendacion
     extracciones/<id>.parquet, almacen/, etl/<id>/, serie/<id>.parquet,
-    historial/, planillas/, ESTADO_ULTIMA_EJECUCION.txt
+    historial/, planillas/, indicadores/<D>.parquet, ESTADO_ULTIMA_EJECUCION.txt
+
+Metricas en CloudWatch (PILOTO_METRICAS=1): al cierre de la corrida nocturna, o
+de un ensayo con --publicar-metricas; nunca en --relleno ni con codigo 2.
 """
 
 from __future__ import annotations
@@ -27,6 +31,7 @@ from __future__ import annotations
 import argparse
 import json
 import logging
+import math
 import os
 import platform
 import subprocess
@@ -50,8 +55,9 @@ from proyecto_grado.modeling.config import (
 )
 from proyecto_grado.piloto import config as cfg_mod
 from proyecto_grado.piloto import correccion as corr
+from proyecto_grado.piloto import desempeno as desemp
 from proyecto_grado.piloto import extraccion as ext
-from proyecto_grado.piloto import fechas, registro
+from proyecto_grado.piloto import fechas, metricas, registro
 from proyecto_grado.piloto import prediccion as pred_mod
 from proyecto_grado.piloto import serie as serie_mod
 from proyecto_grado.piloto.planilla import DatosPlanilla, escribir_planilla
@@ -103,6 +109,7 @@ class Dependencias:
     escritor_bd: Callable[[], Any] | None = None
     cliente_s3: Callable[[], Any] | None = None
     cliente_sns: Callable[[], Any] | None = None
+    cliente_cw: Callable[[], Any] | None = None
 
 
 def fuente_predeterminada(cfg: cfg_mod.ConfigPiloto, nombre: str) -> ext.Fuente:
@@ -348,6 +355,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=None,
         help="Raiz de salidas relativa al proyecto (por defecto data/piloto).",
     )
+    p.add_argument(
+        "--publicar-metricas",
+        action="store_true",
+        help="Publica en CloudWatch tambien en un ensayo con --fecha-objetivo "
+        "(la corrida nocturna publica siempre; requiere PILOTO_METRICAS=1).",
+    )
     p.add_argument("--config", default=None, help="Configuracion (por defecto piloto.yaml).")
     p.add_argument(
         "--sincronizar-estado",
@@ -373,6 +386,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                 "--sincronizar-estado y --descargar-insumos son modos aparte: no se combinan "
                 "entre si ni con --relleno, --fecha-objetivo, --escribir-bd o --subir-s3."
             )
+    if args.publicar_metricas and (
+        args.relleno or args.sincronizar_estado or args.descargar_insumos
+    ):
+        p.error(
+            "--publicar-metricas solo aplica a la corrida nocturna o a un ensayo con "
+            "--fecha-objetivo."
+        )
     if args.relleno and args.fecha_objetivo:
         p.error("--relleno y --fecha-objetivo son excluyentes.")
     if args.relleno and args.escribir_bd:
@@ -591,6 +611,8 @@ def corrida(e: Ejecucion, args, cfg, d: Dependencias, ctx: dict) -> None:
         final = pred_mod.prediccion_final(pred, {r: f.valor for r, f in factores.items()})
         m["factor"] = {str(r): f.como_dict() for r, f in factores.items()}
 
+    evaluar_desempeno(e, cfg, hist, serie, objetivo, ctx, d)
+
     with e.paso("recomendacion", d.reloj):
         modulo = cargar_modulo(
             cfg.entrada("configuracion_recomendacion"),
@@ -600,6 +622,7 @@ def corrida(e: Ejecucion, args, cfg, d: Dependencias, ctx: dict) -> None:
         rec, ajuste = recomendar(final, serie, pred_mod.corte_de(dia), modulo)
         m["recomendacion"] = {
             **modulo.como_dict(),
+            "filas": len(rec),
             "despachos_por_ruta": rec.groupby("route")["despachos_recomendados"].sum().to_dict(),
             "franjas_fuera_de_disponibilidad": int((~rec["en_disponibilidad"]).sum()),
             "ajuste_factibilidad": ajuste.to_dict("records"),
@@ -691,6 +714,51 @@ def corrida(e: Ejecucion, args, cfg, d: Dependencias, ctx: dict) -> None:
         raise error_bd
 
 
+def evaluar_desempeno(e: Ejecucion, cfg, hist, serie, objetivo, ctx: dict, d) -> None:
+    """Error de la jornada D contra la prediccion emitida para D la noche anterior.
+
+    Nunca cambia el estado ni el codigo de salida: si no se puede calcular, queda
+    el motivo en el manifiesto (bloque "desempeno") y en el log.
+    """
+    dia = objetivo.d
+    bloque: dict = {"jornada": dia.isoformat()}
+    e.manifiesto["desempeno"] = bloque
+    with e.paso("desempeno", d.reloj):
+        try:
+            if objetivo.anticipada:
+                bloque["motivo"] = "jornada_incompleta: corrida anticipada"
+                return
+            from proyecto_grado.modeling.evaluation_config import (
+                cargar_configuracion_evaluacion,
+            )
+
+            ev = cargar_configuracion_evaluacion(cfg.entrada("configuracion_evaluacion"))
+            bloque["umbral_mape"] = float(ev.umbral_mape)
+            rutas = tuple(int(r) for r in ev.rutas)
+            por_ruta = desemp.evaluar_jornada(hist, serie, dia, rutas, float(ev.umbral_mape))
+            bloque["por_ruta"] = {r: _sin_nan(v) for r, v in por_ruta.items()}
+            grupo = str(cfg_mod.grupo_de(dia, cfg.ruta_asignacion_grupos))
+            filas = desemp.filas_indicadores(por_ruta, dia, grupo, e.id)
+            if filas.empty:
+                bloque["motivo"] = "; ".join(
+                    f"ruta {r}: {v['motivo']}" for r, v in por_ruta.items()
+                )
+                logger.info("Desempeno de %s omitido: %s", dia, bloque["motivo"])
+                return
+            ruta = desemp.guardar_indicadores(e.salidas / "indicadores", dia, filas)
+            bloque["grupo"] = grupo
+            bloque["archivo"] = _sha_relativo(ruta)
+            ctx["indicadores"] = ruta
+        except Exception as exc:
+            bloque["motivo"] = registro.ocultar(f"error: {type(exc).__name__}: {exc}")
+            logger.error("No se pudo calcular el desempeno de %s: %s", dia, bloque["motivo"])
+
+
+def _sin_nan(valores: dict) -> dict:
+    """NaN no es JSON valido: se guarda como null."""
+    return {k: (None if isinstance(v, float) and math.isnan(v) else v) for k, v in valores.items()}
+
+
 def relleno(e: Ejecucion, args, cfg, d: Dependencias, ctx: dict) -> None:
     """Predice DESDE..HASTA, cada jornada con datos anteriores a sus 04:00 (seccion 4)."""
     desde, hasta = args.relleno
@@ -772,6 +840,8 @@ def subir_s3(e: Ejecucion, ctx: dict, d: Dependencias, solo_cierre: bool = False
     else:
         escribir_json(e.carpeta / "manifiesto.json", e.manifiesto)  # version previa
         archivos = salida_s3.archivos_a_subir(e.carpeta, None, ctx["datos"].instantanea, e.id)
+        if ctx.get("indicadores") is not None:
+            archivos.append((ctx["indicadores"], ("indicadores", ctx["indicadores"].name)))
     uris = salida_s3.subir(archivos, destino, cliente)
     if not solo_cierre:
         e.manifiesto["s3"] = {"ruta": destino.uri("ejecuciones", e.id) + "/", "archivos": uris}
@@ -904,6 +974,8 @@ def _ejecutar_con_bloqueo(args, cfg, d, salidas, inicio, id_ejecucion, ruta_conf
                 for k, v in vars(args).items()
             },
             "estado": str(e.estado),
+            "metricas": motivo_sin_metricas(args)
+            or {"metricas_publicadas": False, "motivo": "pendiente"},
         }
     )
     ctx: dict = {}
@@ -1006,6 +1078,9 @@ def _ejecutar_con_bloqueo(args, cfg, d, salidas, inicio, id_ejecucion, ruta_conf
         escribir_json(carpeta / "manifiesto.json", m)
         escribir_estado_ultima(salidas, e)
         logger.info("Estado final: %s (codigo %d)", e.estado, codigo)
+        if motivo_sin_metricas(args) is None:
+            publicar_metricas_corrida(m, fin, d)
+            escribir_json(carpeta / "manifiesto.json", m)
         if args.subir_s3 and m.get("s3", {}).get("ruta"):
             try:
                 subir_s3(e, ctx, d, solo_cierre=True)
@@ -1020,6 +1095,33 @@ def _ejecutar_con_bloqueo(args, cfg, d, salidas, inicio, id_ejecucion, ruta_conf
 
 
 MODOS_CON_AVISO = ("nocturno", "relleno", "ensayo")
+
+
+def motivo_sin_metricas(args: argparse.Namespace) -> dict | None:
+    """None si la corrida publica metricas; si no, el bloque "no_aplica" del manifiesto.
+
+    Publican la corrida nocturna (sin --fecha-objetivo) y el ensayo con
+    --publicar-metricas. El codigo 2 (bloqueo) no llega a escribir manifiesto.
+    """
+    modo = modo_de(args)
+    if modo == "nocturno" or (modo == "ensayo" and args.publicar_metricas):
+        return None
+    if modo == "ensayo":
+        return metricas.no_aplica("ensayo sin --publicar-metricas")
+    return metricas.no_aplica(f"modo {modo}")
+
+
+def publicar_metricas_corrida(m: dict, fin: datetime, d: Dependencias) -> None:
+    """Publica las metricas de la corrida; nunca cambia el estado ni el codigo."""
+    try:
+        datos = metricas.datos_de_corrida(m, metricas.memoria_pico_mb())
+        m["metricas"] = metricas.publicar_metricas(datos, fin, d.cliente_cw)
+    except Exception as exc:  # publicar_metricas no lanza; esto cubre datos_de_corrida
+        m["metricas"] = {
+            "metricas_publicadas": False,
+            "motivo": registro.ocultar(f"{type(exc).__name__}: {exc}"),
+        }
+        logger.error("No se pudieron preparar las metricas: %s", m["metricas"]["motivo"])
 
 
 def avisar_ok(m: dict, d: Dependencias) -> None:

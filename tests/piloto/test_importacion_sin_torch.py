@@ -30,6 +30,8 @@ MODULOS = [
             "alerta",
             "verificacion",
             "estado_s3",
+            "metricas",
+            "desempeno",
             "nocturno",
         )
     ),

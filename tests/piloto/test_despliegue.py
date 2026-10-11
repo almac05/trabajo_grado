@@ -128,6 +128,8 @@ def test_alerta_y_verificacion():
     assert a["ExecStart"][0].endswith("scripts/piloto/alerta.sh %i")
     v = unidad("despacho-verificacion.service")
     assert "OnFailure" not in v.get("Unit", {})  # evita alertas dobles
+    # PILOTO_METRICAS y PILOTO_SNS_TOPIC llegan al vigilante por el .env.
+    assert v["Service"]["EnvironmentFile"] == ["/opt/despacho/.env"]
     assert v["Service"]["ExecStart"][0].endswith("python -m proyecto_grado.piloto.verificacion")
 
 
@@ -147,6 +149,7 @@ def test_plantillas_de_entorno_sin_valores_secretos():
         "PILOTO_S3_PREFIJO": "piloto",
         "PILOTO_SNS_TOPIC": "",
         "PILOTO_AVISAR_OK": "1",
+        "PILOTO_METRICAS": "1",
     }
     tunel = (DEPLOY / "tunel.env.ejemplo").read_text(encoding="utf-8")
     assert re.search(r"^PILOTO_TUNEL_DESTINO=$", tunel, re.MULTILINE)
@@ -154,7 +157,10 @@ def test_plantillas_de_entorno_sin_valores_secretos():
 
 @pytest.mark.unit
 def test_sin_ip_ni_usuario_del_vps_en_archivos_versionados():
-    archivos = [p for p in [*DEPLOY.iterdir(), *SCRIPTS.iterdir()] if p.is_file()]
+    tablero = DEPLOY.parent / "cloudwatch"
+    archivos = [
+        p for p in [*DEPLOY.iterdir(), *SCRIPTS.iterdir(), *tablero.iterdir()] if p.is_file()
+    ]
     for ruta in (p for p in archivos if p.suffix != ".pyc"):
         texto = ruta.read_text(encoding="utf-8")
         ips = set(re.findall(r"\b\d{1,3}(?:\.\d{1,3}){3}\b", texto)) - {"127.0.0.1"}
@@ -172,6 +178,19 @@ def test_instalar_rechaza_ramas_y_no_activa_timers_por_defecto():
     assert "--activar-timers) ACTIVAR=1" in texto and "ACTIVAR=0" in texto
     assert "systemctl enable --now" in texto
     assert "disable tunel-ionos.service" in texto
+    # El aviso de archivo faltante nombra la plantilla real (env.ejemplo, sin punto).
+    assert ".env.ejemplo" not in texto and "${nombre#.}.ejemplo" in texto
+
+
+@pytest.mark.unit
+def test_readme_comandos_manuales_como_despacho():
+    texto = (DEPLOY / "README.md").read_text(encoding="utf-8")
+    # Ningun cd a /opt/despacho fuera de sudo -u despacho (ssm-user no puede entrar).
+    for linea in texto.splitlines():
+        if "cd /opt/despacho" in linea:
+            assert "sudo -u despacho -H bash -c '" in linea, linea
+    assert "Métricas y tablero CloudWatch" in texto and "0,70 métrica-mes" in texto
+    assert "--publicar-metricas" in texto and "se mezcla" in texto
 
 
 @pytest.mark.unit

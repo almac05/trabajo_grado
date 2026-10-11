@@ -7,7 +7,8 @@ lee de PILOTO_S3_BUCKET y PILOTO_S3_PREFIJO.
 Claves:
 - ``<prefijo>/ejecuciones/<id>/<archivo>``: manifiesto, log y salidas de la ejecucion;
 - ``<prefijo>/planillas/<planilla>.xlsx``;
-- ``<prefijo>/extracciones/<id>.parquet``: instantanea de la extraccion.
+- ``<prefijo>/extracciones/<id>.parquet``: instantanea de la extraccion;
+- ``<prefijo>/indicadores/<D>.parquet``: desempeno del modelo en la jornada D.
 """
 
 from __future__ import annotations
