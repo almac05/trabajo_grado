@@ -348,11 +348,34 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Raiz de salidas relativa al proyecto (por defecto data/piloto).",
     )
     p.add_argument("--config", default=None, help="Configuracion (por defecto piloto.yaml).")
+    p.add_argument(
+        "--sincronizar-estado",
+        action="store_true",
+        help="Solo descarga de S3 el estado mas reciente (preparar el plan B).",
+    )
+    p.add_argument(
+        "--descargar-insumos",
+        action="store_true",
+        help="Solo descarga de s3://<bucket>/insumos/ las entradas congeladas y las verifica.",
+    )
     args = p.parse_args(argv)
+    if args.sincronizar_estado or args.descargar_insumos:
+        otras = [
+            args.sincronizar_estado and args.descargar_insumos,
+            args.relleno,
+            args.fecha_objetivo,
+            args.escribir_bd,
+            args.subir_s3,
+        ]
+        if any(otras):
+            p.error(
+                "--sincronizar-estado y --descargar-insumos son modos aparte: no se combinan "
+                "entre si ni con --relleno, --fecha-objetivo, --escribir-bd o --subir-s3."
+            )
     if args.relleno and args.fecha_objetivo:
         p.error("--relleno y --fecha-objetivo son excluyentes.")
-    if args.relleno and (args.escribir_bd or args.subir_s3):
-        p.error("--relleno no escribe en la base ni sube a S3.")
+    if args.relleno and args.escribir_bd:
+        p.error("--relleno no escribe en la base.")
     if args.relleno and args.relleno[0] > args.relleno[1]:
         p.error("--relleno: DESDE debe ser anterior o igual a HASTA.")
     return args
@@ -540,6 +563,8 @@ def corrida(e: Ejecucion, args, cfg, d: Dependencias, ctx: dict) -> None:
             )
             m["bd"] = {"corrida_abierta": True}
 
+    if args.subir_s3 and oficial:
+        traer_estado(e, d)
     fuente = (d.fuente or fuente_predeterminada)(cfg, args.fuente)
     datos = extraer_y_procesar(e, cfg, objetivo, fuente, d)
     with e.paso("serie_objetivo", d.reloj):
@@ -659,6 +684,8 @@ def corrida(e: Ejecucion, args, cfg, d: Dependencias, ctx: dict) -> None:
 
     filas_hist = corr.filas_emitidas(final, e.id, "piloto", e.inicio) if oficial else None
     consolidar_estado(e, datos, filas_hist)
+    if args.subir_s3 and oficial:
+        publicar_estado(e, d, ctx)
     if error_bd is not None:
         raise error_bd
 
@@ -676,6 +703,8 @@ def relleno(e: Ejecucion, args, cfg, d: Dependencias, ctx: dict) -> None:
         raise ErrorEjecucion(f"--relleno: HASTA ({hasta}) es posterior a la jornada {tope}.")
     oficial = args.fuente == "bd"
     objetivo = fechas.objetivo_fijado(hasta)
+    if args.subir_s3 and oficial:
+        traer_estado(e, d)
     fuente = (d.fuente or fuente_predeterminada)(cfg, args.fuente)
     datos = extraer_y_procesar(e, cfg, objetivo, fuente, d)
     p = pred_mod.cargar_parametros(
@@ -713,6 +742,15 @@ def relleno(e: Ejecucion, args, cfg, d: Dependencias, ctx: dict) -> None:
     e.estado = evaluar_estado(e)
     ctx["datos"] = datos
     consolidar_estado(e, datos, todas if oficial else None)
+    if args.subir_s3:
+        with e.paso("s3", d.reloj):
+            try:
+                subir_s3(e, ctx, d)
+            except Exception as exc:
+                m["s3"] = {"ruta": None, "error": registro.ocultar(str(exc))}
+                e.advertir(f"No se pudo subir la ejecucion a S3: {exc}")
+        if oficial:
+            publicar_estado(e, d, ctx)
 
 
 def subir_s3(e: Ejecucion, ctx: dict, d: Dependencias, solo_cierre: bool = False) -> None:
@@ -736,6 +774,76 @@ def subir_s3(e: Ejecucion, ctx: dict, d: Dependencias, solo_cierre: bool = False
     uris = salida_s3.subir(archivos, destino, cliente)
     if not solo_cierre:
         e.manifiesto["s3"] = {"ruta": destino.uri("ejecuciones", e.id) + "/", "archivos": uris}
+
+
+def _s3(d: Dependencias):
+    from proyecto_grado.piloto import salida_s3
+
+    return salida_s3.destino_desde_entorno(), (d.cliente_s3 or salida_s3.cliente_s3)()
+
+
+def traer_estado(e: Ejecucion, d: Dependencias) -> None:
+    """Al iniciar una corrida real con --subir-s3: estado remoto si es mas nuevo."""
+    from proyecto_grado.piloto import estado_s3
+
+    with e.paso("estado_descarga", d.reloj):
+        try:
+            destino, cliente = _s3(d)
+            r = estado_s3.descargar_estado(e.salidas, destino, cliente)
+        except Exception as exc:
+            e.manifiesto.setdefault("estado_s3", {})["descarga"] = {"error": str(exc)}
+            e.advertir(f"No se pudo consultar el estado en S3; se usa el local: {exc}")
+            return
+        e.manifiesto.setdefault("estado_s3", {})["descarga"] = r
+        if r["accion"] == "local_mas_nuevo":
+            e.advertir(
+                f"El estado local ({r['local']}) es mas nuevo que el de S3 ({r['remoto']}): "
+                "se usa el local y se publicara al terminar."
+            )
+
+
+def publicar_estado(e: Ejecucion, d: Dependencias, ctx: dict) -> None:
+    """Al terminar en OK una corrida real con --subir-s3: publica el estado."""
+    from proyecto_grado.piloto import estado_s3
+
+    if e.estado != Estado.OK:
+        return
+    with e.paso("estado_publicacion", d.reloj):
+        try:
+            destino, cliente = _s3(d)
+            r = estado_s3.publicar_estado(
+                e.salidas,
+                e.id,
+                destino,
+                cliente,
+                {
+                    "commit": e.manifiesto["codigo"]["commit"],
+                    "entorno": ctx.get("entorno"),
+                    "modo": e.manifiesto.get("modo"),
+                    "creado": d.reloj().isoformat(timespec="seconds"),
+                },
+            )
+            e.manifiesto.setdefault("estado_s3", {})["publicacion"] = r
+        except Exception as exc:
+            e.manifiesto.setdefault("estado_s3", {})["publicacion"] = {"error": str(exc)}
+            e.advertir(f"No se pudo publicar el estado en S3 (queda solo local): {exc}")
+
+
+def utilidad(e: Ejecucion, args, cfg, d: Dependencias) -> None:
+    """--sincronizar-estado o --descargar-insumos: solo S3, sin base de datos."""
+    from proyecto_grado.piloto import estado_s3
+
+    destino, cliente = _s3(d)
+    if args.sincronizar_estado:
+        with e.paso("sincronizar_estado", d.reloj):
+            e.manifiesto["estado_s3"] = {
+                "descarga": estado_s3.descargar_estado(e.salidas, destino, cliente)
+            }
+    else:
+        with e.paso("descargar_insumos", d.reloj):
+            e.manifiesto["insumos"] = estado_s3.descargar_insumos(cfg, destino.bucket, cliente)
+            e.manifiesto["entradas"] = cfg_mod.verificar_entradas(cfg, fuente_local=False)
+    e.estado = Estado.OK
 
 
 def _escritor_predeterminado():
@@ -787,9 +895,7 @@ def _ejecutar_con_bloqueo(args, cfg, d, salidas, inicio, id_ejecucion, ruta_conf
             "id_ejecucion": id_ejecucion,
             "inicio": inicio.isoformat(timespec="seconds"),
             "zona_horaria": str(fechas.ZONA),
-            "modo": "relleno"
-            if args.relleno
-            else ("ensayo" if args.fecha_objetivo else "nocturno"),
+            "modo": modo_de(args),
             "version": VERSION_PREDICCION,
             "candidato": {"nombre": cfg.candidato, "nota": cfg.nota_candidato},
             "opciones": {
@@ -802,6 +908,15 @@ def _ejecutar_con_bloqueo(args, cfg, d, salidas, inicio, id_ejecucion, ruta_conf
     ctx: dict = {}
     codigo = CODIGO_ERROR
     try:
+        if args.sincronizar_estado or args.descargar_insumos:
+            # Modos de solo S3: sin base de datos, sin prediccion y sin exigir commit limpio.
+            with e.paso("preparacion", d.reloj):
+                m["codigo"] = {**estado_git(d.git), **versiones()}
+                ctx["entorno"] = str(cfg_mod.entorno())
+                m["entorno"] = ctx["entorno"]
+            utilidad(e, args, cfg, d)
+            codigo = CODIGO_OK
+            return codigo
         with e.paso("preparacion", d.reloj):
             m["codigo"] = {
                 **estado_git(d.git),
@@ -899,6 +1014,16 @@ def _ejecutar_con_bloqueo(args, cfg, d, salidas, inicio, id_ejecucion, ruta_conf
             ctx["escritor"].cerrar()
         registro.cerrar_registro(manejadores)
     return codigo
+
+
+def modo_de(args: argparse.Namespace) -> str:
+    if args.sincronizar_estado:
+        return "sincronizar_estado"
+    if args.descargar_insumos:
+        return "descargar_insumos"
+    if args.relleno:
+        return "relleno"
+    return "ensayo" if args.fecha_objetivo else "nocturno"
 
 
 def main(argv: list[str] | None = None, dependencias: Dependencias | None = None) -> int:

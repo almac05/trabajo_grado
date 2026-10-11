@@ -16,6 +16,7 @@ Modulos:
 - ``planilla``: archivo Excel de la jornada.
 - ``salida_bd``: escritura en bd_montebello_recomendaciones.
 - ``salida_s3``: subida de la ejecucion a S3.
+- ``estado_s3``: estado entre corridas (almacen e historial) e insumos congelados en S3.
 - ``nocturno``: orquestador.
 
 Nunca escribe en bd_montebello_rdw ni en bd_montebello_rdw_gps.

@@ -26,6 +26,7 @@ MODULOS = [
             "planilla",
             "salida_bd",
             "salida_s3",
+            "estado_s3",
             "nocturno",
         )
     ),
