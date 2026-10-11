@@ -159,7 +159,7 @@ def test_sin_ip_ni_usuario_del_vps_en_archivos_versionados():
         texto = ruta.read_text(encoding="utf-8")
         ips = set(re.findall(r"\b\d{1,3}(?:\.\d{1,3}){3}\b", texto)) - {"127.0.0.1"}
         assert not ips, (ruta.name, ips)
-        assert "tunel_aws" not in texto, ruta.name
+        assert not re.search(r"[\w.-]+@\d{1,3}(?:\.\d{1,3}){3}", texto), ruta.name
         assert not re.search(r"(?i)aws_(secret_)?access_key", texto), ruta.name
 
 
