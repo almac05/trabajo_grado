@@ -311,7 +311,7 @@ def test_tablero_valido_y_sin_datos_de_la_cuenta():
         if w["type"] != "metric":
             continue
         assert p["region"] == "us-east-2"
-        assert p["period"] == 86400
+        assert p["period"] == 3600
         for fila in p["metrics"]:
             if fila[0] != "Montebello/Despacho":
                 assert fila[:4] == [

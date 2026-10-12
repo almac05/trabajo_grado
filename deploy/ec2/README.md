@@ -162,7 +162,7 @@ El rol solo puede publicar: desde la instancia no se pueden listar ni leer las m
 2. Acciones → Ver/editar origen, pegar el contenido de `deploy/cloudwatch/tablero_despacho.json`.
 3. Reemplazar `REEMPLAZAR_INSTANCE_ID` por el id de la instancia (solo en la consola; no se versiona). Guardar.
 
-Rango por defecto de 30 días con un punto por día; la CPU de la instancia (`AWS/EC2 CPUUtilization`) va con periodo de 300 s.
+Rango por defecto de 30 días. Los widgets de `Montebello/Despacho` usan periodo de 3600 s: cada corrida aparece como un punto en la hora en que terminó, sin mezclarse con otra publicación del mismo día (por ejemplo, un ensayo). La CPU de la instancia (`AWS/EC2 CPUUtilization`) va con periodo de 300 s.
 
 ### Costo
 

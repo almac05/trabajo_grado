@@ -14,6 +14,10 @@ no consulta la base entre las 04:00 y las 21:00 de Colombia salvo
 --forzar-horario. La columna con la hora de creacion del registro se detecta con
 SHOW COLUMNS entre nombres candidatos o se indica con --columna-creacion.
 
+La hora de creacion es un TIMESTAMP (MySQL lo devuelve en la zona de la sesion):
+la sesion fija time_zone = '-05:00' (Colombia, sin horario de verano) para no
+depender de la zona del servidor, y la zona usada queda en el informe.
+
 Salidas nuevas (nunca sobrescribe) en data/piloto/diagnosticos/:
     latencia_registros_<id>.csv   por jornada
     latencia_registros_<id>.md    resumen por jornada y total
@@ -47,6 +51,7 @@ CANDIDATOS = (
     "CREATED_AT",
 )
 TIPOS_FECHA_HORA = ("datetime", "timestamp")
+ZONA_SESION = "-05:00"  # Colombia, sin horario de verano
 UMBRALES = {
     "despues_21_00": timedelta(hours=21),
     "despues_23_42": timedelta(hours=23, minutes=42),
@@ -90,12 +95,12 @@ def consulta(columna: str) -> str:
     if not re.fullmatch(r"[A-Z0-9_]+", columna):
         raise ErrorLatencia(f"Nombre de columna invalido: {columna!r}.")
     return (
-        "SELECT d.PK_INTERVALO_DESPACHO AS pk, d.FECHA_INICIAL AS jornada, d.FK_RUTA AS ruta, "
+        "SELECT d.PK_INTERVALO_DESPACHO AS pk, d.FECHA_INICIAL AS jornada, r.FK_RUTA AS ruta, "
         f"r.`{columna}` AS creado "
         "FROM tbl_intervalo_despacho d "
         "INNER JOIN tbl_informacion_registradora r "
         "ON r.FK_INTERVALO_DESPACHO = d.PK_INTERVALO_DESPACHO "
-        "WHERE d.FECHA_INICIAL BETWEEN %s AND %s AND d.ESTADO = 1 AND d.FK_RUTA IN (1, 3) "
+        "WHERE d.FECHA_INICIAL BETWEEN %s AND %s AND d.ESTADO = 1 AND r.FK_RUTA IN (1, 3) "
         "AND r.FECHA_SALIDA_BASE_SALIDA BETWEEN %s AND %s"
     )
 
@@ -121,7 +126,9 @@ def resumir(registros: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
     return por_dia.reset_index(), total
 
 
-def informe_md(por_dia: pd.DataFrame, total: dict, columna: str, desde: date, hasta: date) -> str:
+def informe_md(
+    por_dia: pd.DataFrame, total: dict, columna: str, desde: date, hasta: date, zona: str
+) -> str:
     def pct(x):
         return "—" if pd.isna(x) else f"{100 * x:.1f} %"
 
@@ -130,6 +137,8 @@ def informe_md(por_dia: pd.DataFrame, total: dict, columna: str, desde: date, ha
         "",
         f"Jornadas del {desde} al {hasta}, rutas 1 y 3, `ESTADO = 1`. Hora de creacion: "
         f"`{TABLA}.{columna}`.",
+        "",
+        f"Zona horaria de la sesion MySQL: `{zona}` (las horas de creacion se leen en esa zona).",
         "",
         f"**Total:** {total['registros']} registros de {total['despachos']} despachos.",
         "",
@@ -199,6 +208,11 @@ def main(argv: list[str] | None = None, conectar=None, ahora=None) -> int:
     try:
         cursor = conexion.cursor()
         cursor.execute("SET SESSION TRANSACTION READ ONLY")
+        cursor.execute(f"SET time_zone = '{ZONA_SESION}'")
+        cursor.execute("SELECT @@session.time_zone")
+        zona = _texto(cursor.fetchall()[0][0])
+        if zona != ZONA_SESION:
+            raise ErrorLatencia(f"La sesion quedo en time_zone {zona}, no {ZONA_SESION}.")
         cursor.execute(f"SHOW COLUMNS FROM {TABLA}")
         columna = detectar_columna(
             [(_texto(f[0]), _texto(f[1])) for f in cursor.fetchall()], args.columna_creacion
@@ -216,8 +230,15 @@ def main(argv: list[str] | None = None, conectar=None, ahora=None) -> int:
     por_dia, total = resumir(registros)
     salida.mkdir(parents=True, exist_ok=True)
     por_dia.to_csv(rutas["csv"], index=False)
-    rutas["md"].write_text(informe_md(por_dia, total, columna, desde, hasta), encoding="utf-8")
-    print(ocultar(f"Columna de creacion: {columna}. Jornadas {desde} a {hasta}."))
+    rutas["md"].write_text(
+        informe_md(por_dia, total, columna, desde, hasta, zona), encoding="utf-8"
+    )
+    print(
+        ocultar(
+            f"Columna de creacion: {columna}. Zona de la sesion: {zona}. "
+            f"Jornadas {desde} a {hasta}."
+        )
+    )
     for nombre in UMBRALES:
         print(
             f"  {nombre}: {total[f'{nombre}_n']} de {total['registros']} "

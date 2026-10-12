@@ -40,6 +40,8 @@ def test_detectar_columna():
 def test_consulta_solo_lectura_y_columna_validada():
     sql = lat.consulta("FECHA_CREACION")
     assert sql.startswith("SELECT") and "r.`FECHA_CREACION`" in sql and sql.count("%s") == 4
+    # FK_RUTA esta en tbl_informacion_registradora (r), no en tbl_intervalo_despacho (d).
+    assert "r.FK_RUTA AS ruta" in sql and "r.FK_RUTA IN (1, 3)" in sql and "d.FK_RUTA" not in sql
     for palabra in ("INSERT", "UPDATE", "DELETE", "REPLACE", "CREATE", "DROP", "ALTER"):
         assert palabra not in sql
     with pytest.raises(lat.ErrorLatencia):
@@ -74,14 +76,16 @@ def test_resumir_umbrales_respecto_a_la_jornada():
 
 
 class Cursor:
-    def __init__(self, log):
-        self.log, self.ultimo = log, None
+    def __init__(self, log, zona="-05:00"):
+        self.log, self.ultimo, self.zona = log, None, zona
 
     def execute(self, sql, params=None):
         self.log.append((sql, params))
         self.ultimo = sql
 
     def fetchall(self):
+        if self.ultimo == "SELECT @@session.time_zone":
+            return [(self.zona.encode(),)]
         if self.ultimo.startswith("SHOW COLUMNS"):
             return [(n.encode(), t.encode()) for n, t in COLUMNAS]  # bytes, como mysql-connector
         return [
@@ -94,11 +98,11 @@ class Cursor:
 
 
 class Conexion:
-    def __init__(self):
-        self.log, self.cerrada = [], False
+    def __init__(self, zona="-05:00"):
+        self.log, self.cerrada, self.zona = [], False, zona
 
     def cursor(self):
-        return Cursor(self.log)
+        return Cursor(self.log, self.zona)
 
     def close(self):
         self.cerrada = True
@@ -127,11 +131,25 @@ def test_salidas_en_solo_lectura_y_sin_sobrescribir(tmp_path):
         lat.main(["--directorio-salidas", str(salida)], conectar=lambda bd: con, ahora=ahora) == 0
     )
     assert con.log[0] == ("SET SESSION TRANSACTION READ ONLY", None) and con.cerrada
+    assert con.log[1] == ("SET time_zone = '-05:00'", None)
     _sql, params = con.log[-1]
     assert params == (date(2026, 9, 13), date(2026, 10, 12), date(2026, 9, 13), date(2026, 10, 12))
     csv = salida / "latencia_registros_20261013_220000.csv"
     md = salida / "latencia_registros_20261013_220000.md"
-    assert csv.exists() and "FECHA_CREACION" in md.read_text(encoding="utf-8")
+    informe = md.read_text(encoding="utf-8")
+    assert csv.exists() and "FECHA_CREACION" in informe
+    assert "Zona horaria de la sesion MySQL: `-05:00`" in informe
     assert len(pd.read_csv(csv)) == 2
     with pytest.raises(FileExistsError):
         lat.main(["--directorio-salidas", str(salida)], conectar=lambda bd: Conexion(), ahora=ahora)
+
+
+@pytest.mark.unit
+def test_sesion_fuera_de_colombia_no_consulta(tmp_path, capsys):
+    con = Conexion(zona="SYSTEM")
+    ahora = datetime(2026, 10, 13, 22, 0, tzinfo=ZONA)
+    codigo = lat.main(
+        ["--directorio-salidas", str(tmp_path / "diag")], conectar=lambda bd: con, ahora=ahora
+    )
+    assert codigo == 1 and "time_zone SYSTEM" in capsys.readouterr().err
+    assert not any(sql.startswith("SELECT d.") for sql, _ in con.log) and con.cerrada
