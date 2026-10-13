@@ -6,7 +6,7 @@ Orquestador nocturno de la prueba piloto (`python -m proyecto_grado.piloto.noctu
 
 | Archivo | Qué hace |
 |---|---|
-| `tunel-ionos.service` | Túnel SSH a MySQL de IONOS en 127.0.0.1:3306. No se habilita: lo arranca el nocturno y se detiene al terminar. |
+| `tunel-ionos.service` | Túnel SSH a MySQL de IONOS en 127.0.0.1:3306. No se habilita: lo arranca el nocturno y se detiene solo al terminar (`StopWhenUnneeded=yes`; ver «Cómo se abre y se cierra el túnel»). |
 | `despacho-nocturno.service` / `.timer` | Corrida diaria a las 00:30 (America/Bogota) con `--escribir-bd --subir-s3`. Si falla, alerta por SNS. |
 | `despacho-alerta@.service` | Alerta por SNS: unidad, hora, `ESTADO_ULTIMA_EJECUCION.txt` y las últimas 30 líneas del journal, sin secretos. |
 | `despacho-verificacion.service` / `.timer` | Vigilante de las 05:00: alerta si no hay una corrida nocturna OK para la jornada de hoy y publica `JornadaCubierta`. |
@@ -28,6 +28,12 @@ Todo corre como el usuario `despacho` (sin sudo). Las credenciales de AWS vienen
   r = boto3.client(\"s3\").list_objects_v2(Bucket=\"registel-montebello-despacho\", Prefix=\"piloto/planillas/\")
   print([o[\"Key\"] for o in r.get(\"Contents\", [])][-5:])"'
   ```
+
+### Cómo se abre y se cierra el túnel
+
+- **Se abre** con el nocturno: `despacho-nocturno.service` tiene `Requires=` y `After=tunel-ionos.service`, así que systemd arranca el túnel antes que la corrida, y `esperar_puerto.sh` espera hasta 60 s a que 127.0.0.1:3306 responda.
+- **Se cierra** solo: `tunel-ionos.service` tiene `StopWhenUnneeded=yes` y systemd lo detiene cuando el nocturno termina (OK o con fallo), porque ya ninguna unidad activa lo requiere.
+- **El nocturno no detiene el túnel por su cuenta.** Hasta la noche 1 (13-oct) tenía `ExecStopPost=+/bin/systemctl stop tunel-ionos.service`, y eso es un bloqueo mutuo: por `After=`, systemd detiene el túnel solo después de que el nocturno termina de detenerse, y el nocturno esperaba ese stop. La corrida terminó OK a las 00:30:42, el stop-post agotó los 90 s («State 'stop-post' timed out»), la unidad quedó en `failed` y `OnFailure=` mandó una alerta SNS falsa. El túnel se cerró ese mismo segundo por `StopWhenUnneeded=`. `tests/piloto/test_despliegue.py` falla si vuelve un `ExecStop=`/`ExecStopPost=` con `systemctl stop` síncrono de una dependencia.
 
 ## Instalación inicial
 

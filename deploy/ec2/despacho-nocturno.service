@@ -1,7 +1,14 @@
 # Corrida nocturna de la piloto. La lanza despacho-nocturno.timer a las 00:30
 # (hora de Colombia). Arranca el tunel, espera a que 127.0.0.1:3306 responda
-# (maximo 60 s), corre el orquestador y al terminar detiene el tunel.
-# Si falla (codigo 1 = ERROR, 2 = otra ejecucion en curso), avisa por SNS.
+# (maximo 60 s) y corre el orquestador. Si falla (codigo 1 = ERROR, 2 = otra
+# ejecucion en curso), avisa por SNS.
+#
+# El tunel lo cierra su StopWhenUnneeded=yes cuando esta unidad termina, no un
+# ExecStopPost= de aqui. Un "systemctl stop tunel-ionos.service" sincrono en
+# ExecStopPost= se bloquea: por After=tunel-ionos.service, systemd solo detiene el
+# tunel despues de que esta unidad termina de detenerse, y esta unidad espera ese
+# stop. En la noche 1 (13-oct) el stop-post agoto los 90 s, la unidad quedo en
+# failed y OnFailure= mando una alerta falsa aunque la corrida habia terminado OK.
 
 [Unit]
 Description=Piloto: corrida nocturna de recomendacion de despachos
@@ -19,8 +26,6 @@ EnvironmentFile=/opt/despacho/.env
 Environment=TZ=America/Bogota PILOTO_ENTORNO=EC2 PYTHONIOENCODING=utf-8 LANG=C.UTF-8
 ExecStartPre=/bin/bash /opt/despacho/proyecto_grado/scripts/piloto/esperar_puerto.sh 127.0.0.1 3306 60
 ExecStart=/opt/despacho/.local/bin/uv run --frozen python -m proyecto_grado.piloto.nocturno --escribir-bd --subir-s3
-# "+": con privilegios completos (el usuario despacho no puede detener unidades).
-ExecStopPost=+/bin/systemctl stop tunel-ionos.service
 TimeoutStartSec=2h
 NoNewPrivileges=yes
 PrivateTmp=yes

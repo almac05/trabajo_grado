@@ -38,8 +38,12 @@ requiere_bash = pytest.mark.skipif(BASH is None, reason="Requiere un bash utiliz
 
 
 def unidad(nombre: str) -> dict[str, dict[str, list[str]]]:
+    return parsear_unidad((DEPLOY / nombre).read_text(encoding="utf-8"))
+
+
+def parsear_unidad(texto: str) -> dict[str, dict[str, list[str]]]:
     """Secciones -> clave -> valores (las claves repetidas se acumulan)."""
-    texto = (DEPLOY / nombre).read_text(encoding="utf-8").replace("\\\n", " ")
+    texto = texto.replace("\\\n", " ")
     secciones: dict[str, dict[str, list[str]]] = {}
     actual = None
     for linea in texto.splitlines():
@@ -105,8 +109,53 @@ def test_servicio_nocturno():
         "/opt/despacho/.local/bin/uv run --frozen python -m proyecto_grado.piloto.nocturno "
         "--escribir-bd --subir-s3"
     ]
-    assert s["ExecStopPost"] == ["+/bin/systemctl stop tunel-ionos.service"]
+    # El tunel lo cierra su StopWhenUnneeded=yes (ver test_sin_stop_sincrono_de_dependencias).
+    assert "ExecStop" not in s and "ExecStopPost" not in s
     assert s["TimeoutStartSec"] == ["2h"]
+
+
+DEPENDENCIAS = ("Requires", "Requisite", "BindsTo", "Wants", "After")
+
+
+def stops_sincronos_de_dependencias(u: dict[str, dict[str, list[str]]]) -> list[str]:
+    """Unidades de las que depende ``u`` y que ``u`` detiene con un systemctl stop sincrono.
+
+    Con After=X, systemd detiene X solo despues de que ``u`` termina de detenerse; un
+    "systemctl stop X" en ExecStop=/ExecStopPost= de ``u`` espera ese stop y queda
+    bloqueado hasta el timeout (incidente de la noche 1, 13-oct). --no-block no espera.
+    """
+    deps = {d for c in DEPENDENCIAS for v in u.get("Unit", {}).get(c, []) for d in v.split()}
+    culpables = []
+    for clave in ("ExecStop", "ExecStopPost"):
+        for cmd in u.get("Service", {}).get(clave, []):
+            partes = cmd.lstrip("+-!@:").split()
+            if not partes or not partes[0].endswith("systemctl") or "--no-block" in partes:
+                continue
+            if "stop" in partes:
+                objetivos = partes[partes.index("stop") + 1 :]
+                culpables += [o for o in objetivos if o in deps]
+    return culpables
+
+
+@pytest.mark.unit
+def test_regla_de_stop_sincrono_detecta_el_bloqueo_de_la_noche_1():
+    anterior = """[Unit]
+Requires=tunel-ionos.service
+After=tunel-ionos.service network-online.target
+[Service]
+ExecStopPost=+/bin/systemctl stop tunel-ionos.service
+"""
+    assert stops_sincronos_de_dependencias(parsear_unidad(anterior)) == ["tunel-ionos.service"]
+    asincrono = anterior.replace("systemctl stop", "systemctl --no-block stop")
+    assert stops_sincronos_de_dependencias(parsear_unidad(asincrono)) == []
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("nombre", [n for n in UNIDADES if n.endswith(".service")])
+def test_sin_stop_sincrono_de_dependencias(nombre):
+    assert stops_sincronos_de_dependencias(unidad(nombre)) == []
+    # El cierre del tunel depende de esto, no de un ExecStopPost= del nocturno.
+    assert unidad("tunel-ionos.service")["Unit"]["StopWhenUnneeded"] == ["yes"]
 
 
 @pytest.mark.unit

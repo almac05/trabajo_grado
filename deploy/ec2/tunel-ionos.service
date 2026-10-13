@@ -1,8 +1,10 @@
 # Tunel SSH a la base MySQL del VPS de IONOS: 127.0.0.1:3306 en la instancia.
 #
-# No se habilita: lo arranca despacho-nocturno.service (Requires=) y se detiene al
-# terminar (StopWhenUnneeded= y el ExecStopPost= del nocturno). Por eso no tiene
-# seccion [Install].
+# No se habilita: lo arranca despacho-nocturno.service (Requires=) y se detiene
+# solo cuando el nocturno termina, por StopWhenUnneeded=yes. Por eso no tiene
+# seccion [Install]. El nocturno no debe detenerlo con un ExecStopPost=/ExecStop=
+# "systemctl stop": con After=tunel-ionos.service eso es un bloqueo mutuo (ver
+# despacho-nocturno.service).
 #
 # El destino (usuario@host) esta en /opt/despacho/tunel.env, fuera del repositorio
 # (ver tunel.env.ejemplo). La llave solo permite reenviar a 127.0.0.1:3306.
