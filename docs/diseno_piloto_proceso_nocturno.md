@@ -286,3 +286,20 @@ Queda para la fase 2:
 - los scripts de los controles 8.1 a 8.4;
 - el envoltorio `.ps1` y la tarea de Windows;
 - los archivos de systemd para EC2.
+
+### 13.5 Asignación de grupos de la piloto (v1.4, 2026-10-15)
+
+La piloto va del lunes 19 al viernes 30 de octubre de 2026. Cada jornada es MODULO (el despachador ve la recomendación) o CONTROL (la recomendación se calcula y se guarda, pero no se le muestra). Antes del 19 y desde el 31 todo sigue siendo SOMBRA, la regla de siempre para una fecha sin asignar.
+
+**Método.** Aleatorización en bloques por día de la semana, con la semilla fija 20261019 definida antes del sorteo. Para cada día laboral, de lunes a viernes, las dos fechas de ese día de la semana forman un par. Si `random.Random(20261019).random() < 0.5`, la primera fecha es MODULO y la segunda CONTROL; si no, al revés. Después se sortea el par sábado 24 / domingo 25 con la misma regla (sábado = primera). Así cada día laboral aparece una vez en cada grupo y el fin de semana queda repartido: 6 jornadas MODULO y 6 CONTROL.
+
+**Fechas.** El sorteo se hizo el 2026-10-12. El script que lo reproduce, `scripts/piloto/sorteo_grupos.py`, se versionó en piloto-v1.4 el 2026-10-15. La asignación está fijada y no se vuelve a sortear. `tests/piloto/test_sorteo_grupos.py` comprueba que el script y `configs/piloto/asignacion_grupos.yaml` coinciden.
+
+| Semana | Lun | Mar | Mié | Jue | Vie | Sáb | Dom |
+|---|---|---|---|---|---|---|---|
+| 19–25 oct | 19 CONTROL | 20 CONTROL | 21 CONTROL | 22 MODULO | 23 CONTROL | 24 MODULO | 25 CONTROL |
+| 26–30 oct | 26 MODULO | 27 MODULO | 28 MODULO | 29 CONTROL | 30 MODULO | | |
+
+Valores sorteados en orden (lun, mar, mié, jue, vie, sáb/dom): 0,589; 0,964; 0,953; 0,212; 0,539; 0,267.
+
+El grupo es el de la jornada que se predice (D+1): la corrida de las 00:30 del lunes 19 es la primera CONTROL y la del sábado 31 vuelve a SOMBRA. Regisdata lee la vista `v_recomendaciones_vigentes`, que solo muestra MODULO.

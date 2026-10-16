@@ -256,6 +256,19 @@ def test_corrida_anticipada_y_tardia_quedan_marcadas(tmp_path, entorno):
 
 
 @pytest.mark.unit
+@pytest.mark.parametrize(
+    ("dia", "grupo"),
+    [(22, "MODULO"), (19, "CONTROL"), (18, "SOMBRA"), (31, "SOMBRA")],
+)
+def test_corrida_de_las_0030_lee_el_grupo_versionado(tmp_path, entorno, dia, grupo):
+    """La corrida de las 00:30 del dia D toma el grupo de la jornada D en la asignacion real."""
+    _, m, _ = correr(tmp_path, [], deps(reloj=reloj(0, 30, dia=dia)))
+    assert m["objetivo"]["d_mas_1"] == f"2026-10-{dia}"
+    assert m["grupo"] == grupo
+    assert len(m["entradas"]["asignacion_grupos"]["sha256"]) == 64
+
+
+@pytest.mark.unit
 def test_falta_piloto_entorno(tmp_path, monkeypatch):
     monkeypatch.delenv("PILOTO_ENTORNO", raising=False)
     codigo, m, _ = correr(tmp_path, [], deps())
@@ -511,6 +524,42 @@ def test_corrida_completa_sin_base_de_datos(tmp_path, entorno):
     )
     u = pred.merge(x43[x43["dia_op"] == "2026-10-01"], on=["route", "hora"], suffixes=("", "_43"))
     assert len(u) == 51 and (u["pred_xgboost"] - u["pred_xgboost_43"]).abs().max() < 1e-4
+
+
+@requiere_semilla
+@pytest.mark.integration
+@pytest.mark.slow
+@pytest.mark.parametrize("grupo", ["MODULO", "CONTROL"])
+def test_grupo_asignado_llega_a_la_base_y_a_la_planilla(tmp_path, entorno, grupo):
+    """Con la jornada asignada, cada fila de recomendaciones y la planilla llevan el grupo."""
+    asignacion = tmp_path / "asignacion_grupos.yaml"
+    asignacion.write_text(f"2026-10-01: {grupo}\n", encoding="utf-8")
+    raw = yaml.safe_load(RUTA_CONFIG_PREDETERMINADA.read_text(encoding="utf-8"))
+    raw["grupos"]["asignacion"] = (
+        asignacion.resolve().relative_to(PROJECT_ROOT.resolve()).as_posix()
+    )
+    config = tmp_path / "piloto.yaml"
+    config.write_text(yaml.safe_dump(raw, allow_unicode=True), encoding="utf-8")
+    escritor = EscritorFalso()
+    d = Dependencias(
+        reloj=reloj(0, 30, dia=13),
+        git=git_falso(),
+        cargar_env=lambda: None,
+        escritor_bd=lambda: escritor,
+    )
+    codigo, m, salidas = correr(
+        tmp_path,
+        ["--fecha-objetivo", "2026-10-01", "--fuente", "local", "--escribir-bd"],
+        d,
+        config=config,
+    )
+    assert codigo == CODIGO_OK and m["grupo"] == grupo
+    cierre = escritor.log[1][2]
+    assert len(cierre.filas) == 57 and {f[-1] for f in cierre.filas} == {grupo}
+    planillas = [p.name for p in (salidas / "planillas").glob("*.xlsx")]
+    assert planillas == [f"planilla_2026-10-01_OK_{grupo}.xlsx"]
+    resumen = load_workbook(salidas / "planillas" / planillas[0])["Resumen"]
+    assert grupo in [c.value for fila in resumen.iter_rows() for c in fila]
 
 
 @requiere_semilla

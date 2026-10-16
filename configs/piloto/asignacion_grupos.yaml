@@ -5,11 +5,30 @@
 #             como de costumbre (no se le muestra).
 #   SOMBRA  : ejecucion de ensayo; nadie la ve.
 #
-# Una jornada que no aparece aqui es SOMBRA (valor seguro: nadie la ve).
+# Una jornada que no aparece aqui es SOMBRA (valor seguro: nadie la ve); asi
+# quedan las del 13 al 18 de octubre y las desde el 31 de octubre de 2026.
 # La fecha es la de la jornada operativa (empieza a las 04:00, hora Colombia).
-# Formato, una linea por jornada:
-#   2026-10-20: MODULO
-#   2026-10-21: CONTROL
 #
 # El grupo se registra en el manifiesto, en la planilla (hoja Resumen y nombre
 # del archivo) y en cada fila de bd_montebello_recomendaciones.recomendaciones.
+#
+# Metodo: aleatorizacion en bloques por dia de la semana, con semilla fija
+# 20261019 definida antes del sorteo. Sorteo realizado el 2026-10-12; el script
+# que lo reproduce, scripts/piloto/sorteo_grupos.py, se versiono en piloto-v1.4
+# (2026-10-15). Para cada dia laboral, de lunes a viernes, las dos fechas de ese
+# dia de la semana forman un par: si rng.random() < 0.5 la primera es MODULO y
+# la segunda CONTROL; si no, al reves. Despues, el par sabado 24 / domingo 25
+# con la misma regla (sabado = primera). Resultado: 6 MODULO y 6 CONTROL.
+# La asignacion esta fijada: no se vuelve a sortear.
+2026-10-19: CONTROL
+2026-10-20: CONTROL
+2026-10-21: CONTROL
+2026-10-22: MODULO
+2026-10-23: CONTROL
+2026-10-24: MODULO
+2026-10-25: CONTROL
+2026-10-26: MODULO
+2026-10-27: MODULO
+2026-10-28: MODULO
+2026-10-29: CONTROL
+2026-10-30: MODULO

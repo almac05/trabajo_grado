@@ -101,6 +101,20 @@ sudo -u despacho -H bash -c 'cd /opt/despacho/proyecto_grado && cat data/piloto/
 sudo -u despacho -H bash -c 'cd /opt/despacho/proyecto_grado && ls data/piloto/ejecuciones/'  # manifiesto.json y ejecucion.log de cada corrida
 ```
 
+## Asignación del piloto
+
+El grupo de cada jornada está en `configs/piloto/asignacion_grupos.yaml` (v1.4). La corrida de las 00:30 toma el grupo de la jornada que predice: la del lunes 19 a las 00:30 (domingo 18 en la noche) es la primera CONTROL.
+
+| Grupo | Jornadas | Qué ve el despachador |
+|---|---|---|
+| MODULO | 22, 24, 26, 27, 28 y 30 de octubre | La recomendación, en Regisdata y en la planilla. |
+| CONTROL | 19, 20, 21, 23, 25 y 29 de octubre | Nada. La recomendación se calcula y se guarda, pero él opera como siempre. |
+| SOMBRA | Cualquier fecha sin asignar (13 al 18 y desde el 31 de octubre) | Nada. Es una ejecución de ensayo. |
+
+La vista `v_recomendaciones_vigentes`, que es la que lee Regisdata, solo muestra MODULO. Está definida en `deploy/mysql/esquema_recomendaciones.sql` y `tests/piloto/test_esquema_sql.py` falla si deja de filtrar por MODULO. En CONTROL y SOMBRA las filas quedan en la base con su grupo y el despachador no ve nada. La asignación se hizo por sorteo en bloques por día de la semana (semilla 20261019, `scripts/piloto/sorteo_grupos.py`) y no se vuelve a sortear. El método está en `docs/diseno_piloto_proceso_nocturno.md`, sección 13.5.
+
+**Cuidado con los ensayos manuales.** Un ensayo con `--escribir-bd` y `--fecha-objetivo` en una jornada MODULO escribe filas MODULO, y esas filas sí aparecen en la vista. Entre el 19 y el 30 de octubre, los ensayos con `--escribir-bd` se hacen solo con fechas SOMBRA.
+
 ## Ensayo manual
 
 El ensayo usa la base real: hacerlo entre las 21:00 y las 04:00 (hora de Colombia). Fuera de ese horario el orquestador se niega, salvo `--forzar-horario`.

@@ -92,9 +92,15 @@ def test_ruta_absoluta_se_rechaza(tmp_path):
 
 
 @pytest.mark.unit
-def test_asignacion_versionada_esta_vacia():
+def test_asignacion_versionada_de_la_piloto():
     cfg = cargar_configuracion()
-    assert cargar_asignacion_grupos(cfg.ruta_asignacion_grupos) == {}
+    asignacion = cargar_asignacion_grupos(cfg.ruta_asignacion_grupos)
+    assert min(asignacion) == date(2026, 10, 19) and max(asignacion) == date(2026, 10, 30)
+    assert len(asignacion) == 12
+    assert grupo_de(date(2026, 10, 22), cfg.ruta_asignacion_grupos) is Grupo.MODULO
+    assert grupo_de(date(2026, 10, 19), cfg.ruta_asignacion_grupos) is Grupo.CONTROL
+    assert grupo_de(date(2026, 10, 18), cfg.ruta_asignacion_grupos) is Grupo.SOMBRA
+    assert grupo_de(date(2026, 10, 31), cfg.ruta_asignacion_grupos) is Grupo.SOMBRA
 
 
 @pytest.mark.unit
